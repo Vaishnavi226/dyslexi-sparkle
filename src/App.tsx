@@ -13,6 +13,7 @@ import SpellingWorld from "./pages/SpellingWorld";
 import FlashCards from "./pages/FlashCards";
 import ARPlayground from "./pages/ARPlayground";
 import VoicePractice from "./pages/VoicePractice";
+import StoryMode from "./pages/StoryMode";
 import Profile from "./pages/Profile";
 import Progress from "./pages/Progress";
 import Settings from "./pages/Settings";
@@ -37,6 +38,7 @@ const App = () => (
                 <Route path="/flash-cards" element={<FlashCards />} />
                 <Route path="/ar-playground" element={<ARPlayground />} />
                 <Route path="/voice-practice" element={<VoicePractice />} />
+                <Route path="/story-mode" element={<StoryMode />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/progress" element={<Progress />} />
                 <Route path="/settings" element={<Settings />} />

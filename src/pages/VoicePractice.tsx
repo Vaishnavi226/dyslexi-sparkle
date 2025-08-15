@@ -55,6 +55,9 @@ const VoicePractice: React.FC = () => {
   const [accuracy, setAccuracy] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [hasPlayedTarget, setHasPlayedTarget] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [speechWaveform, setSpeechWaveform] = useState<number[]>([]);
+  const [confidenceLevel, setConfidenceLevel] = useState(0);
 
   const currentExercise = voiceExercises[currentExerciseIndex];
   const progress = ((currentExerciseIndex + 1) / voiceExercises.length) * 100;
@@ -66,10 +69,15 @@ const VoicePractice: React.FC = () => {
   }, [currentExerciseIndex]);
 
   const playTargetAudio = () => {
+    setIsPlaying(true);
     SpeechUtils.speak(currentExercise.targetText, {
       rate: userProfile.ttsRate * 0.8, // Slower for learning
       volume: userProfile.ttsVolume,
-      onEnd: () => setHasPlayedTarget(true)
+      onStart: () => setIsPlaying(true),
+      onEnd: () => {
+        setHasPlayedTarget(true);
+        setIsPlaying(false);
+      }
     });
   };
 
@@ -90,16 +98,28 @@ const VoicePractice: React.FC = () => {
       await SpeechUtils.startListening({
         onResult: (transcript, isFinal) => {
           setUserTranscript(transcript);
+          
+          // Simulate confidence level based on transcript length and clarity
+          const confidence = Math.min(transcript.length * 10, 100);
+          setConfidenceLevel(confidence);
+          
+          // Simulate waveform data
+          const waveform = Array.from({ length: 20 }, () => Math.random() * 100);
+          setSpeechWaveform(waveform);
+          
           if (isFinal) {
             setIsListening(false);
+            setSpeechWaveform([]);
             checkAccuracy(transcript);
           }
         },
         onEnd: () => {
           setIsListening(false);
+          setSpeechWaveform([]);
         },
         onError: (error) => {
           setIsListening(false);
+          setSpeechWaveform([]);
           setFeedback({
             type: 'error',
             message: 'Voice recognition failed. Please try again or check your microphone.'
@@ -109,6 +129,7 @@ const VoicePractice: React.FC = () => {
       });
     } catch (error) {
       setIsListening(false);
+      setSpeechWaveform([]);
       setFeedback({
         type: 'error',
         message: 'Voice recognition is not supported in your browser.'
@@ -349,75 +370,149 @@ const VoicePractice: React.FC = () => {
                   {/* Controls */}
                   <div className="flex flex-col items-center space-y-4">
                     {(currentExercise.type === 'word-repeat' || currentExercise.type === 'sentence-read') && (
-                      <Button onClick={playTargetAudio} variant="outline" size="lg">
-                        <Volume2 className="w-5 h-5 mr-2" />
-                        Listen to Target
-                      </Button>
-                    )}
-
-                    <div className="flex items-center space-x-4">
-                      <Button
-                        onClick={isListening ? stopListening : startListening}
+                      <Button 
+                        onClick={playTargetAudio} 
+                        variant="outline" 
                         size="lg"
-                        className={`px-8 py-4 ${isListening ? 'bg-red-500 hover:bg-red-600' : ''}`}
+                        disabled={isPlaying}
+                        className="w-full md:w-auto"
                       >
-                        {isListening ? (
-                          <>
-                            <Square className="w-5 h-5 mr-2" />
-                            Stop Recording
-                          </>
-                        ) : (
-                          <>
-                            <Mic className="w-5 h-5 mr-2" />
-                            Start Speaking
-                          </>
-                        )}
+                        <Volume2 className="w-5 h-5 mr-2" />
+                        {isPlaying ? 'Playing...' : 'Listen to Target'}
                       </Button>
-                    </div>
+                    )}
 
-                    {/* Real-time transcript */}
-                    {(isListening || userTranscript) && (
+                    <div className="flex flex-col items-center space-y-4 w-full">
+                      {/* Microphone Button */}
                       <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="w-full"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                       >
-                        <div className="bg-muted/30 rounded-lg p-4 border-2 border-dashed border-primary/30">
-                          <div className="text-sm text-muted-foreground mb-1">
-                            {isListening ? 'Listening...' : 'You said:'}
+                        <Button
+                          onClick={isListening ? stopListening : startListening}
+                          size="lg"
+                          className={`px-8 py-6 text-lg font-semibold transition-all duration-300 ${
+                            isListening 
+                              ? 'bg-red-500 hover:bg-red-600 text-white animate-pulse' 
+                              : 'bg-primary hover:bg-primary/90'
+                          }`}
+                        >
+                          {isListening ? (
+                            <>
+                              <Square className="w-6 h-6 mr-2" />
+                              Stop Recording
+                            </>
+                          ) : (
+                            <>
+                              <Mic className="w-6 h-6 mr-2" />
+                              Start Speaking
+                            </>
+                          )}
+                        </Button>
+                      </motion.div>
+
+                      {/* Voice Waveform Visualization */}
+                      {isListening && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className="flex items-center justify-center space-x-1 h-16 w-full max-w-md"
+                        >
+                          {speechWaveform.map((height, index) => (
+                            <motion.div
+                              key={index}
+                              className="bg-primary rounded-full"
+                              style={{
+                                width: '4px',
+                                height: `${Math.max(height / 2, 8)}px`,
+                              }}
+                              animate={{
+                                height: [`${Math.max(height / 2, 8)}px`, `${Math.max(height, 16)}px`, `${Math.max(height / 2, 8)}px`]
+                              }}
+                              transition={{
+                                duration: 0.5,
+                                repeat: Infinity,
+                                delay: index * 0.05,
+                              }}
+                            />
+                          ))}
+                        </motion.div>
+                      )}
+
+                      {/* Confidence Level */}
+                      {isListening && confidenceLevel > 0 && (
+                        <div className="w-full max-w-md">
+                          <div className="flex justify-between text-sm text-muted-foreground mb-1">
+                            <span>Speech Clarity</span>
+                            <span>{Math.round(confidenceLevel)}%</span>
                           </div>
-                          <div className="text-lg font-medium">
-                            {userTranscript || (isListening ? '...' : 'Click Start Speaking to begin')}
-                          </div>
+                          <Progress value={confidenceLevel} className="h-2" />
                         </div>
-                      </motion.div>
-                    )}
+                      )}
+                    </div>
+                  </div>
 
-                    {/* Feedback */}
-                    {feedback && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="w-full"
-                      >
-                        <Alert variant={feedback.type === 'error' ? 'destructive' : 'default'}>
-                          <div className="flex items-center">
-                            {feedback.type === 'success' && <CheckCircle className="w-4 h-4 mr-2 text-green-600" />}
-                            {feedback.type === 'error' && <XCircle className="w-4 h-4 mr-2" />}
-                            <AlertDescription>{feedback.message}</AlertDescription>
-                          </div>
-                        </Alert>
-                      </motion.div>
-                    )}
+                  {/* Real-time transcript */}
+                  {(isListening || userTranscript) && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="w-full max-w-2xl mx-auto"
+                    >
+                      <div className="bg-muted/30 rounded-lg p-6 border-2 border-dashed border-primary/30">
+                        <div className="text-sm text-muted-foreground mb-2 flex items-center justify-between">
+                          <span>{isListening ? 'Listening...' : 'You said:'}</span>
+                          {userTranscript && (
+                            <span className="text-xs">
+                              {userTranscript.split(' ').length} words
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-lg font-medium min-h-[2rem] leading-relaxed">
+                          {userTranscript || (isListening ? '...' : 'Click Start Speaking to begin')}
+                          {isListening && (
+                            <motion.span
+                              animate={{ opacity: [1, 0, 1] }}
+                              transition={{ duration: 1, repeat: Infinity }}
+                              className="text-primary"
+                            >
+                              |
+                            </motion.span>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
 
-                    {/* Instructions */}
-                    <div className="text-center max-w-md">
-                      <p className="text-sm text-muted-foreground">
-                        {currentExercise.type === 'word-repeat' && 'Listen to the word, then repeat it clearly.'}
-                        {currentExercise.type === 'picture-describe' && 'Look at the picture and describe what you see.'}
-                        {currentExercise.type === 'phoneme-practice' && 'Practice saying this sound clearly.'}
-                        {currentExercise.type === 'sentence-read' && 'Read the sentence aloud clearly.'}
-                      </p>
+                  {/* Feedback */}
+                  {feedback && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="w-full max-w-2xl mx-auto"
+                    >
+                      <Alert variant={feedback.type === 'error' ? 'destructive' : 'default'}>
+                        <div className="flex items-center">
+                          {feedback.type === 'success' && <CheckCircle className="w-4 h-4 mr-2 text-green-600" />}
+                          {feedback.type === 'error' && <XCircle className="w-4 h-4 mr-2" />}
+                          <AlertDescription>{feedback.message}</AlertDescription>
+                        </div>
+                      </Alert>
+                    </motion.div>
+                  )}
+
+                  {/* Instructions & Tips */}
+                  <div className="text-center max-w-2xl mx-auto space-y-3">
+                    <p className="text-sm text-muted-foreground">
+                      {currentExercise.type === 'word-repeat' && 'Listen to the word, then repeat it clearly. Speak slowly and clearly for best results.'}
+                      {currentExercise.type === 'picture-describe' && 'Look at the picture and describe what you see using simple words.'}
+                      {currentExercise.type === 'phoneme-practice' && 'Practice saying this sound clearly. Focus on the shape of your mouth.'}
+                      {currentExercise.type === 'sentence-read' && 'Read the sentence aloud clearly. Take your time and pronounce each word.'}
+                    </p>
+                    <div className="flex flex-wrap justify-center gap-2 text-xs text-muted-foreground">
+                      <span className="bg-muted/50 px-2 py-1 rounded">💡 Tip: Speak clearly</span>
+                      <span className="bg-muted/50 px-2 py-1 rounded">🎯 Target: {currentExercise.minAccuracy}% accuracy</span>
+                      <span className="bg-muted/50 px-2 py-1 rounded">📈 Attempts: {attempts}</span>
                     </div>
                   </div>
                 </motion.div>
