@@ -63,7 +63,7 @@ const FlashCards: React.FC = () => {
         volume: userProfile.ttsVolume
       });
     }
-  }, [currentCardIndex, userProfile.ttsEnabled, userProfile.ttsRate, userProfile.ttsVolume]);
+  }, [currentCardIndex, userProfile.ttsEnabled, userProfile.ttsRate, userProfile.ttsVolume, currentCard, isFlipped]);
 
   const shuffleCards = () => {
     const shuffled = [...flashCardsData].sort(() => Math.random() - 0.5);
@@ -79,7 +79,9 @@ const FlashCards: React.FC = () => {
     if (!isFlipped) {
       setCardsViewed(prev => prev + 1);
       if (userProfile.ttsEnabled) {
-        SpeechUtils.speak(`${currentCard.word}. Sound: ${currentCard.pronunciation}`, {
+        // Clean pronunciation by removing forward slashes and phonetic symbols
+        const cleanPronunciation = currentCard.pronunciation.replace(/[\/\[\]]/g, '');
+        SpeechUtils.speak(`${currentCard.word}`, {
           rate: userProfile.ttsRate,
           volume: userProfile.ttsVolume
         });
@@ -131,7 +133,8 @@ const FlashCards: React.FC = () => {
 
   const speakWord = () => {
     if (isFlipped) {
-      SpeechUtils.speak(`${currentCard.word}. ${currentCard.pronunciation}`, {
+      // Only speak the word, not the pronunciation symbols
+      SpeechUtils.speak(`${currentCard.word}`, {
         rate: userProfile.ttsRate,
         volume: userProfile.ttsVolume
       });
@@ -253,7 +256,7 @@ const FlashCards: React.FC = () => {
               <div className="flex flex-col items-center space-y-6">
                 {/* Flash Card */}
                 <motion.div
-                  className="relative w-80 h-96 cursor-pointer"
+                  className="relative w-80 h-96 cursor-pointer group"
                   style={{ perspective: '1000px' }}
                   onClick={flipCard}
                   whileHover={{ scale: 1.05 }}
@@ -262,88 +265,225 @@ const FlashCards: React.FC = () => {
                   <motion.div
                     className="relative w-full h-full"
                     animate={{ rotateY: isFlipped ? 180 : 0 }}
-                    transition={{ duration: 0.6 }}
+                    transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
                     style={{ transformStyle: 'preserve-3d' }}
                   >
                     {/* Front of card */}
-                    <div
-                      className="absolute inset-0 w-full h-full bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl border-2 border-primary/20 flex flex-col items-center justify-center"
+                    <motion.div
+                      className="absolute inset-0 w-full h-full bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 dark:from-blue-400/30 dark:via-purple-400/30 dark:to-pink-400/30 rounded-3xl border-4 border-blue-300/50 dark:border-blue-400/70 flex flex-col items-center justify-center shadow-2xl backdrop-blur-sm"
                       style={{ backfaceVisibility: 'hidden' }}
+                      whileHover={{ borderColor: 'rgba(59, 130, 246, 0.8)' }}
                     >
-                      <div className="text-8xl font-bold text-primary mb-4">
+                      <motion.div 
+                        className="text-9xl font-black text-transparent bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text mb-4 drop-shadow-lg"
+                        animate={{ 
+                          textShadow: [
+                            '0 0 20px rgba(59, 130, 246, 0.5)',
+                            '0 0 30px rgba(147, 51, 234, 0.5)',
+                            '0 0 20px rgba(236, 72, 153, 0.5)',
+                            '0 0 20px rgba(59, 130, 246, 0.5)'
+                          ]
+                        }}
+                        transition={{ duration: 3, repeat: Infinity }}
+                      >
                         {currentCard.letter}
-                      </div>
-                      <div className="text-lg text-muted-foreground">
-                        Tap to see word
-                      </div>
-                    </div>
+                      </motion.div>
+                      <motion.div 
+                        className="text-lg font-semibold text-foreground/80 dark:text-foreground/90 bg-background/60 dark:bg-background/80 px-4 py-2 rounded-full border border-border/50"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                      >
+                        ✨ Tap to reveal ✨
+                      </motion.div>
+                      
+                      {/* Floating sparkles */}
+                      <motion.div
+                        className="absolute top-4 right-4 text-yellow-400 text-2xl"
+                        animate={{ 
+                          rotate: [0, 360],
+                          scale: [1, 1.2, 1]
+                        }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      >
+                        ⭐
+                      </motion.div>
+                      <motion.div
+                        className="absolute bottom-6 left-6 text-pink-400 text-xl"
+                        animate={{ 
+                          rotate: [360, 0],
+                          scale: [1, 1.3, 1]
+                        }}
+                        transition={{ duration: 2.5, repeat: Infinity }}
+                      >
+                        🌟
+                      </motion.div>
+                      <motion.div
+                        className="absolute top-1/3 left-4 text-blue-400 text-lg"
+                        animate={{ 
+                          y: [-5, 5, -5],
+                          scale: [1, 1.1, 1]
+                        }}
+                        transition={{ duration: 3, repeat: Infinity }}
+                      >
+                        ✨
+                      </motion.div>
+                    </motion.div>
 
                     {/* Back of card */}
-                    <div
-                      className="absolute inset-0 w-full h-full bg-gradient-to-br from-secondary/10 to-accent/10 rounded-2xl border-2 border-secondary/20 flex flex-col items-center justify-center"
+                    <motion.div
+                      className="absolute inset-0 w-full h-full bg-gradient-to-br from-green-500/20 via-emerald-500/20 to-teal-500/20 dark:from-green-400/30 dark:via-emerald-400/30 dark:to-teal-400/30 rounded-3xl border-4 border-green-300/50 dark:border-green-400/70 flex flex-col items-center justify-center shadow-2xl backdrop-blur-sm"
                       style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                     >
-                      <div className="text-6xl mb-4">{currentCard.image}</div>
-                      <div className="text-3xl font-bold text-secondary mb-2">
+                      <motion.div 
+                        className="text-8xl mb-4 drop-shadow-2xl"
+                        animate={{ 
+                          scale: [1, 1.1, 1],
+                          filter: [
+                            'drop-shadow(0 0 10px rgba(34, 197, 94, 0.5))',
+                            'drop-shadow(0 0 20px rgba(16, 185, 129, 0.7))',
+                            'drop-shadow(0 0 10px rgba(20, 184, 166, 0.5))'
+                          ]
+                        }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      >
+                        {currentCard.image}
+                      </motion.div>
+                      
+                      <motion.div 
+                        className="text-4xl font-black text-transparent bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 dark:from-green-400 dark:via-emerald-400 dark:to-teal-400 bg-clip-text mb-3"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                      >
                         {currentCard.word}
-                      </div>
-                      <div className="text-lg text-muted-foreground mb-4">
+                      </motion.div>
+                      
+                      <motion.div 
+                        className="text-lg font-medium text-foreground/70 dark:text-foreground/80 mb-4 bg-background/60 dark:bg-background/80 px-3 py-1 rounded-full border border-border/50"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.4 }}
+                      >
                         {currentCard.pronunciation}
-                      </div>
-                      <Button onClick={(e) => { e.stopPropagation(); speakWord(); }} variant="outline" size="sm">
-                        <Volume2 className="w-4 h-4 mr-2" />
-                        Listen
-                      </Button>
-                    </div>
+                      </motion.div>
+                      
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Button 
+                          onClick={(e) => { e.stopPropagation(); speakWord(); }} 
+                          variant="outline" 
+                          size="lg"
+                          className="bg-background/80 dark:bg-background/90 border-2 border-green-300 dark:border-green-400 hover:bg-green-50 dark:hover:bg-green-950/30 text-foreground dark:text-foreground font-semibold"
+                        >
+                          <Volume2 className="w-5 h-5 mr-2" />
+                          🎵 Listen
+                        </Button>
+                      </motion.div>
+                      
+                      {/* Decorative elements */}
+                      <motion.div
+                        className="absolute top-4 left-4 text-green-400 text-2xl"
+                        animate={{ 
+                          rotate: [0, 360]
+                        }}
+                        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                      >
+                        🍃
+                      </motion.div>
+                      <motion.div
+                        className="absolute bottom-4 right-4 text-emerald-400 text-xl"
+                        animate={{ 
+                          scale: [1, 1.2, 1],
+                          rotate: [0, 180, 360]
+                        }}
+                        transition={{ duration: 3, repeat: Infinity }}
+                      >
+                        💎
+                      </motion.div>
+                    </motion.div>
                   </motion.div>
                 </motion.div>
 
                 {/* Controls */}
-                <div className="flex items-center space-x-4">
-                  <Button
-                    onClick={previousCard}
-                    disabled={currentCardIndex === 0}
-                    variant="outline"
-                  >
-                    <ChevronLeft className="w-4 h-4 mr-2" />
-                    Previous
-                  </Button>
+                <div className="flex flex-wrap items-center justify-center gap-4">
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Button
+                      onClick={previousCard}
+                      disabled={currentCardIndex === 0}
+                      variant="outline"
+                      className="bg-background/80 dark:bg-background/90 border-2 border-primary/30 dark:border-primary/50 hover:border-primary/60 dark:hover:border-primary/80"
+                    >
+                      <ChevronLeft className="w-4 h-4 mr-2" />
+                      Previous
+                    </Button>
+                  </motion.div>
 
                   {gameMode === 'quiz' && isFlipped && (
-                    <div className="flex space-x-2">
-                      <Button onClick={markIncorrect} variant="outline" className="text-red-600">
-                        ❌ Incorrect
-                      </Button>
-                      <Button onClick={markCorrect} className="text-green-600">
-                        ✅ Correct
-                      </Button>
+                    <div className="flex space-x-3">
+                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <Button 
+                          onClick={markIncorrect} 
+                          variant="outline" 
+                          className="border-2 border-red-300 dark:border-red-400 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30"
+                        >
+                          ❌ Try Again
+                        </Button>
+                      </motion.div>
+                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <Button 
+                          onClick={markCorrect} 
+                          className="border-2 border-green-300 dark:border-green-400 bg-green-500 dark:bg-green-600 text-white hover:bg-green-600 dark:hover:bg-green-700"
+                        >
+                          ✅ Got It!
+                        </Button>
+                      </motion.div>
                     </div>
                   )}
 
                   {gameMode === 'study' && (
-                    <Button onClick={nextCard}>
-                      {currentCardIndex === shuffledCards.length - 1 ? 'Finish' : 'Next'}
-                      <ChevronRight className="w-4 h-4 ml-2" />
-                    </Button>
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <Button 
+                        onClick={nextCard}
+                        className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-0 font-semibold px-6"
+                      >
+                        {currentCardIndex === shuffledCards.length - 1 ? '🎉 Finish' : 'Next Card'}
+                        <ChevronRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </motion.div>
                   )}
                 </div>
 
                 {/* Mode Toggle */}
-                <div className="flex items-center space-x-4">
-                  <Button
-                    onClick={() => setGameMode('study')}
-                    variant={gameMode === 'study' ? 'default' : 'outline'}
-                    size="sm"
-                  >
-                    Study Mode
-                  </Button>
-                  <Button
-                    onClick={() => setGameMode('quiz')}
-                    variant={gameMode === 'quiz' ? 'default' : 'outline'}
-                    size="sm"
-                  >
-                    Quiz Mode
-                  </Button>
+                <div className="flex items-center space-x-4 bg-muted/30 dark:bg-muted/50 p-2 rounded-xl border border-border/50">
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Button
+                      onClick={() => setGameMode('study')}
+                      variant={gameMode === 'study' ? 'default' : 'outline'}
+                      size="sm"
+                      className={gameMode === 'study' 
+                        ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white border-0 font-semibold' 
+                        : 'border-2 border-blue-300 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30'
+                      }
+                    >
+                      📚 Study Mode
+                    </Button>
+                  </motion.div>
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Button
+                      onClick={() => setGameMode('quiz')}
+                      variant={gameMode === 'quiz' ? 'default' : 'outline'}
+                      size="sm"
+                      className={gameMode === 'quiz' 
+                        ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white border-0 font-semibold' 
+                        : 'border-2 border-purple-300 dark:border-purple-400 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/30'
+                      }
+                    >
+                      🎯 Quiz Mode
+                    </Button>
+                  </motion.div>
                 </div>
               </div>
             </CardContent>
