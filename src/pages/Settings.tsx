@@ -1,6 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Settings as SettingsIcon, Download, Upload, RotateCcw, Save, Volume2, Eye, Palette } from 'lucide-react';
+import { 
+  Settings as SettingsIcon, 
+  Download, 
+  Upload, 
+  RotateCcw, 
+  Save, 
+  Volume2, 
+  Eye, 
+  Palette,
+  Rocket,
+  Star,
+  Brain,
+  Zap,
+  Sparkles
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -8,6 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
 import Layout from '@/components/shared/Layout';
 import { useGame } from '@/contexts/GameContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -19,49 +34,100 @@ const Settings: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const { toast } = useToast();
   const [tempProfile, setTempProfile] = useState(userProfile);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSave = () => {
-    updateProfile(tempProfile);
-    toast({
-      title: "Settings Saved! ✅",
-      description: "Your preferences have been updated.",
-    });
+  // Apply font changes to document
+  useEffect(() => {
+    const root = document.documentElement;
+    
+    // Apply font family
+    switch (tempProfile.preferredFont) {
+      case 'opendyslexic':
+        root.style.setProperty('--font-family', '"OpenDyslexic", sans-serif');
+        break;
+      case 'atkinson':
+        root.style.setProperty('--font-family', '"Atkinson Hyperlegible", sans-serif');
+        break;
+      default:
+        root.style.setProperty('--font-family', 'system-ui, sans-serif');
+    }
+    
+    // Apply font size
+    const sizeMap = { small: '14px', medium: '16px', large: '18px' };
+    root.style.setProperty('--base-font-size', sizeMap[tempProfile.fontSize]);
+    
+    // Apply high contrast
+    if (tempProfile.highContrast) {
+      root.classList.add('high-contrast');
+    } else {
+      root.classList.remove('high-contrast');
+    }
+  }, [tempProfile.preferredFont, tempProfile.fontSize, tempProfile.highContrast]);
+
+  const handleSave = async () => {
+    setIsLoading(true);
+    try {
+      updateProfile(tempProfile);
+      
+      // Simulate save delay for better UX
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      toast({
+        title: "🚀 Settings Saved!",
+        description: "Your cosmic preferences have been updated successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error Saving Settings",
+        description: "Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleReset = () => {
     setTempProfile(userProfile);
     toast({
-      title: "Settings Reset",
-      description: "All changes have been reverted.",
+      title: "🔄 Settings Reset",
+      description: "All changes have been reverted to your last saved state.",
     });
   };
 
   const handleTestTTS = () => {
-    SpeechUtils.speak("Hello! This is a test of the text-to-speech feature.", {
+    const testText = "Greetings, space explorer! This is your cosmic text-to-speech system. Ready for your next galactic adventure?";
+    SpeechUtils.speak(testText, {
       rate: tempProfile.ttsRate,
       volume: tempProfile.ttsVolume
+    });
+    
+    toast({
+      title: "🎵 Testing Voice",
+      description: "How does that sound?",
     });
   };
 
   const exportData = () => {
     const data = {
       profile: userProfile,
-      exportDate: new Date().toISOString()
+      exportDate: new Date().toISOString(),
+      version: "1.0"
     };
     
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'dyslexia-support-data.json';
+    a.download = `cosmic-dyslexia-data-${new Date().toISOString().split('T')[0]}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     
     toast({
-      title: "Data Exported! 📦",
-      description: "Your data has been downloaded as a JSON file.",
+      title: "📦 Data Exported!",
+      description: "Your cosmic journey data has been downloaded successfully.",
     });
   };
 
@@ -77,24 +143,33 @@ const Settings: React.FC = () => {
           updateProfile(data.profile);
           setTempProfile(data.profile);
           toast({
-            title: "Data Imported! 📥",
-            description: "Your settings have been restored.",
+            title: "📥 Data Imported!",
+            description: "Your cosmic settings have been restored from the stars.",
           });
+        } else {
+          throw new Error('Invalid data format');
         }
       } catch (error) {
         toast({
-          title: "Import Failed",
-          description: "The file format is not valid.",
+          title: "❌ Import Failed",
+          description: "The file format appears to be corrupted or invalid.",
           variant: "destructive"
         });
       }
     };
     reader.readAsText(file);
+    event.target.value = ''; // Reset input
   };
+
+  const achievements = [
+    { icon: <Star className="w-4 h-4" />, title: "Settings Explorer", desc: "Customized your experience" },
+    { icon: <Brain className="w-4 h-4" />, title: "Accessibility Advocate", desc: "Optimized for learning" },
+    { icon: <Rocket className="w-4 h-4" />, title: "Space Traveler", desc: "Ready for cosmic adventures" }
+  ];
 
   return (
     <Layout>
-      <div className="p-8 max-w-4xl mx-auto">
+      <div className="p-4 lg:p-8 max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -102,276 +177,362 @@ const Settings: React.FC = () => {
           className="space-y-6"
         >
           {/* Header */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <SettingsIcon className="w-8 h-8 text-primary" />
-              <h1 className="text-3xl font-bold">Settings</h1>
-            </div>
-            <div className="flex space-x-2">
-              <Button onClick={handleReset} variant="outline">
+          <div className="text-center space-y-4">
+            <motion.div
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className="cosmic-card p-6 rounded-2xl max-w-2xl mx-auto"
+            >
+              <div className="flex items-center justify-center mb-4">
+                <div className="relative">
+                  <SettingsIcon className="w-12 h-12 text-accent" />
+                  <Sparkles className="w-6 h-6 text-primary absolute -top-2 -right-2 animate-pulse" />
+                </div>
+              </div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                Cosmic Control Center
+              </h1>
+              <p className="text-muted-foreground mt-2">
+                Customize your galactic learning experience
+              </p>
+              
+              {/* Achievement Badges */}
+              <div className="flex flex-wrap justify-center gap-2 mt-4">
+                {achievements.map((achievement, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.3 + index * 0.1 }}
+                  >
+                    <Badge variant="secondary" className="flex items-center gap-1 px-3 py-1">
+                      {achievement.icon}
+                      <span className="text-xs">{achievement.title}</span>
+                    </Badge>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-wrap justify-center gap-3">
+              <Button 
+                onClick={handleReset} 
+                variant="outline" 
+                className="cosmic-button"
+                disabled={isLoading}
+              >
                 <RotateCcw className="w-4 h-4 mr-2" />
-                Reset
+                Reset All
               </Button>
-              <Button onClick={handleSave}>
+              <Button 
+                onClick={handleSave} 
+                className="cosmic-button"
+                disabled={isLoading}
+              >
                 <Save className="w-4 h-4 mr-2" />
-                Save Changes
+                {isLoading ? 'Saving...' : 'Save Changes'}
               </Button>
             </div>
           </div>
 
-          {/* Accessibility Settings */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <Card className="glass">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Eye className="w-5 h-5 mr-2" />
-                  Accessibility Options
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Font Selection */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="font">Preferred Font</Label>
-                    <Select
-                      value={tempProfile.preferredFont}
-                      onValueChange={(value: 'default' | 'opendyslexic' | 'atkinson') =>
-                        setTempProfile({ ...tempProfile, preferredFont: value })
-                      }
-                    >
-                      <SelectTrigger id="font" className="mt-1">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="default">Default Font</SelectItem>
-                        <SelectItem value="opendyslexic">OpenDyslexic (Dyslexia-friendly)</SelectItem>
-                        <SelectItem value="atkinson">Atkinson Hyperlegible</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Choose a font that's easier for you to read
-                    </p>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="fontSize">Font Size</Label>
-                    <Select
-                      value={tempProfile.fontSize}
-                      onValueChange={(value: 'small' | 'medium' | 'large') =>
-                        setTempProfile({ ...tempProfile, fontSize: value })
-                      }
-                    >
-                      <SelectTrigger id="fontSize" className="mt-1">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="small">Small</SelectItem>
-                        <SelectItem value="medium">Medium</SelectItem>
-                        <SelectItem value="large">Large</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Color and Contrast */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Accessibility Settings */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <Card className="cosmic-card h-full">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Eye className="w-5 h-5 mr-2 text-accent" />
+                    Visual Accessibility
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Font Selection */}
+                  <div className="space-y-4">
                     <div>
-                      <Label htmlFor="contrast">High Contrast Mode</Label>
-                      <p className="text-xs text-muted-foreground">
-                        Increases contrast for better visibility
+                      <Label htmlFor="font" className="text-sm font-medium">
+                        Reading Font
+                      </Label>
+                      <Select
+                        value={tempProfile.preferredFont}
+                        onValueChange={(value: 'default' | 'opendyslexic' | 'atkinson') =>
+                          setTempProfile({ ...tempProfile, preferredFont: value })
+                        }
+                      >
+                        <SelectTrigger id="font" className="mt-2">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="default">Default Space Font</SelectItem>
+                          <SelectItem value="opendyslexic">OpenDyslexic (Dyslexia-Optimized)</SelectItem>
+                          <SelectItem value="atkinson">Atkinson Hyperlegible</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Choose a font that enhances your reading experience
                       </p>
                     </div>
-                    <Switch
-                      id="contrast"
-                      checked={tempProfile.highContrast}
-                      onCheckedChange={(checked) =>
-                        setTempProfile({ ...tempProfile, highContrast: checked })
-                      }
-                    />
-                  </div>
 
-                  <div className="flex items-center justify-between">
                     <div>
-                      <Label htmlFor="theme">Theme</Label>
-                      <p className="text-xs text-muted-foreground">
-                        Current: {theme === 'light' ? 'Light' : 'Dark'} mode
-                      </p>
+                      <Label htmlFor="fontSize" className="text-sm font-medium">
+                        Text Size
+                      </Label>
+                      <Select
+                        value={tempProfile.fontSize}
+                        onValueChange={(value: 'small' | 'medium' | 'large') =>
+                          setTempProfile({ ...tempProfile, fontSize: value })
+                        }
+                      >
+                        <SelectTrigger id="fontSize" className="mt-2">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="small">Compact (14px)</SelectItem>
+                          <SelectItem value="medium">Standard (16px)</SelectItem>
+                          <SelectItem value="large">Large (18px)</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
-                    <Button onClick={toggleTheme} variant="outline" size="sm">
-                      <Palette className="w-4 h-4 mr-2" />
-                      Toggle Theme
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Audio Settings */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <Card className="glass">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Volume2 className="w-5 h-5 mr-2" />
-                  Audio Settings
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Text-to-Speech */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label htmlFor="tts">Text-to-Speech</Label>
-                      <p className="text-xs text-muted-foreground">
-                        Have text read aloud to you
-                      </p>
-                    </div>
-                    <Switch
-                      id="tts"
-                      checked={tempProfile.ttsEnabled}
-                      onCheckedChange={(checked) =>
-                        setTempProfile({ ...tempProfile, ttsEnabled: checked })
-                      }
-                    />
                   </div>
 
-                  {tempProfile.ttsEnabled && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      className="space-y-4 pl-4 border-l-2 border-primary/20"
-                    >
+                  <Separator />
+
+                  {/* Visual Options */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
                       <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <Label>Speech Rate</Label>
-                          <span className="text-sm text-muted-foreground">
-                            {tempProfile.ttsRate}x
-                          </span>
-                        </div>
-                        <Slider
-                          value={[tempProfile.ttsRate]}
-                          onValueChange={(value) =>
-                            setTempProfile({ ...tempProfile, ttsRate: value[0] })
-                          }
-                          max={2}
-                          min={0.5}
-                          step={0.1}
-                          className="w-full"
-                        />
-                        <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                          <span>Slow</span>
-                          <span>Fast</span>
-                        </div>
+                        <Label htmlFor="contrast" className="text-sm font-medium">
+                          High Contrast Mode
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          Enhanced visibility for better reading
+                        </p>
                       </div>
+                      <Switch
+                        id="contrast"
+                        checked={tempProfile.highContrast}
+                        onCheckedChange={(checked) =>
+                          setTempProfile({ ...tempProfile, highContrast: checked })
+                        }
+                      />
+                    </div>
 
+                    <div className="flex items-center justify-between">
                       <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <Label>Speech Volume</Label>
-                          <span className="text-sm text-muted-foreground">
-                            {Math.round(tempProfile.ttsVolume * 100)}%
-                          </span>
-                        </div>
-                        <Slider
-                          value={[tempProfile.ttsVolume]}
-                          onValueChange={(value) =>
-                            setTempProfile({ ...tempProfile, ttsVolume: value[0] })
-                          }
-                          max={1}
-                          min={0}
-                          step={0.1}
-                          className="w-full"
-                        />
+                        <Label htmlFor="theme" className="text-sm font-medium">
+                          Theme Mode
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          Current: {theme === 'light' ? 'Light Space' : 'Deep Space'} theme
+                        </p>
                       </div>
-
-                      <Button onClick={handleTestTTS} variant="outline" size="sm">
-                        <Volume2 className="w-4 h-4 mr-2" />
-                        Test Speech
+                      <Button 
+                        onClick={toggleTheme} 
+                        variant="outline" 
+                        size="sm"
+                        className="cosmic-button"
+                      >
+                        <Palette className="w-4 h-4 mr-2" />
+                        Switch Theme
                       </Button>
-                    </motion.div>
-                  )}
-                </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
 
-                <Separator />
+            {/* Audio Settings */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Card className="cosmic-card h-full">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Volume2 className="w-5 h-5 mr-2 text-accent" />
+                    Audio Experience
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Text-to-Speech */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label htmlFor="tts" className="text-sm font-medium">
+                          Cosmic Voice Assistant
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          Have text narrated by your space companion
+                        </p>
+                      </div>
+                      <Switch
+                        id="tts"
+                        checked={tempProfile.ttsEnabled}
+                        onCheckedChange={(checked) =>
+                          setTempProfile({ ...tempProfile, ttsEnabled: checked })
+                        }
+                      />
+                    </div>
 
-                {/* Sound Effects */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label htmlFor="soundfx">Sound Effects</Label>
-                    <p className="text-xs text-muted-foreground">
-                      Play sounds for actions and achievements
+                    {tempProfile.ttsEnabled && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        className="space-y-4 p-4 cosmic-card rounded-lg"
+                      >
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <Label className="text-sm">Voice Speed</Label>
+                            <Badge variant="outline">
+                              {tempProfile.ttsRate}x
+                            </Badge>
+                          </div>
+                          <Slider
+                            value={[tempProfile.ttsRate]}
+                            onValueChange={(value) =>
+                              setTempProfile({ ...tempProfile, ttsRate: value[0] })
+                            }
+                            max={2}
+                            min={0.5}
+                            step={0.1}
+                            className="w-full"
+                          />
+                          <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                            <span>Slow</span>
+                            <span>Fast</span>
+                          </div>
+                        </div>
+
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <Label className="text-sm">Voice Volume</Label>
+                            <Badge variant="outline">
+                              {Math.round(tempProfile.ttsVolume * 100)}%
+                            </Badge>
+                          </div>
+                          <Slider
+                            value={[tempProfile.ttsVolume]}
+                            onValueChange={(value) =>
+                              setTempProfile({ ...tempProfile, ttsVolume: value[0] })
+                            }
+                            max={1}
+                            min={0}
+                            step={0.1}
+                            className="w-full"
+                          />
+                        </div>
+
+                        <Button 
+                          onClick={handleTestTTS} 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full cosmic-button"
+                        >
+                          <Volume2 className="w-4 h-4 mr-2" />
+                          Test Cosmic Voice
+                        </Button>
+                      </motion.div>
+                    )}
+                  </div>
+
+                  <Separator />
+
+                  {/* Sound Effects */}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label htmlFor="soundfx" className="text-sm font-medium">
+                        Galactic Sound Effects
+                      </Label>
+                      <p className="text-xs text-muted-foreground">
+                        Space sounds for actions and achievements
+                      </p>
+                    </div>
+                    <Switch
+                      id="soundfx"
+                      checked={tempProfile.soundFxEnabled}
+                      onCheckedChange={(checked) =>
+                        setTempProfile({ ...tempProfile, soundFxEnabled: checked })
+                      }
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Data Management */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="lg:col-span-2"
+            >
+              <Card className="cosmic-card">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Rocket className="w-5 h-5 mr-2 text-accent" />
+                    Mission Data Management
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <p className="text-sm text-muted-foreground">
+                    Safely backup and restore your cosmic learning journey data.
+                  </p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Button 
+                      onClick={exportData} 
+                      variant="outline" 
+                      className="cosmic-button h-16 flex-col space-y-1"
+                    >
+                      <Download className="w-5 h-5" />
+                      <div className="text-center">
+                        <div className="font-medium">Export Data</div>
+                        <div className="text-xs opacity-70">Download your progress</div>
+                      </div>
+                    </Button>
+                    
+                    <div>
+                      <input
+                        type="file"
+                        accept=".json"
+                        onChange={importData}
+                        className="hidden"
+                        id="importFile"
+                      />
+                      <Button asChild variant="outline" className="cosmic-button h-16 w-full flex-col space-y-1">
+                        <label htmlFor="importFile" className="cursor-pointer">
+                          <Upload className="w-5 h-5" />
+                          <div className="text-center">
+                            <div className="font-medium">Import Data</div>
+                            <div className="text-xs opacity-70">Restore from backup</div>
+                          </div>
+                        </label>
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="cosmic-card p-4 rounded-lg">
+                    <h4 className="font-medium mb-2 flex items-center">
+                      <Zap className="w-4 h-4 mr-2 text-accent" />
+                      Privacy & Security
+                    </h4>
+                    <p className="text-sm text-muted-foreground">
+                      Your cosmic journey data is stored securely on your device. We respect your privacy - 
+                      no personal information is collected or transmitted to external servers. 
+                      You maintain full control over your data and can export or delete it at any time 
+                      through your browser settings.
                     </p>
                   </div>
-                  <Switch
-                    id="soundfx"
-                    checked={tempProfile.soundFxEnabled}
-                    onCheckedChange={(checked) =>
-                      setTempProfile({ ...tempProfile, soundFxEnabled: checked })
-                    }
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Data Management */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <Card className="glass">
-              <CardHeader>
-                <CardTitle>Data Management</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Export your progress data or import previously saved data.
-                </p>
-                
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Button onClick={exportData} variant="outline" className="flex-1">
-                    <Download className="w-4 h-4 mr-2" />
-                    Export Data
-                  </Button>
-                  
-                  <div className="flex-1">
-                    <input
-                      type="file"
-                      accept=".json"
-                      onChange={importData}
-                      className="hidden"
-                      id="importFile"
-                    />
-                    <Button asChild variant="outline" className="w-full">
-                      <label htmlFor="importFile" className="cursor-pointer">
-                        <Upload className="w-4 h-4 mr-2" />
-                        Import Data
-                      </label>
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="bg-muted/50 p-4 rounded-lg">
-                  <h4 className="font-medium mb-2">Data Privacy</h4>
-                  <p className="text-sm text-muted-foreground">
-                    All your data is stored locally on your device. We don't collect or share any personal information.
-                    You can export your data at any time and delete it from your browser's storage settings.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
         </motion.div>
       </div>
     </Layout>

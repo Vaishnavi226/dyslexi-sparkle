@@ -8,50 +8,56 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Kid-friendly color palette */
-    --background: 214 40% 98%;
-    --foreground: 217 19% 27%;
+    /* Space-themed color palette */
+    --background: 225 39% 5%;
+    --foreground: 210 40% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 217 19% 27%;
+    --card: 224 71% 4%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 217 19% 27%;
+    --popover: 224 71% 4%;
+    --popover-foreground: 210 40% 98%;
 
-    /* Vibrant blue primary */
+    /* Cosmic blue primary */
     --primary: 217 91% 60%;
     --primary-foreground: 0 0% 100%;
 
-    /* Soft purple secondary */
-    --secondary: 268 83% 92%;
-    --secondary-foreground: 268 83% 20%;
+    /* Nebula purple secondary */
+    --secondary: 263 70% 50%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 215 27% 17%;
+    --muted-foreground: 217 10% 64%;
 
-    /* Gentle green accent */
-    --accent: 142 76% 88%;
-    --accent-foreground: 142 76% 20%;
+    /* Star yellow accent */
+    --accent: 47 96% 53%;
+    --accent-foreground: 26 83% 14%;
 
-    /* Soft orange for warnings */
-    --warning: 38 92% 88%;
-    --warning-foreground: 38 92% 20%;
+    /* Cosmic orange for warnings */
+    --warning: 25 95% 53%;
+    --warning-foreground: 26 83% 14%;
 
     /* Success green */
-    --success: 142 76% 88%;
-    --success-foreground: 142 76% 20%;
+    --success: 142 76% 36%;
+    --success-foreground: 355 100% 97%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive-foreground: 355 100% 97%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
+    --border: 215 27% 17%;
+    --input: 215 27% 17%;
     --ring: 217 91% 60%;
 
-    /* Gradient variables */
-    --gradient-primary: linear-gradient(135deg, hsl(217 91% 70%), hsl(268 83% 70%));
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100% / 0.8), hsl(214 40% 98%));
-    --gradient-background: linear-gradient(180deg, hsl(214 40% 98%), hsl(217 91% 95%));
+    /* Space gradient variables */
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(263 70% 50%));
+    --gradient-card: linear-gradient(145deg, hsl(224 71% 4% / 0.8), hsl(215 27% 17% / 0.4));
+    --gradient-background: radial-gradient(ellipse at top, hsl(263 70% 50% / 0.15), transparent 50%), 
+                          radial-gradient(ellipse at bottom, hsl(217 91% 60% / 0.15), transparent 50%), 
+                          linear-gradient(to bottom, hsl(225 39% 5%), hsl(224 71% 4%));
+    --gradient-nebula: radial-gradient(circle at 20% 80%, hsl(263 70% 50% / 0.3) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 20%, hsl(217 91% 60% / 0.3) 0%, transparent 50%),
+                      radial-gradient(circle at 40% 40%, hsl(47 96% 53% / 0.2) 0%, transparent 50%);
+    --gradient-cosmic: linear-gradient(135deg, hsl(263 70% 50% / 0.8), hsl(217 91% 60% / 0.6), hsl(47 96% 53% / 0.4));
 
     /* Animation variables */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -78,45 +84,45 @@ All colors MUST be HSL.
   }
 
   .dark {
-    /* Dark mode with warm, comfortable colors */
-    --background: 217 19% 8%;
-    --foreground: 214 40% 98%;
+    /* Light space theme */
+    --background: 214 40% 98%;
+    --foreground: 217 19% 27%;
 
-    --card: 217 19% 12%;
-    --card-foreground: 214 40% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 217 19% 27%;
 
-    --popover: 217 19% 12%;
-    --popover-foreground: 214 40% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 217 19% 27%;
 
-    --primary: 217 91% 65%;
-    --primary-foreground: 217 19% 8%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 268 83% 15%;
-    --secondary-foreground: 268 83% 92%;
+    --secondary: 268 83% 92%;
+    --secondary-foreground: 268 83% 20%;
 
-    --muted: 217 19% 15%;
-    --muted-foreground: 215 16% 65%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
 
-    --accent: 142 76% 15%;
-    --accent-foreground: 142 76% 88%;
+    --accent: 142 76% 88%;
+    --accent-foreground: 142 76% 20%;
 
-    --warning: 38 92% 15%;
-    --warning-foreground: 38 92% 88%;
+    --warning: 38 92% 88%;
+    --warning-foreground: 38 92% 20%;
 
-    --success: 142 76% 15%;
-    --success-foreground: 142 76% 88%;
+    --success: 142 76% 88%;
+    --success-foreground: 142 76% 20%;
 
-    --destructive: 0 84% 50%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 217 19% 20%;
-    --input: 217 19% 20%;
-    --ring: 217 91% 65%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 217 91% 60%;
 
-    /* Dark mode gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(217 91% 50%), hsl(268 83% 50%));
-    --gradient-card: linear-gradient(145deg, hsl(217 19% 15%), hsl(217 19% 12%));
-    --gradient-background: linear-gradient(180deg, hsl(217 19% 8%), hsl(217 19% 12%));
+    /* Light space gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 70%), hsl(268 83% 70%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100% / 0.8), hsl(214 40% 98%));
+    --gradient-background: linear-gradient(180deg, hsl(214 40% 98%), hsl(217 91% 95%));
 
     --shadow-soft: 0 4px 20px hsl(0 0% 0% / 0.3);
     --shadow-card: 0 8px 30px hsl(0 0% 0% / 0.4);
@@ -140,6 +146,42 @@ All colors MUST be HSL.
     @apply bg-background text-foreground font-sans;
     background: var(--gradient-background);
     min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Space-themed background effects */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-nebula);
+    pointer-events: none;
+    z-index: -2;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      radial-gradient(2px 2px at 20px 30px, hsl(var(--accent)), transparent),
+      radial-gradient(2px 2px at 40px 70px, hsl(var(--primary)), transparent),
+      radial-gradient(1px 1px at 90px 40px, hsl(var(--secondary)), transparent),
+      radial-gradient(1px 1px at 130px 80px, hsl(var(--accent)), transparent),
+      radial-gradient(2px 2px at 160px 30px, hsl(var(--primary)), transparent);
+    background-repeat: repeat;
+    background-size: 200px 100px;
+    animation: twinkle 4s linear infinite;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.6;
   }
 
   /* Custom animations */
@@ -202,4 +244,57 @@ All colors MUST be HSL.
     opacity: 1; 
     transform: scale(1); 
   }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px hsl(var(--primary) / 0.8), 0 0 60px hsl(var(--secondary) / 0.4);
+  }
+}
+
+/* Cosmic UI elements */
+.cosmic-card {
+  background: var(--gradient-card);
+  border: 1px solid hsl(var(--primary) / 0.3);
+  box-shadow: 0 8px 32px hsl(var(--primary) / 0.1);
+}
+
+.cosmic-button {
+  background: var(--gradient-cosmic);
+  border: 1px solid hsl(var(--accent) / 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.cosmic-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, hsl(var(--accent) / 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.cosmic-button:hover::before {
+  left: 100%;
+}
+
+.space-progress {
+  background: hsl(var(--muted) / 0.3);
+  border: 1px solid hsl(var(--primary) / 0.2);
+}
+
+.space-progress [data-state="complete"] {
+  background: var(--gradient-primary);
+  box-shadow: 0 0 15px hsl(var(--primary) / 0.5);
 }
