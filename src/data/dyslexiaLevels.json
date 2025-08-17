@@ -1,0 +1,1069 @@
+{
+  "levels": [
+    {
+      "id": 1,
+      "difficulty": "easy",
+      "theme": "Mercury",
+      "questions": [
+        {
+          "id": "q1_1",
+          "type": "letter-identification",
+          "question": "Which letter is this?",
+          "content": "A",
+          "options": ["A", "B", "C", "D"],
+          "correct": 0,
+          "points": 20
+        },
+        {
+          "id": "q1_2",
+          "type": "shape-recognition",
+          "question": "What shape is this?",
+          "content": "circle",
+          "options": ["Circle", "Square", "Triangle", "Star"],
+          "correct": 0,
+          "points": 20
+        },
+        {
+          "id": "q1_3",
+          "type": "color-matching",
+          "question": "What color is this?",
+          "content": "red",
+          "options": ["Red", "Blue", "Green", "Yellow"],
+          "correct": 0,
+          "points": 20
+        },
+        {
+          "id": "q1_4",
+          "type": "letter-identification",
+          "question": "Which letter is this?",
+          "content": "B",
+          "options": ["A", "B", "C", "D"],
+          "correct": 1,
+          "points": 20
+        },
+        {
+          "id": "q1_5",
+          "type": "simple-matching",
+          "question": "Match the picture to the letter",
+          "content": "🍎",
+          "options": ["A", "B", "C", "D"],
+          "correct": 0,
+          "points": 20
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "difficulty": "easy",
+      "theme": "Venus",
+      "questions": [
+        {
+          "id": "q2_1",
+          "type": "letter-identification",
+          "question": "Which letter is this?",
+          "content": "C",
+          "options": ["A", "B", "C", "D"],
+          "correct": 2,
+          "points": 20
+        },
+        {
+          "id": "q2_2",
+          "type": "shape-recognition",
+          "question": "What shape is this?",
+          "content": "square",
+          "options": ["Circle", "Square", "Triangle", "Rectangle"],
+          "correct": 1,
+          "points": 20
+        },
+        {
+          "id": "q2_3",
+          "type": "color-matching",
+          "question": "What color is this?",
+          "content": "blue",
+          "options": ["Red", "Blue", "Green", "Yellow"],
+          "correct": 1,
+          "points": 20
+        },
+        {
+          "id": "q2_4",
+          "type": "letter-identification",
+          "question": "Which letter is this?",
+          "content": "D",
+          "options": ["A", "B", "C", "D"],
+          "correct": 3,
+          "points": 20
+        },
+        {
+          "id": "q2_5",
+          "type": "simple-matching",
+          "question": "Match the picture to the letter",
+          "content": "🐱",
+          "options": ["A", "B", "C", "D"],
+          "correct": 2,
+          "points": 20
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "difficulty": "easy",
+      "theme": "Earth",
+      "questions": [
+        {
+          "id": "q3_1",
+          "type": "letter-identification",
+          "question": "Which letter is this?",
+          "content": "E",
+          "options": ["E", "F", "G", "H"],
+          "correct": 0,
+          "points": 20
+        },
+        {
+          "id": "q3_2",
+          "type": "shape-recognition",
+          "question": "What shape is this?",
+          "content": "triangle",
+          "options": ["Circle", "Square", "Triangle", "Star"],
+          "correct": 2,
+          "points": 20
+        },
+        {
+          "id": "q3_3",
+          "type": "color-matching",
+          "question": "What color is this?",
+          "content": "green",
+          "options": ["Red", "Blue", "Green", "Yellow"],
+          "correct": 2,
+          "points": 20
+        },
+        {
+          "id": "q3_4",
+          "type": "letter-identification",
+          "question": "Which letter is this?",
+          "content": "F",
+          "options": ["E", "F", "G", "H"],
+          "correct": 1,
+          "points": 20
+        },
+        {
+          "id": "q3_5",
+          "type": "simple-matching",
+          "question": "Match the picture to the letter",
+          "content": "🐶",
+          "options": ["A", "B", "C", "D"],
+          "correct": 3,
+          "points": 20
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "difficulty": "easy",
+      "theme": "Mars",
+      "questions": [
+        {
+          "id": "q4_1",
+          "type": "letter-identification",
+          "question": "Which letter is this?",
+          "content": "G",
+          "options": ["E", "F", "G", "H"],
+          "correct": 2,
+          "points": 20
+        },
+        {
+          "id": "q4_2",
+          "type": "shape-recognition",
+          "question": "What shape is this?",
+          "content": "rectangle",
+          "options": ["Circle", "Square", "Triangle", "Rectangle"],
+          "correct": 3,
+          "points": 20
+        },
+        {
+          "id": "q4_3",
+          "type": "color-matching",
+          "question": "What color is this?",
+          "content": "yellow",
+          "options": ["Red", "Blue", "Green", "Yellow"],
+          "correct": 3,
+          "points": 20
+        },
+        {
+          "id": "q4_4",
+          "type": "letter-identification",
+          "question": "Which letter is this?",
+          "content": "H",
+          "options": ["E", "F", "G", "H"],
+          "correct": 3,
+          "points": 20
+        },
+        {
+          "id": "q4_5",
+          "type": "simple-matching",
+          "question": "Match the picture to the letter",
+          "content": "🐘",
+          "options": ["E", "F", "G", "H"],
+          "correct": 0,
+          "points": 20
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "difficulty": "easy",
+      "theme": "Jupiter",
+      "questions": [
+        {
+          "id": "q5_1",
+          "type": "letter-identification",
+          "question": "Which letter is this?",
+          "content": "I",
+          "options": ["I", "J", "K", "L"],
+          "correct": 0,
+          "points": 20
+        },
+        {
+          "id": "q5_2",
+          "type": "shape-recognition",
+          "question": "What shape is this?",
+          "content": "star",
+          "options": ["Circle", "Square", "Triangle", "Star"],
+          "correct": 3,
+          "points": 20
+        },
+        {
+          "id": "q5_3",
+          "type": "color-matching",
+          "question": "What color is this?",
+          "content": "purple",
+          "options": ["Purple", "Orange", "Pink", "Brown"],
+          "correct": 0,
+          "points": 20
+        },
+        {
+          "id": "q5_4",
+          "type": "letter-identification",
+          "question": "Which letter is this?",
+          "content": "J",
+          "options": ["I", "J", "K", "L"],
+          "correct": 1,
+          "points": 20
+        },
+        {
+          "id": "q5_5",
+          "type": "simple-matching",
+          "question": "Match the picture to the letter",
+          "content": "🦁",
+          "options": ["I", "J", "K", "L"],
+          "correct": 3,
+          "points": 20
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "difficulty": "medium",
+      "theme": "Saturn",
+      "questions": [
+        {
+          "id": "q6_1",
+          "type": "phonics",
+          "question": "What sound does this letter make?",
+          "content": "B",
+          "options": ["buh", "bee", "bah", "boh"],
+          "correct": 0,
+          "points": 25
+        },
+        {
+          "id": "q6_2",
+          "type": "sound-letter-mapping",
+          "question": "Which letter makes the 'kuh' sound?",
+          "content": "audio:k",
+          "options": ["C", "K", "Q", "X"],
+          "correct": 1,
+          "points": 25
+        },
+        {
+          "id": "q6_3",
+          "type": "word-recognition",
+          "question": "Which word is this?",
+          "content": "CAT",
+          "options": ["CAT", "BAT", "HAT", "RAT"],
+          "correct": 0,
+          "points": 25
+        },
+        {
+          "id": "q6_4",
+          "type": "phonics",
+          "question": "What sound does this letter make?",
+          "content": "D",
+          "options": ["duh", "dee", "dah", "doh"],
+          "correct": 0,
+          "points": 25
+        },
+        {
+          "id": "q6_5",
+          "type": "word-recognition",
+          "question": "Which word is this?",
+          "content": "DOG",
+          "options": ["DOG", "LOG", "HOG", "FOG"],
+          "correct": 0,
+          "points": 25
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "difficulty": "medium",
+      "theme": "Uranus",
+      "questions": [
+        {
+          "id": "q7_1",
+          "type": "phonics",
+          "question": "What sound does this letter make?",
+          "content": "F",
+          "options": ["fuh", "fee", "fah", "foh"],
+          "correct": 0,
+          "points": 25
+        },
+        {
+          "id": "q7_2",
+          "type": "sound-letter-mapping",
+          "question": "Which letter makes the 'guh' sound?",
+          "content": "audio:g",
+          "options": ["G", "J", "Q", "Z"],
+          "correct": 0,
+          "points": 25
+        },
+        {
+          "id": "q7_3",
+          "type": "word-recognition",
+          "question": "Which word is this?",
+          "content": "SUN",
+          "options": ["SUN", "RUN", "FUN", "GUN"],
+          "correct": 0,
+          "points": 25
+        },
+        {
+          "id": "q7_4",
+          "type": "phonics",
+          "question": "What sound does this letter make?",
+          "content": "M",
+          "options": ["muh", "mee", "mah", "moh"],
+          "correct": 0,
+          "points": 25
+        },
+        {
+          "id": "q7_5",
+          "type": "word-recognition",
+          "question": "Which word is this?",
+          "content": "BEE",
+          "options": ["BEE", "SEE", "TEE", "WEE"],
+          "correct": 0,
+          "points": 25
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "difficulty": "medium",
+      "theme": "Neptune",
+      "questions": [
+        {
+          "id": "q8_1",
+          "type": "phonics",
+          "question": "What sound does this letter make?",
+          "content": "P",
+          "options": ["puh", "pee", "pah", "poh"],
+          "correct": 0,
+          "points": 25
+        },
+        {
+          "id": "q8_2",
+          "type": "sound-letter-mapping",
+          "question": "Which letter makes the 'ruh' sound?",
+          "content": "audio:r",
+          "options": ["R", "L", "W", "Y"],
+          "correct": 0,
+          "points": 25
+        },
+        {
+          "id": "q8_3",
+          "type": "word-recognition",
+          "question": "Which word is this?",
+          "content": "TOP",
+          "options": ["TOP", "POP", "HOP", "MOP"],
+          "correct": 0,
+          "points": 25
+        },
+        {
+          "id": "q8_4",
+          "type": "phonics",
+          "question": "What sound does this letter make?",
+          "content": "S",
+          "options": ["suh", "see", "sah", "soh"],
+          "correct": 0,
+          "points": 25
+        },
+        {
+          "id": "q8_5",
+          "type": "word-recognition",
+          "question": "Which word is this?",
+          "content": "HAT",
+          "options": ["HAT", "BAT", "CAT", "RAT"],
+          "correct": 0,
+          "points": 25
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "difficulty": "medium",
+      "theme": "Pluto",
+      "questions": [
+        {
+          "id": "q9_1",
+          "type": "phonics",
+          "question": "What sound does this letter make?",
+          "content": "T",
+          "options": ["tuh", "tee", "tah", "toh"],
+          "correct": 0,
+          "points": 25
+        },
+        {
+          "id": "q9_2",
+          "type": "sound-letter-mapping",
+          "question": "Which letter makes the 'vuh' sound?",
+          "content": "audio:v",
+          "options": ["V", "W", "U", "Y"],
+          "correct": 0,
+          "points": 25
+        },
+        {
+          "id": "q9_3",
+          "type": "word-recognition",
+          "question": "Which word is this?",
+          "content": "NET",
+          "options": ["NET", "PET", "SET", "WET"],
+          "correct": 0,
+          "points": 25
+        },
+        {
+          "id": "q9_4",
+          "type": "phonics",
+          "question": "What sound does this letter make?",
+          "content": "L",
+          "options": ["luh", "lee", "lah", "loh"],
+          "correct": 0,
+          "points": 25
+        },
+        {
+          "id": "q9_5",
+          "type": "word-recognition",
+          "question": "Which word is this?",
+          "content": "CUP",
+          "options": ["CUP", "PUP", "TUP", "SUP"],
+          "correct": 0,
+          "points": 25
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "difficulty": "medium",
+      "theme": "Moon",
+      "questions": [
+        {
+          "id": "q10_1",
+          "type": "phonics",
+          "question": "What sound does this letter make?",
+          "content": "N",
+          "options": ["nuh", "nee", "nah", "noh"],
+          "correct": 0,
+          "points": 25
+        },
+        {
+          "id": "q10_2",
+          "type": "sound-letter-mapping",
+          "question": "Which letter makes the 'wuh' sound?",
+          "content": "audio:w",
+          "options": ["W", "V", "U", "Y"],
+          "correct": 0,
+          "points": 25
+        },
+        {
+          "id": "q10_3",
+          "type": "word-recognition",
+          "question": "Which word is this?",
+          "content": "BIG",
+          "options": ["BIG", "PIG", "FIG", "DIG"],
+          "correct": 0,
+          "points": 25
+        },
+        {
+          "id": "q10_4",
+          "type": "phonics",
+          "question": "What sound does this letter make?",
+          "content": "Z",
+          "options": ["zuh", "zee", "zah", "zoh"],
+          "correct": 0,
+          "points": 25
+        },
+        {
+          "id": "q10_5",
+          "type": "word-recognition",
+          "question": "Which word is this?",
+          "content": "BOX",
+          "options": ["BOX", "FOX", "SOX", "COX"],
+          "correct": 0,
+          "points": 25
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "difficulty": "hard",
+      "theme": "Asteroid Belt",
+      "questions": [
+        {
+          "id": "q11_1",
+          "type": "jumbled-words",
+          "question": "Unscramble this word:",
+          "content": "TAC",
+          "options": ["CAT", "ACT", "TAC", "CTA"],
+          "correct": 0,
+          "points": 30
+        },
+        {
+          "id": "q11_2",
+          "type": "missing-letters",
+          "question": "Fill in the missing letter: D_G",
+          "content": "D_G",
+          "options": ["O", "I", "A", "U"],
+          "correct": 0,
+          "points": 30
+        },
+        {
+          "id": "q11_3",
+          "type": "short-sentences",
+          "question": "Complete the sentence: The cat is ___",
+          "content": "The cat is ___",
+          "options": ["big", "small", "happy", "sad"],
+          "correct": 0,
+          "points": 30
+        },
+        {
+          "id": "q11_4",
+          "type": "jumbled-words",
+          "question": "Unscramble this word:",
+          "content": "GUN",
+          "options": ["NUG", "GNU", "UNG", "GUN"],
+          "correct": 3,
+          "points": 30
+        },
+        {
+          "id": "q11_5",
+          "type": "missing-letters",
+          "question": "Fill in the missing letter: S_N",
+          "content": "S_N",
+          "options": ["U", "O", "A", "I"],
+          "correct": 0,
+          "points": 30
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "difficulty": "hard",
+      "theme": "Comet",
+      "questions": [
+        {
+          "id": "q12_1",
+          "type": "jumbled-words",
+          "question": "Unscramble this word:",
+          "content": "EEB",
+          "options": ["BEE", "EBE", "EEB", "BBE"],
+          "correct": 0,
+          "points": 30
+        },
+        {
+          "id": "q12_2",
+          "type": "missing-letters",
+          "question": "Fill in the missing letter: H_T",
+          "content": "H_T",
+          "options": ["A", "I", "O", "U"],
+          "correct": 0,
+          "points": 30
+        },
+        {
+          "id": "q12_3",
+          "type": "short-sentences",
+          "question": "Complete the sentence: I can ___",
+          "content": "I can ___",
+          "options": ["run", "walk", "jump", "swim"],
+          "correct": 0,
+          "points": 30
+        },
+        {
+          "id": "q12_4",
+          "type": "jumbled-words",
+          "question": "Unscramble this word:",
+          "content": "TAR",
+          "options": ["RAT", "ART", "TAR", "TRA"],
+          "correct": 0,
+          "points": 30
+        },
+        {
+          "id": "q12_5",
+          "type": "missing-letters",
+          "question": "Fill in the missing letter: C_P",
+          "content": "C_P",
+          "options": ["U", "A", "O", "I"],
+          "correct": 0,
+          "points": 30
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "difficulty": "hard",
+      "theme": "Galaxy",
+      "questions": [
+        {
+          "id": "q13_1",
+          "type": "jumbled-words",
+          "question": "Unscramble this word:",
+          "content": "GIB",
+          "options": ["BIG", "GIB", "IBG", "BGI"],
+          "correct": 0,
+          "points": 30
+        },
+        {
+          "id": "q13_2",
+          "type": "missing-letters",
+          "question": "Fill in the missing letter: B_X",
+          "content": "B_X",
+          "options": ["O", "A", "I", "U"],
+          "correct": 0,
+          "points": 30
+        },
+        {
+          "id": "q13_3",
+          "type": "short-sentences",
+          "question": "Complete the sentence: The dog is ___",
+          "content": "The dog is ___",
+          "options": ["brown", "black", "white", "gray"],
+          "correct": 0,
+          "points": 30
+        },
+        {
+          "id": "q13_4",
+          "type": "jumbled-words",
+          "question": "Unscramble this word:",
+          "content": "TEN",
+          "options": ["NET", "TEN", "ENT", "NTE"],
+          "correct": 0,
+          "points": 30
+        },
+        {
+          "id": "q13_5",
+          "type": "missing-letters",
+          "question": "Fill in the missing letter: T_P",
+          "content": "T_P",
+          "options": ["O", "A", "I", "U"],
+          "correct": 0,
+          "points": 30
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "difficulty": "hard",
+      "theme": "Black Hole",
+      "questions": [
+        {
+          "id": "q14_1",
+          "type": "jumbled-words",
+          "question": "Unscramble this word:",
+          "content": "TEP",
+          "options": ["PET", "TEP", "EPT", "TPE"],
+          "correct": 0,
+          "points": 30
+        },
+        {
+          "id": "q14_2",
+          "type": "missing-letters",
+          "question": "Fill in the missing letter: R_N",
+          "content": "R_N",
+          "options": ["U", "A", "I", "O"],
+          "correct": 0,
+          "points": 30
+        },
+        {
+          "id": "q14_3",
+          "type": "short-sentences",
+          "question": "Complete the sentence: We like to ___",
+          "content": "We like to ___",
+          "options": ["play", "eat", "sleep", "read"],
+          "correct": 0,
+          "points": 30
+        },
+        {
+          "id": "q14_4",
+          "type": "jumbled-words",
+          "question": "Unscramble this word:",
+          "content": "NUF",
+          "options": ["FUN", "NUF", "UNF", "FNU"],
+          "correct": 0,
+          "points": 30
+        },
+        {
+          "id": "q14_5",
+          "type": "missing-letters",
+          "question": "Fill in the missing letter: W_T",
+          "content": "W_T",
+          "options": ["E", "A", "I", "O"],
+          "correct": 0,
+          "points": 30
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "difficulty": "hard",
+      "theme": "Space Station",
+      "questions": [
+        {
+          "id": "q15_1",
+          "type": "jumbled-words",
+          "question": "Unscramble this word:",
+          "content": "TES",
+          "options": ["SET", "TES", "EST", "STE"],
+          "correct": 0,
+          "points": 30
+        },
+        {
+          "id": "q15_2",
+          "type": "missing-letters",
+          "question": "Fill in the missing letter: M_P",
+          "content": "M_P",
+          "options": ["O", "A", "I", "U"],
+          "correct": 0,
+          "points": 30
+        },
+        {
+          "id": "q15_3",
+          "type": "short-sentences",
+          "question": "Complete the sentence: The sun is ___",
+          "content": "The sun is ___",
+          "options": ["bright", "hot", "yellow", "big"],
+          "correct": 0,
+          "points": 30
+        },
+        {
+          "id": "q15_4",
+          "type": "jumbled-words",
+          "question": "Unscramble this word:",
+          "content": "GIP",
+          "options": ["PIG", "GIP", "IPG", "PGI"],
+          "correct": 0,
+          "points": 30
+        },
+        {
+          "id": "q15_5",
+          "type": "missing-letters",
+          "question": "Fill in the missing letter: H_P",
+          "content": "H_P",
+          "options": ["O", "A", "I", "U"],
+          "correct": 0,
+          "points": 30
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "difficulty": "expert",
+      "theme": "Alpha Centauri",
+      "questions": [
+        {
+          "id": "q16_1",
+          "type": "reading-comprehension",
+          "question": "Read: 'The cat sat on the mat.' Where did the cat sit?",
+          "content": "The cat sat on the mat.",
+          "options": ["on the mat", "on the hat", "on the bat", "on the rat"],
+          "correct": 0,
+          "points": 35,
+          "timeLimit": 30
+        },
+        {
+          "id": "q16_2",
+          "type": "spelling-correction",
+          "question": "Which word is spelled correctly?",
+          "content": "spelling",
+          "options": ["catt", "cat", "caat", "caht"],
+          "correct": 1,
+          "points": 35,
+          "timeLimit": 25
+        },
+        {
+          "id": "q16_3",
+          "type": "timed-reading",
+          "question": "Read this word quickly:",
+          "content": "HOUSE",
+          "options": ["HOUSE", "HORSE", "MOUSE", "HOSE"],
+          "correct": 0,
+          "points": 35,
+          "timeLimit": 15
+        },
+        {
+          "id": "q16_4",
+          "type": "reading-comprehension",
+          "question": "Read: 'The dog runs fast.' What does the dog do?",
+          "content": "The dog runs fast.",
+          "options": ["runs fast", "walks slow", "jumps high", "sits down"],
+          "correct": 0,
+          "points": 35,
+          "timeLimit": 30
+        },
+        {
+          "id": "q16_5",
+          "type": "spelling-correction",
+          "question": "Which word is spelled correctly?",
+          "content": "spelling",
+          "options": ["dogg", "dog", "doog", "dogge"],
+          "correct": 1,
+          "points": 35,
+          "timeLimit": 25
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "difficulty": "expert",
+      "theme": "Andromeda",
+      "questions": [
+        {
+          "id": "q17_1",
+          "type": "reading-comprehension",
+          "question": "Read: 'Birds fly in the sky.' What do birds do?",
+          "content": "Birds fly in the sky.",
+          "options": ["fly in the sky", "swim in water", "run on ground", "hide in trees"],
+          "correct": 0,
+          "points": 35,
+          "timeLimit": 30
+        },
+        {
+          "id": "q17_2",
+          "type": "spelling-correction",
+          "question": "Which word is spelled correctly?",
+          "content": "spelling",
+          "options": ["sunn", "sun", "ssun", "suhn"],
+          "correct": 1,
+          "points": 35,
+          "timeLimit": 25
+        },
+        {
+          "id": "q17_3",
+          "type": "timed-reading",
+          "question": "Read this word quickly:",
+          "content": "WATER",
+          "options": ["WATER", "WAGER", "WAFER", "LATER"],
+          "correct": 0,
+          "points": 35,
+          "timeLimit": 15
+        },
+        {
+          "id": "q17_4",
+          "type": "reading-comprehension",
+          "question": "Read: 'Fish swim in water.' Where do fish swim?",
+          "content": "Fish swim in water.",
+          "options": ["in water", "in air", "on land", "in trees"],
+          "correct": 0,
+          "points": 35,
+          "timeLimit": 30
+        },
+        {
+          "id": "q17_5",
+          "type": "spelling-correction",
+          "question": "Which word is spelled correctly?",
+          "content": "spelling",
+          "options": ["boook", "book", "bbook", "bokk"],
+          "correct": 1,
+          "points": 35,
+          "timeLimit": 25
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "difficulty": "expert",
+      "theme": "Milky Way",
+      "questions": [
+        {
+          "id": "q18_1",
+          "type": "reading-comprehension",
+          "question": "Read: 'The tree has green leaves.' What color are the leaves?",
+          "content": "The tree has green leaves.",
+          "options": ["green", "red", "blue", "yellow"],
+          "correct": 0,
+          "points": 35,
+          "timeLimit": 30
+        },
+        {
+          "id": "q18_2",
+          "type": "spelling-correction",
+          "question": "Which word is spelled correctly?",
+          "content": "spelling",
+          "options": ["baal", "ball", "baall", "balll"],
+          "correct": 1,
+          "points": 35,
+          "timeLimit": 25
+        },
+        {
+          "id": "q18_3",
+          "type": "timed-reading",
+          "question": "Read this word quickly:",
+          "content": "FRIEND",
+          "options": ["FRIEND", "TREND", "FREND", "FIEND"],
+          "correct": 0,
+          "points": 35,
+          "timeLimit": 15
+        },
+        {
+          "id": "q18_4",
+          "type": "reading-comprehension",
+          "question": "Read: 'I like to play games.' What do I like to do?",
+          "content": "I like to play games.",
+          "options": ["play games", "watch TV", "read books", "eat food"],
+          "correct": 0,
+          "points": 35,
+          "timeLimit": 30
+        },
+        {
+          "id": "q18_5",
+          "type": "spelling-correction",
+          "question": "Which word is spelled correctly?",
+          "content": "spelling",
+          "options": ["treee", "tree", "trre", "tre"],
+          "correct": 1,
+          "points": 35,
+          "timeLimit": 25
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "difficulty": "expert",
+      "theme": "Nebula",
+      "questions": [
+        {
+          "id": "q19_1",
+          "type": "reading-comprehension",
+          "question": "Read: 'My mom makes good food.' Who makes good food?",
+          "content": "My mom makes good food.",
+          "options": ["my mom", "my dad", "my friend", "my teacher"],
+          "correct": 0,
+          "points": 35,
+          "timeLimit": 30
+        },
+        {
+          "id": "q19_2",
+          "type": "spelling-correction",
+          "question": "Which word is spelled correctly?",
+          "content": "spelling",
+          "options": ["girll", "girl", "giirl", "grirl"],
+          "correct": 1,
+          "points": 35,
+          "timeLimit": 25
+        },
+        {
+          "id": "q19_3",
+          "type": "timed-reading",
+          "question": "Read this word quickly:",
+          "content": "HAPPY",
+          "options": ["HAPPY", "PUPPY", "HIPPY", "HOPPY"],
+          "correct": 0,
+          "points": 35,
+          "timeLimit": 15
+        },
+        {
+          "id": "q19_4",
+          "type": "reading-comprehension",
+          "question": "Read: 'The ball is round.' What shape is the ball?",
+          "content": "The ball is round.",
+          "options": ["round", "square", "triangle", "rectangle"],
+          "correct": 0,
+          "points": 35,
+          "timeLimit": 30
+        },
+        {
+          "id": "q19_5",
+          "type": "spelling-correction",
+          "question": "Which word is spelled correctly?",
+          "content": "spelling",
+          "options": ["boyy", "boy", "booy", "byoy"],
+          "correct": 1,
+          "points": 35,
+          "timeLimit": 25
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "difficulty": "expert",
+      "theme": "Cosmic Journey",
+      "questions": [
+        {
+          "id": "q20_1",
+          "type": "reading-comprehension",
+          "question": "Read: 'The children play in the park every day.' When do the children play?",
+          "content": "The children play in the park every day.",
+          "options": ["every day", "sometimes", "never", "once a week"],
+          "correct": 0,
+          "points": 40,
+          "timeLimit": 35
+        },
+        {
+          "id": "q20_2",
+          "type": "spelling-correction",
+          "question": "Which word is spelled correctly?",
+          "content": "spelling",
+          "options": ["freinds", "friends", "freands", "frends"],
+          "correct": 1,
+          "points": 40,
+          "timeLimit": 30
+        },
+        {
+          "id": "q20_3",
+          "type": "timed-reading",
+          "question": "Read this word quickly:",
+          "content": "RAINBOW",
+          "options": ["RAINBOW", "RAINCOAT", "RAILWAY", "RANDOM"],
+          "correct": 0,
+          "points": 40,
+          "timeLimit": 12
+        },
+        {
+          "id": "q20_4",
+          "type": "reading-comprehension",
+          "question": "Read: 'The smart student reads many books.' What does the student do?",
+          "content": "The smart student reads many books.",
+          "options": ["reads many books", "watches TV", "plays games", "sleeps all day"],
+          "correct": 0,
+          "points": 40,
+          "timeLimit": 35
+        },
+        {
+          "id": "q20_5",
+          "type": "spelling-correction",
+          "question": "Which word is spelled correctly?",
+          "content": "spelling",
+          "options": ["schoool", "school", "schol", "scool"],
+          "correct": 1,
+          "points": 40,
+          "timeLimit": 30
+        }
+      ]
+    }
+  ]
+}

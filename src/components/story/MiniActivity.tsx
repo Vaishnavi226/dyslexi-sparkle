@@ -14,7 +14,47 @@ interface MiniActivityProps {
   isVisible: boolean;
 }
 
-const activities = {
+interface FindActivity {
+  type: 'find';
+  title: string;
+  description: string;
+  items: { id: number; x: number; y: number; found: boolean; }[];
+}
+
+interface RiddleActivity {
+  type: 'riddle';
+  title: string;
+  description: string;
+  options: string[];
+  correct: number;
+}
+
+interface SequenceActivity {
+  type: 'sequence';
+  title: string;
+  description: string;
+  sequence: number[];
+  shuffled: number[];
+}
+
+interface LettersActivity {
+  type: 'letters';
+  title: string;
+  description: string;
+  word: string;
+  letters: string[];
+}
+
+interface MatchActivity {
+  type: 'match';
+  title: string;
+  description: string;
+  pairs: { item: string; color: string; }[];
+}
+
+type Activity = FindActivity | RiddleActivity | SequenceActivity | LettersActivity | MatchActivity;
+
+const activities: Record<number, Activity> = {
   1: { // Lost Star
     type: 'find',
     title: 'Find the Hidden Stars!',
@@ -78,15 +118,16 @@ const MiniActivity: React.FC<MiniActivityProps> = ({
 
   const handleStarClick = (starId: number) => {
     if (activity.type === 'find') {
-      const newItems = activity.items.map(item => 
+      const findActivity = activity as FindActivity;
+      const newItems = findActivity.items.map(item => 
         item.id === starId ? { ...item, found: true } : item
       );
       const foundCount = newItems.filter(item => item.found).length;
       
       setGameState({ items: newItems });
-      setScore((foundCount / activity.items.length) * 100);
+      setScore((foundCount / findActivity.items.length) * 100);
       
-      if (foundCount === activity.items.length) {
+      if (foundCount === findActivity.items.length) {
         completeActivity(100);
       } else {
         triggerConfetti('success');
@@ -98,25 +139,29 @@ const MiniActivity: React.FC<MiniActivityProps> = ({
   const handleRiddleAnswer = (answerIndex: number) => {
     setAttempts(prev => prev + 1);
     
-    if (answerIndex === activity.correct) {
-      completeActivity(Math.max(100 - (attempts * 20), 60));
-    } else {
-      SpeechUtils.speak('Try again! Think about what the tree is asking.');
-      if (attempts >= 2) {
-        SpeechUtils.speak(`The answer is ${activity.options[activity.correct]}!`);
-        completeActivity(40);
+    if (activity.type === 'riddle') {
+      const riddleActivity = activity as RiddleActivity;
+      if (answerIndex === riddleActivity.correct) {
+        completeActivity(Math.max(100 - (attempts * 20), 60));
+      } else {
+        SpeechUtils.speak('Try again! Think about what the tree is asking.');
+        if (attempts >= 2) {
+          SpeechUtils.speak(`The answer is ${riddleActivity.options[riddleActivity.correct]}!`);
+          completeActivity(40);
+        }
       }
     }
   };
 
   const handleSequenceDrop = (dragIndex: number, dropIndex: number) => {
     if (activity.type === 'sequence') {
-      const newSequence = [...(gameState.sequence || activity.shuffled)];
+      const sequenceActivity = activity as SequenceActivity;
+      const newSequence = [...(gameState.sequence || sequenceActivity.shuffled)];
       [newSequence[dragIndex], newSequence[dropIndex]] = [newSequence[dropIndex], newSequence[dragIndex]];
       
       setGameState({ sequence: newSequence });
       
-      const isCorrect = newSequence.every((num, index) => num === activity.sequence[index]);
+      const isCorrect = newSequence.every((num, index) => num === sequenceActivity.sequence[index]);
       if (isCorrect) {
         completeActivity(100);
       }
@@ -125,12 +170,13 @@ const MiniActivity: React.FC<MiniActivityProps> = ({
 
   const handleLetterDrop = (letter: string, position: number) => {
     if (activity.type === 'letters') {
-      const newSpelling = [...(gameState.spelling || Array(activity.word.length).fill(''))];
+      const lettersActivity = activity as LettersActivity;
+      const newSpelling = [...(gameState.spelling || Array(lettersActivity.word.length).fill(''))];
       newSpelling[position] = letter;
       
       setGameState({ spelling: newSpelling });
       
-      const isCorrect = newSpelling.join('') === activity.word;
+      const isCorrect = newSpelling.join('') === lettersActivity.word;
       if (isCorrect) {
         completeActivity(100);
       }
@@ -139,7 +185,8 @@ const MiniActivity: React.FC<MiniActivityProps> = ({
 
   const handleMatch = (item: string, color: string) => {
     if (activity.type === 'match') {
-      const correctPair = activity.pairs.find(pair => pair.item === item);
+      const matchActivity = activity as MatchActivity;
+      const correctPair = matchActivity.pairs.find(pair => pair.item === item);
       const isCorrect = correctPair?.color === color;
       
       const newMatches = { ...(gameState.matches || {}), [item]: color };
@@ -150,9 +197,9 @@ const MiniActivity: React.FC<MiniActivityProps> = ({
         SpeechUtils.speak('Perfect match!');
         
         const completedMatches = Object.keys(newMatches).length;
-        setScore((completedMatches / activity.pairs.length) * 100);
+        setScore((completedMatches / matchActivity.pairs.length) * 100);
         
-        if (completedMatches === activity.pairs.length) {
+        if (completedMatches === matchActivity.pairs.length) {
           completeActivity(100);
         }
       } else {
@@ -175,9 +222,10 @@ const MiniActivity: React.FC<MiniActivityProps> = ({
   const renderActivity = () => {
     switch (activity.type) {
       case 'find':
+        const findActivity = activity as FindActivity;
         return (
           <div className="relative h-64 bg-gradient-to-br from-purple-900 to-blue-900 rounded-lg overflow-hidden">
-            {(gameState.items || activity.items).map((star: any) => (
+            {(gameState.items || findActivity.items).map((star: any) => (
               <motion.button
                 key={star.id}
                 className={`absolute w-8 h-8 text-2xl ${star.found ? 'opacity-30' : 'animate-pulse'}`}
@@ -191,19 +239,20 @@ const MiniActivity: React.FC<MiniActivityProps> = ({
               </motion.button>
             ))}
             <div className="absolute bottom-4 left-4 text-white">
-              Found: {(gameState.items || activity.items).filter((s: any) => s.found).length} / {activity.items.length}
+              Found: {(gameState.items || findActivity.items).filter((s: any) => s.found).length} / {findActivity.items.length}
             </div>
           </div>
         );
 
       case 'riddle':
+        const riddleActivity = activity as RiddleActivity;
         return (
           <div className="space-y-4">
             <div className="text-lg font-medium text-center p-4 bg-muted rounded-lg">
-              {activity.description}
+              {riddleActivity.description}
             </div>
             <div className="grid grid-cols-2 gap-3">
-              {activity.options.map((option: string, index: number) => (
+              {riddleActivity.options.map((option: string, index: number) => (
                 <Button
                   key={index}
                   onClick={() => handleRiddleAnswer(index)}
@@ -219,11 +268,12 @@ const MiniActivity: React.FC<MiniActivityProps> = ({
         );
 
       case 'sequence':
+        const sequenceActivity = activity as SequenceActivity;
         return (
           <div className="space-y-4">
             <div className="text-center">Drag to reorder the countdown!</div>
             <div className="flex justify-center space-x-2">
-              {(gameState.sequence || activity.shuffled).map((num: number, index: number) => (
+              {(gameState.sequence || sequenceActivity.shuffled).map((num: number, index: number) => (
                 <motion.div
                   key={index}
                   className="w-16 h-16 bg-primary text-primary-foreground rounded-lg flex items-center justify-center text-2xl font-bold cursor-move"
@@ -239,11 +289,12 @@ const MiniActivity: React.FC<MiniActivityProps> = ({
         );
 
       case 'letters':
+        const lettersActivity = activity as LettersActivity;
         return (
           <div className="space-y-4">
-            <div className="text-center">Drag letters to spell: {activity.word}</div>
+            <div className="text-center">Drag letters to spell: {lettersActivity.word}</div>
             <div className="flex justify-center space-x-2 mb-4">
-              {Array(activity.word.length).fill('').map((_, index) => (
+              {Array(lettersActivity.word.length).fill('').map((_, index) => (
                 <div
                   key={index}
                   className="w-12 h-12 border-2 border-dashed border-primary rounded-lg flex items-center justify-center text-xl font-bold"
@@ -253,7 +304,7 @@ const MiniActivity: React.FC<MiniActivityProps> = ({
               ))}
             </div>
             <div className="flex justify-center space-x-2">
-              {activity.letters.map((letter: string, index: number) => (
+              {lettersActivity.letters.map((letter: string, index: number) => (
                 <motion.div
                   key={index}
                   className="w-12 h-12 bg-secondary text-secondary-foreground rounded-lg flex items-center justify-center text-xl font-bold cursor-move"
@@ -268,12 +319,13 @@ const MiniActivity: React.FC<MiniActivityProps> = ({
         );
 
       case 'match':
+        const matchActivity = activity as MatchActivity;
         return (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <h4 className="font-medium text-center">Foods</h4>
-                {activity.pairs.map((pair: any, index: number) => (
+                {matchActivity.pairs.map((pair: any, index: number) => (
                   <motion.button
                     key={index}
                     className="w-full p-3 bg-muted rounded-lg text-2xl"
