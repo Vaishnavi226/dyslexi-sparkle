@@ -2,8 +2,11 @@
   "levels": [
     {
       "id": 1,
-      "difficulty": "easy",
-      "theme": "Mercury",
+      "title": "Level 1: Mercury Adventure",
+      "description": "Start your space journey by identifying letters, shapes, and colors!",
+      "difficulty": 1,
+      "category": "Basic Recognition",
+      "requiredStars": 0,
       "questions": [
         {
           "id": "q1_1",
@@ -54,8 +57,11 @@
     },
     {
       "id": 2,
-      "difficulty": "easy",
-      "theme": "Venus",
+      "title": "Level 2: Venus Voyage",
+      "description": "Continue exploring letters, shapes and colors on Venus!",
+      "difficulty": 1,
+      "category": "Basic Recognition",
+      "requiredStars": 2,
       "questions": [
         {
           "id": "q2_1",
@@ -106,8 +112,11 @@
     },
     {
       "id": 3,
-      "difficulty": "easy",
-      "theme": "Earth",
+      "title": "Level 3: Earth Explorer",
+      "description": "Explore more letters and shapes on our home planet!",
+      "difficulty": 1,
+      "category": "Basic Recognition",
+      "requiredStars": 4,
       "questions": [
         {
           "id": "q3_1",
@@ -150,24 +159,27 @@
           "type": "simple-matching",
           "question": "Match the picture to the letter",
           "content": "🐶",
-          "options": ["A", "B", "C", "D"],
-          "correct": 3,
+          "options": ["D", "E", "F", "G"],
+          "correct": 0,
           "points": 20
         }
       ]
     },
     {
       "id": 4,
-      "difficulty": "easy",
-      "theme": "Mars",
+      "title": "Level 4: Mars Mission",
+      "description": "Journey to Mars and master more challenging letter recognition!",
+      "difficulty": 1,
+      "category": "Basic Recognition",
+      "requiredStars": 6,
       "questions": [
         {
           "id": "q4_1",
           "type": "letter-identification",
           "question": "Which letter is this?",
           "content": "G",
-          "options": ["E", "F", "G", "H"],
-          "correct": 2,
+          "options": ["G", "H", "I", "J"],
+          "correct": 0,
           "points": 20
         },
         {
@@ -193,16 +205,16 @@
           "type": "letter-identification",
           "question": "Which letter is this?",
           "content": "H",
-          "options": ["E", "F", "G", "H"],
-          "correct": 3,
+          "options": ["G", "H", "I", "J"],
+          "correct": 1,
           "points": 20
         },
         {
           "id": "q4_5",
           "type": "simple-matching",
           "question": "Match the picture to the letter",
-          "content": "🐘",
-          "options": ["E", "F", "G", "H"],
+          "content": "🏠",
+          "options": ["H", "I", "J", "K"],
           "correct": 0,
           "points": 20
         }
@@ -210,8 +222,11 @@
     },
     {
       "id": 5,
-      "difficulty": "easy",
-      "theme": "Jupiter",
+      "title": "Level 5: Jupiter Journey",
+      "description": "Complete your basic training on the giant planet Jupiter!",
+      "difficulty": 1,
+      "category": "Basic Recognition",
+      "requiredStars": 8,
       "questions": [
         {
           "id": "q5_1",
@@ -236,8 +251,8 @@
           "type": "color-matching",
           "question": "What color is this?",
           "content": "purple",
-          "options": ["Purple", "Orange", "Pink", "Brown"],
-          "correct": 0,
+          "options": ["Red", "Blue", "Purple", "Yellow"],
+          "correct": 2,
           "points": 20
         },
         {
@@ -253,815 +268,835 @@
           "id": "q5_5",
           "type": "simple-matching",
           "question": "Match the picture to the letter",
-          "content": "🦁",
+          "content": "🧊",
           "options": ["I", "J", "K", "L"],
-          "correct": 3,
+          "correct": 0,
           "points": 20
         }
       ]
     },
     {
       "id": 6,
-      "difficulty": "medium",
-      "theme": "Saturn",
+      "title": "Level 6: Saturn Sounds",
+      "description": "Learn letter sounds and phonics on Saturn!",
+      "difficulty": 2,
+      "category": "Phonics",
+      "requiredStars": 10,
       "questions": [
         {
           "id": "q6_1",
           "type": "phonics",
           "question": "What sound does this letter make?",
-          "content": "B",
-          "options": ["buh", "bee", "bah", "boh"],
+          "content": "A",
+          "options": ["Ah", "Eh", "Oh", "Uh"],
           "correct": 0,
-          "points": 25
+          "points": 20
         },
         {
           "id": "q6_2",
           "type": "sound-letter-mapping",
-          "question": "Which letter makes the 'kuh' sound?",
-          "content": "audio:k",
-          "options": ["C", "K", "Q", "X"],
+          "question": "Which letter makes the sound 'Buh'?",
+          "content": "Buh",
+          "options": ["A", "B", "C", "D"],
           "correct": 1,
-          "points": 25
+          "points": 20
         },
         {
           "id": "q6_3",
-          "type": "word-recognition",
-          "question": "Which word is this?",
-          "content": "CAT",
-          "options": ["CAT", "BAT", "HAT", "RAT"],
+          "type": "phonics",
+          "question": "What sound does this letter make?",
+          "content": "C",
+          "options": ["Cuh", "Duh", "Fuh", "Guh"],
           "correct": 0,
-          "points": 25
+          "points": 20
         },
         {
           "id": "q6_4",
-          "type": "phonics",
-          "question": "What sound does this letter make?",
-          "content": "D",
-          "options": ["duh", "dee", "dah", "doh"],
-          "correct": 0,
-          "points": 25
+          "type": "word-recognition",
+          "question": "Which word starts with 'C'?",
+          "content": "Cat",
+          "options": ["Bat", "Cat", "Rat", "Hat"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q6_5",
-          "type": "word-recognition",
-          "question": "Which word is this?",
-          "content": "DOG",
-          "options": ["DOG", "LOG", "HOG", "FOG"],
+          "type": "phonics",
+          "question": "What sound does this letter make?",
+          "content": "D",
+          "options": ["Duh", "Buh", "Puh", "Tuh"],
           "correct": 0,
-          "points": 25
+          "points": 20
         }
       ]
     },
     {
       "id": 7,
-      "difficulty": "medium",
-      "theme": "Uranus",
+      "title": "Level 7: Uranus Understanding",
+      "description": "Master more letter sounds and simple words!",
+      "difficulty": 2,
+      "category": "Phonics",
+      "requiredStars": 12,
       "questions": [
         {
           "id": "q7_1",
           "type": "phonics",
           "question": "What sound does this letter make?",
-          "content": "F",
-          "options": ["fuh", "fee", "fah", "foh"],
+          "content": "E",
+          "options": ["Eh", "Ah", "Oh", "Ih"],
           "correct": 0,
-          "points": 25
+          "points": 20
         },
         {
           "id": "q7_2",
           "type": "sound-letter-mapping",
-          "question": "Which letter makes the 'guh' sound?",
-          "content": "audio:g",
-          "options": ["G", "J", "Q", "Z"],
-          "correct": 0,
-          "points": 25
+          "question": "Which letter makes the sound 'Fuh'?",
+          "content": "Fuh",
+          "options": ["E", "F", "G", "H"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q7_3",
           "type": "word-recognition",
-          "question": "Which word is this?",
-          "content": "SUN",
-          "options": ["SUN", "RUN", "FUN", "GUN"],
-          "correct": 0,
-          "points": 25
+          "question": "Which word starts with 'D'?",
+          "content": "Dog",
+          "options": ["Cat", "Dog", "Pig", "Cow"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q7_4",
           "type": "phonics",
           "question": "What sound does this letter make?",
-          "content": "M",
-          "options": ["muh", "mee", "mah", "moh"],
+          "content": "G",
+          "options": ["Guh", "Huh", "Juh", "Kuh"],
           "correct": 0,
-          "points": 25
+          "points": 20
         },
         {
           "id": "q7_5",
           "type": "word-recognition",
-          "question": "Which word is this?",
-          "content": "BEE",
-          "options": ["BEE", "SEE", "TEE", "WEE"],
-          "correct": 0,
-          "points": 25
+          "question": "Which word ends with 'T'?",
+          "content": "Hat",
+          "options": ["Dog", "Cat", "Pig", "Hat"],
+          "correct": 3,
+          "points": 20
         }
       ]
     },
     {
       "id": 8,
-      "difficulty": "medium",
-      "theme": "Neptune",
+      "title": "Level 8: Neptune Navigation",
+      "description": "Navigate through vowel sounds and word patterns!",
+      "difficulty": 2,
+      "category": "Phonics",
+      "requiredStars": 14,
       "questions": [
         {
           "id": "q8_1",
           "type": "phonics",
           "question": "What sound does this letter make?",
-          "content": "P",
-          "options": ["puh", "pee", "pah", "poh"],
+          "content": "I",
+          "options": ["Ih", "Eh", "Ah", "Oh"],
           "correct": 0,
-          "points": 25
+          "points": 20
         },
         {
           "id": "q8_2",
-          "type": "sound-letter-mapping",
-          "question": "Which letter makes the 'ruh' sound?",
-          "content": "audio:r",
-          "options": ["R", "L", "W", "Y"],
-          "correct": 0,
-          "points": 25
+          "type": "word-recognition",
+          "question": "Which is a real word?",
+          "content": "Sun",
+          "options": ["Xun", "Sun", "Zun", "Pun"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q8_3",
-          "type": "word-recognition",
-          "question": "Which word is this?",
-          "content": "TOP",
-          "options": ["TOP", "POP", "HOP", "MOP"],
-          "correct": 0,
-          "points": 25
+          "type": "sound-letter-mapping",
+          "question": "Which letter makes the sound 'Muh'?",
+          "content": "Muh",
+          "options": ["L", "M", "N", "O"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q8_4",
           "type": "phonics",
           "question": "What sound does this letter make?",
-          "content": "S",
-          "options": ["suh", "see", "sah", "soh"],
+          "content": "O",
+          "options": ["Oh", "Ah", "Eh", "Uh"],
           "correct": 0,
-          "points": 25
+          "points": 20
         },
         {
           "id": "q8_5",
           "type": "word-recognition",
-          "question": "Which word is this?",
-          "content": "HAT",
-          "options": ["HAT", "BAT", "CAT", "RAT"],
-          "correct": 0,
-          "points": 25
+          "question": "Which word has 3 letters?",
+          "content": "Run",
+          "options": ["Go", "Run", "Jump", "Walk"],
+          "correct": 1,
+          "points": 20
         }
       ]
     },
     {
       "id": 9,
-      "difficulty": "medium",
-      "theme": "Pluto",
+      "title": "Level 9: Pluto Patterns",
+      "description": "Discover letter patterns and simple word building!",
+      "difficulty": 2,
+      "category": "Word Recognition",
+      "requiredStars": 16,
       "questions": [
         {
           "id": "q9_1",
-          "type": "phonics",
-          "question": "What sound does this letter make?",
-          "content": "T",
-          "options": ["tuh", "tee", "tah", "toh"],
-          "correct": 0,
-          "points": 25
+          "type": "word-recognition",
+          "question": "Which word rhymes with 'cat'?",
+          "content": "Bat",
+          "options": ["Dog", "Bat", "Car", "Sun"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q9_2",
-          "type": "sound-letter-mapping",
-          "question": "Which letter makes the 'vuh' sound?",
-          "content": "audio:v",
-          "options": ["V", "W", "U", "Y"],
+          "type": "phonics",
+          "question": "What sound does this letter make?",
+          "content": "U",
+          "options": ["Uh", "Ah", "Eh", "Oh"],
           "correct": 0,
-          "points": 25
+          "points": 20
         },
         {
           "id": "q9_3",
           "type": "word-recognition",
-          "question": "Which word is this?",
-          "content": "NET",
-          "options": ["NET", "PET", "SET", "WET"],
-          "correct": 0,
-          "points": 25
+          "question": "Which word starts with the same letter as 'Sun'?",
+          "content": "Star",
+          "options": ["Moon", "Star", "Earth", "Mars"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q9_4",
-          "type": "phonics",
-          "question": "What sound does this letter make?",
-          "content": "L",
-          "options": ["luh", "lee", "lah", "loh"],
-          "correct": 0,
-          "points": 25
+          "type": "sound-letter-mapping",
+          "question": "Which letter makes the sound 'Ruh'?",
+          "content": "Ruh",
+          "options": ["P", "Q", "R", "S"],
+          "correct": 2,
+          "points": 20
         },
         {
           "id": "q9_5",
           "type": "word-recognition",
-          "question": "Which word is this?",
-          "content": "CUP",
-          "options": ["CUP", "PUP", "TUP", "SUP"],
-          "correct": 0,
-          "points": 25
+          "question": "Which is the longest word?",
+          "content": "Elephant",
+          "options": ["Cat", "Dog", "Bird", "Elephant"],
+          "correct": 3,
+          "points": 20
         }
       ]
     },
     {
       "id": 10,
-      "difficulty": "medium",
-      "theme": "Moon",
+      "title": "Level 10: Asteroid Adventure",
+      "description": "Master basic words and letter combinations!",
+      "difficulty": 2,
+      "category": "Word Recognition",
+      "requiredStars": 18,
       "questions": [
         {
           "id": "q10_1",
-          "type": "phonics",
-          "question": "What sound does this letter make?",
-          "content": "N",
-          "options": ["nuh", "nee", "nah", "noh"],
-          "correct": 0,
-          "points": 25
+          "type": "word-recognition",
+          "question": "Which word means the opposite of 'big'?",
+          "content": "Small",
+          "options": ["Huge", "Small", "Large", "Giant"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q10_2",
-          "type": "sound-letter-mapping",
-          "question": "Which letter makes the 'wuh' sound?",
-          "content": "audio:w",
-          "options": ["W", "V", "U", "Y"],
+          "type": "phonics",
+          "question": "What sound do these letters make together: 'TH'?",
+          "content": "TH",
+          "options": ["Thuh", "Tuh", "Huh", "Fuh"],
           "correct": 0,
-          "points": 25
+          "points": 20
         },
         {
           "id": "q10_3",
           "type": "word-recognition",
-          "question": "Which word is this?",
-          "content": "BIG",
-          "options": ["BIG", "PIG", "FIG", "DIG"],
-          "correct": 0,
-          "points": 25
+          "question": "Which word has the same ending as 'running'?",
+          "content": "Jumping",
+          "options": ["Walk", "Jumping", "Sit", "Stand"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q10_4",
-          "type": "phonics",
-          "question": "What sound does this letter make?",
-          "content": "Z",
-          "options": ["zuh", "zee", "zah", "zoh"],
-          "correct": 0,
-          "points": 25
+          "type": "sound-letter-mapping",
+          "question": "Which letters together make the 'SH' sound?",
+          "content": "SH",
+          "options": ["CH", "TH", "SH", "PH"],
+          "correct": 2,
+          "points": 20
         },
         {
           "id": "q10_5",
           "type": "word-recognition",
-          "question": "Which word is this?",
-          "content": "BOX",
-          "options": ["BOX", "FOX", "SOX", "COX"],
-          "correct": 0,
-          "points": 25
+          "question": "Which word describes a color?",
+          "content": "Blue",
+          "options": ["Happy", "Blue", "Fast", "Loud"],
+          "correct": 1,
+          "points": 20
         }
       ]
     },
     {
       "id": 11,
-      "difficulty": "hard",
-      "theme": "Asteroid Belt",
+      "title": "Level 11: Comet Chaos",
+      "description": "Unscramble words and find missing letters!",
+      "difficulty": 3,
+      "category": "Word Building",
+      "requiredStars": 20,
       "questions": [
         {
           "id": "q11_1",
           "type": "jumbled-words",
-          "question": "Unscramble this word:",
+          "question": "Unscramble this word: TAC",
           "content": "TAC",
-          "options": ["CAT", "ACT", "TAC", "CTA"],
+          "options": ["CAT", "ACT", "CUT", "COT"],
           "correct": 0,
-          "points": 30
+          "points": 20
         },
         {
           "id": "q11_2",
           "type": "missing-letters",
           "question": "Fill in the missing letter: D_G",
           "content": "D_G",
-          "options": ["O", "I", "A", "U"],
+          "options": ["O", "A", "I", "U"],
           "correct": 0,
-          "points": 30
+          "points": 20
         },
         {
           "id": "q11_3",
-          "type": "short-sentences",
-          "question": "Complete the sentence: The cat is ___",
-          "content": "The cat is ___",
-          "options": ["big", "small", "happy", "sad"],
+          "type": "jumbled-words",
+          "question": "Unscramble this word: NUS",
+          "content": "NUS",
+          "options": ["SUN", "NUT", "RUN", "FUN"],
           "correct": 0,
-          "points": 30
+          "points": 20
         },
         {
           "id": "q11_4",
-          "type": "jumbled-words",
-          "question": "Unscramble this word:",
-          "content": "GUN",
-          "options": ["NUG", "GNU", "UNG", "GUN"],
-          "correct": 3,
-          "points": 30
+          "type": "missing-letters",
+          "question": "Fill in the missing letter: B_RD",
+          "content": "B_RD",
+          "options": ["I", "O", "A", "U"],
+          "correct": 0,
+          "points": 20
         },
         {
           "id": "q11_5",
-          "type": "missing-letters",
-          "question": "Fill in the missing letter: S_N",
-          "content": "S_N",
-          "options": ["U", "O", "A", "I"],
+          "type": "jumbled-words",
+          "question": "Unscramble this word: GOD",
+          "content": "GOD",
+          "options": ["DOG", "GOD", "LOG", "HOG"],
           "correct": 0,
-          "points": 30
+          "points": 20
         }
       ]
     },
     {
       "id": 12,
-      "difficulty": "hard",
-      "theme": "Comet",
+      "title": "Level 12: Meteor Mayhem",
+      "description": "Build longer words and complete sentences!",
+      "difficulty": 3,
+      "category": "Word Building",
+      "requiredStars": 22,
       "questions": [
         {
           "id": "q12_1",
-          "type": "jumbled-words",
-          "question": "Unscramble this word:",
-          "content": "EEB",
-          "options": ["BEE", "EBE", "EEB", "BBE"],
+          "type": "missing-letters",
+          "question": "Fill in the missing letters: HO_SE",
+          "content": "HO_SE",
+          "options": ["U", "R", "A", "I"],
           "correct": 0,
-          "points": 30
+          "points": 20
         },
         {
           "id": "q12_2",
-          "type": "missing-letters",
-          "question": "Fill in the missing letter: H_T",
-          "content": "H_T",
-          "options": ["A", "I", "O", "U"],
+          "type": "jumbled-words",
+          "question": "Unscramble this word: RETE",
+          "content": "RETE",
+          "options": ["TREE", "DEER", "BEAR", "FIRE"],
           "correct": 0,
-          "points": 30
+          "points": 20
         },
         {
           "id": "q12_3",
-          "type": "short-sentences",
-          "question": "Complete the sentence: I can ___",
-          "content": "I can ___",
-          "options": ["run", "walk", "jump", "swim"],
+          "type": "sentence-completion",
+          "question": "Complete the sentence: The cat is ___",
+          "content": "The cat is ___",
+          "options": ["running", "blue", "house", "water"],
           "correct": 0,
-          "points": 30
+          "points": 20
         },
         {
           "id": "q12_4",
-          "type": "jumbled-words",
-          "question": "Unscramble this word:",
-          "content": "TAR",
-          "options": ["RAT", "ART", "TAR", "TRA"],
+          "type": "missing-letters",
+          "question": "Fill in the missing letter: FL_WER",
+          "content": "FL_WER",
+          "options": ["O", "A", "I", "U"],
           "correct": 0,
-          "points": 30
+          "points": 20
         },
         {
           "id": "q12_5",
-          "type": "missing-letters",
-          "question": "Fill in the missing letter: C_P",
-          "content": "C_P",
-          "options": ["U", "A", "O", "I"],
+          "type": "jumbled-words",
+          "question": "Unscramble this word: KOOL",
+          "content": "KOOL",
+          "options": ["LOOK", "BOOK", "COOK", "HOOK"],
           "correct": 0,
-          "points": 30
+          "points": 20
         }
       ]
     },
     {
       "id": 13,
-      "difficulty": "hard",
-      "theme": "Galaxy",
+      "title": "Level 13: Galaxy Guardian",
+      "description": "Master word patterns and sentence structure!",
+      "difficulty": 3,
+      "category": "Sentence Building",
+      "requiredStars": 24,
       "questions": [
         {
           "id": "q13_1",
-          "type": "jumbled-words",
-          "question": "Unscramble this word:",
-          "content": "GIB",
-          "options": ["BIG", "GIB", "IBG", "BGI"],
+          "type": "sentence-completion",
+          "question": "Complete the sentence: I like to ___",
+          "content": "I like to ___",
+          "options": ["play", "red", "house", "water"],
           "correct": 0,
-          "points": 30
+          "points": 20
         },
         {
           "id": "q13_2",
-          "type": "missing-letters",
-          "question": "Fill in the missing letter: B_X",
-          "content": "B_X",
-          "options": ["O", "A", "I", "U"],
+          "type": "jumbled-words",
+          "question": "Unscramble this word: PPAHY",
+          "content": "PPAHY",
+          "options": ["HAPPY", "PARTY", "CARRY", "SORRY"],
           "correct": 0,
-          "points": 30
+          "points": 20
         },
         {
           "id": "q13_3",
-          "type": "short-sentences",
-          "question": "Complete the sentence: The dog is ___",
-          "content": "The dog is ___",
-          "options": ["brown", "black", "white", "gray"],
+          "type": "missing-letters",
+          "question": "Fill in the missing letters: SCH_ _L",
+          "content": "SCH_ _L",
+          "options": ["OO", "AA", "EE", "II"],
           "correct": 0,
-          "points": 30
+          "points": 20
         },
         {
           "id": "q13_4",
-          "type": "jumbled-words",
-          "question": "Unscramble this word:",
-          "content": "TEN",
-          "options": ["NET", "TEN", "ENT", "NTE"],
+          "type": "sentence-completion",
+          "question": "Complete the sentence: The dog can ___",
+          "content": "The dog can ___",
+          "options": ["bark", "green", "table", "seven"],
           "correct": 0,
-          "points": 30
+          "points": 20
         },
         {
           "id": "q13_5",
-          "type": "missing-letters",
-          "question": "Fill in the missing letter: T_P",
-          "content": "T_P",
-          "options": ["O", "A", "I", "U"],
+          "type": "jumbled-words",
+          "question": "Unscramble this word: REDGA",
+          "content": "REDGA",
+          "options": ["GRADE", "BREAD", "GREAT", "DREAM"],
           "correct": 0,
-          "points": 30
+          "points": 20
         }
       ]
     },
     {
       "id": 14,
-      "difficulty": "hard",
-      "theme": "Black Hole",
+      "title": "Level 14: Stellar Stories",
+      "description": "Read short sentences and understand meaning!",
+      "difficulty": 3,
+      "category": "Sentence Building",
+      "requiredStars": 26,
       "questions": [
         {
           "id": "q14_1",
-          "type": "jumbled-words",
-          "question": "Unscramble this word:",
-          "content": "TEP",
-          "options": ["PET", "TEP", "EPT", "TPE"],
-          "correct": 0,
-          "points": 30
+          "type": "reading-comprehension",
+          "question": "Read: 'The boy plays ball.' What does the boy do?",
+          "content": "The boy plays ball.",
+          "options": ["runs", "plays", "sleeps", "eats"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q14_2",
-          "type": "missing-letters",
-          "question": "Fill in the missing letter: R_N",
-          "content": "R_N",
-          "options": ["U", "A", "I", "O"],
+          "type": "sentence-completion",
+          "question": "Complete the sentence: My mom is ___",
+          "content": "My mom is ___",
+          "options": ["kind", "chair", "number", "blue"],
           "correct": 0,
-          "points": 30
+          "points": 20
         },
         {
           "id": "q14_3",
-          "type": "short-sentences",
-          "question": "Complete the sentence: We like to ___",
-          "content": "We like to ___",
-          "options": ["play", "eat", "sleep", "read"],
+          "type": "jumbled-words",
+          "question": "Unscramble this word: MAFLY",
+          "content": "MAFLY",
+          "options": ["FAMILY", "MAINLY", "FIRMLY", "FAIRLY"],
           "correct": 0,
-          "points": 30
+          "points": 20
         },
         {
           "id": "q14_4",
-          "type": "jumbled-words",
-          "question": "Unscramble this word:",
-          "content": "NUF",
-          "options": ["FUN", "NUF", "UNF", "FNU"],
-          "correct": 0,
-          "points": 30
+          "type": "reading-comprehension",
+          "question": "Read: 'The cat sits on the mat.' Where is the cat?",
+          "content": "The cat sits on the mat.",
+          "options": ["under mat", "on the mat", "in the box", "near tree"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q14_5",
           "type": "missing-letters",
-          "question": "Fill in the missing letter: W_T",
-          "content": "W_T",
-          "options": ["E", "A", "I", "O"],
+          "question": "Fill in the missing letters: FR_ _ND",
+          "content": "FR_ _ND",
+          "options": ["IE", "AI", "OO", "EE"],
           "correct": 0,
-          "points": 30
+          "points": 20
         }
       ]
     },
     {
       "id": 15,
-      "difficulty": "hard",
-      "theme": "Space Station",
+      "title": "Level 15: Cosmic Champion",
+      "description": "Master complex sentences and word relationships!",
+      "difficulty": 3,
+      "category": "Reading Comprehension",
+      "requiredStars": 28,
       "questions": [
         {
           "id": "q15_1",
-          "type": "jumbled-words",
-          "question": "Unscramble this word:",
-          "content": "TES",
-          "options": ["SET", "TES", "EST", "STE"],
-          "correct": 0,
-          "points": 30
+          "type": "reading-comprehension",
+          "question": "Read: 'The bird flies high in the sky.' How does the bird move?",
+          "content": "The bird flies high in the sky.",
+          "options": ["walks", "runs", "flies", "swims"],
+          "correct": 2,
+          "points": 20
         },
         {
           "id": "q15_2",
-          "type": "missing-letters",
-          "question": "Fill in the missing letter: M_P",
-          "content": "M_P",
-          "options": ["O", "A", "I", "U"],
+          "type": "jumbled-words",
+          "question": "Unscramble this word: BREMBME",
+          "content": "BREMBME",
+          "options": ["MEMBER", "LUMBER", "TIMBER", "CHAMBER"],
           "correct": 0,
-          "points": 30
+          "points": 20
         },
         {
           "id": "q15_3",
-          "type": "short-sentences",
-          "question": "Complete the sentence: The sun is ___",
-          "content": "The sun is ___",
-          "options": ["bright", "hot", "yellow", "big"],
+          "type": "sentence-completion",
+          "question": "Complete the sentence: After school, I ___",
+          "content": "After school, I ___",
+          "options": ["go home", "pencil", "window", "purple"],
           "correct": 0,
-          "points": 30
+          "points": 20
         },
         {
           "id": "q15_4",
-          "type": "jumbled-words",
-          "question": "Unscramble this word:",
-          "content": "GIP",
-          "options": ["PIG", "GIP", "IPG", "PGI"],
-          "correct": 0,
-          "points": 30
+          "type": "reading-comprehension",
+          "question": "Read: 'She reads a book every night.' When does she read?",
+          "content": "She reads a book every night.",
+          "options": ["morning", "afternoon", "night", "never"],
+          "correct": 2,
+          "points": 20
         },
         {
           "id": "q15_5",
           "type": "missing-letters",
-          "question": "Fill in the missing letter: H_P",
-          "content": "H_P",
-          "options": ["O", "A", "I", "U"],
+          "question": "Fill in the missing letters: BEAU_ _ FUL",
+          "content": "BEAU_ _ FUL",
+          "options": ["TI", "RE", "ST", "ND"],
           "correct": 0,
-          "points": 30
+          "points": 20
         }
       ]
     },
     {
       "id": 16,
-      "difficulty": "expert",
-      "theme": "Alpha Centauri",
+      "title": "Level 16: Universe Explorer",
+      "description": "Read paragraphs and understand complex stories!",
+      "difficulty": 4,
+      "category": "Reading Comprehension",
+      "requiredStars": 30,
       "questions": [
         {
           "id": "q16_1",
           "type": "reading-comprehension",
-          "question": "Read: 'The cat sat on the mat.' Where did the cat sit?",
-          "content": "The cat sat on the mat.",
-          "options": ["on the mat", "on the hat", "on the bat", "on the rat"],
-          "correct": 0,
-          "points": 35,
-          "timeLimit": 30
+          "question": "Read: 'Tom went to the park. He played on the swings and slides. Then he went home for lunch.' What did Tom do first?",
+          "content": "Tom went to the park. He played on the swings and slides. Then he went home for lunch.",
+          "options": ["went home", "ate lunch", "went to park", "played slides"],
+          "correct": 2,
+          "points": 20
         },
         {
           "id": "q16_2",
           "type": "spelling-correction",
           "question": "Which word is spelled correctly?",
-          "content": "spelling",
-          "options": ["catt", "cat", "caat", "caht"],
+          "content": "Choose the correct spelling",
+          "options": ["becuase", "because", "becaus", "becase"],
           "correct": 1,
-          "points": 35,
-          "timeLimit": 25
+          "points": 20
         },
         {
           "id": "q16_3",
-          "type": "timed-reading",
-          "question": "Read this word quickly:",
-          "content": "HOUSE",
-          "options": ["HOUSE", "HORSE", "MOUSE", "HOSE"],
-          "correct": 0,
-          "points": 35,
-          "timeLimit": 15
+          "type": "reading-comprehension",
+          "question": "Read the story and answer: 'The dog was hungry. It found a bone. The dog was happy.' Why was the dog happy?",
+          "content": "The dog was hungry. It found a bone. The dog was happy.",
+          "options": ["it was tired", "found a bone", "saw a cat", "ran fast"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q16_4",
-          "type": "reading-comprehension",
-          "question": "Read: 'The dog runs fast.' What does the dog do?",
-          "content": "The dog runs fast.",
-          "options": ["runs fast", "walks slow", "jumps high", "sits down"],
-          "correct": 0,
-          "points": 35,
-          "timeLimit": 30
+          "type": "spelling-correction",
+          "question": "Which word is spelled correctly?",
+          "content": "Choose the correct spelling",
+          "options": ["freinds", "friends", "freands", "friendz"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q16_5",
-          "type": "spelling-correction",
-          "question": "Which word is spelled correctly?",
-          "content": "spelling",
-          "options": ["dogg", "dog", "doog", "dogge"],
+          "type": "reading-comprehension",
+          "question": "Read: 'Mary has three apples. She gives one to her brother. How many apples does Mary have now?'",
+          "content": "Mary has three apples. She gives one to her brother. How many apples does Mary have now?",
+          "options": ["one", "two", "three", "four"],
           "correct": 1,
-          "points": 35,
-          "timeLimit": 25
+          "points": 20
         }
       ]
     },
     {
       "id": 17,
-      "difficulty": "expert",
-      "theme": "Andromeda",
+      "title": "Level 17: Intergalactic Intelligence",
+      "description": "Master advanced reading and critical thinking!",
+      "difficulty": 4,
+      "category": "Advanced Reading",
+      "requiredStars": 32,
       "questions": [
         {
           "id": "q17_1",
           "type": "reading-comprehension",
-          "question": "Read: 'Birds fly in the sky.' What do birds do?",
-          "content": "Birds fly in the sky.",
-          "options": ["fly in the sky", "swim in water", "run on ground", "hide in trees"],
-          "correct": 0,
-          "points": 35,
-          "timeLimit": 30
+          "question": "Read: 'The library is quiet. People read books and study. Children can borrow books to take home.' What can children do at the library?",
+          "content": "The library is quiet. People read books and study. Children can borrow books to take home.",
+          "options": ["play games", "borrow books", "watch TV", "eat food"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q17_2",
           "type": "spelling-correction",
-          "question": "Which word is spelled correctly?",
-          "content": "spelling",
-          "options": ["sunn", "sun", "ssun", "suhn"],
+          "question": "Which sentence has the correct spelling?",
+          "content": "Choose the correctly spelled sentence",
+          "options": ["I like to reed books", "I like to read books", "I like to red books", "I like to rade books"],
           "correct": 1,
-          "points": 35,
-          "timeLimit": 25
+          "points": 20
         },
         {
           "id": "q17_3",
-          "type": "timed-reading",
-          "question": "Read this word quickly:",
-          "content": "WATER",
-          "options": ["WATER", "WAGER", "WAFER", "LATER"],
-          "correct": 0,
-          "points": 35,
-          "timeLimit": 15
+          "type": "reading-comprehension",
+          "question": "Read: 'Plants need water and sunlight to grow. Without these, plants will die.' What do plants need to grow?",
+          "content": "Plants need water and sunlight to grow. Without these, plants will die.",
+          "options": ["food and toys", "water and sunlight", "books and games", "cars and houses"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q17_4",
-          "type": "reading-comprehension",
-          "question": "Read: 'Fish swim in water.' Where do fish swim?",
-          "content": "Fish swim in water.",
-          "options": ["in water", "in air", "on land", "in trees"],
-          "correct": 0,
-          "points": 35,
-          "timeLimit": 30
+          "type": "spelling-correction",
+          "question": "Which word is spelled correctly?",
+          "content": "Choose the correct spelling",
+          "options": ["seperate", "separate", "seprate", "separete"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q17_5",
-          "type": "spelling-correction",
-          "question": "Which word is spelled correctly?",
-          "content": "spelling",
-          "options": ["boook", "book", "bbook", "bokk"],
+          "type": "reading-comprehension",
+          "question": "Read: 'The weather was rainy. Sarah took her umbrella. She stayed dry on her way to school.' Why did Sarah stay dry?",
+          "content": "The weather was rainy. Sarah took her umbrella. She stayed dry on her way to school.",
+          "options": ["ran fast", "took umbrella", "wore coat", "stayed inside"],
           "correct": 1,
-          "points": 35,
-          "timeLimit": 25
+          "points": 20
         }
       ]
     },
     {
       "id": 18,
-      "difficulty": "expert",
-      "theme": "Milky Way",
+      "title": "Level 18: Cosmic Comprehension",
+      "description": "Analyze complex stories and make connections!",
+      "difficulty": 4,
+      "category": "Advanced Reading",
+      "requiredStars": 34,
       "questions": [
         {
           "id": "q18_1",
           "type": "reading-comprehension",
-          "question": "Read: 'The tree has green leaves.' What color are the leaves?",
-          "content": "The tree has green leaves.",
-          "options": ["green", "red", "blue", "yellow"],
-          "correct": 0,
-          "points": 35,
-          "timeLimit": 30
+          "question": "Read: 'Jake saved money for three months. Finally, he had enough to buy the toy robot he wanted. He was very excited.' How did Jake get the robot?",
+          "content": "Jake saved money for three months. Finally, he had enough to buy the toy robot he wanted. He was very excited.",
+          "options": ["found it", "saved money", "got gift", "borrowed it"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q18_2",
-          "type": "spelling-correction",
-          "question": "Which word is spelled correctly?",
-          "content": "spelling",
-          "options": ["baal", "ball", "baall", "balll"],
+          "type": "paragraph-analysis",
+          "question": "Read the paragraph: 'Bees are important insects. They help flowers make seeds by carrying pollen. Without bees, we would have fewer flowers and fruits.' What is the main idea?",
+          "content": "Bees are important insects. They help flowers make seeds by carrying pollen. Without bees, we would have fewer flowers and fruits.",
+          "options": ["Bees are yellow", "Bees are important", "Flowers are pretty", "Fruits are tasty"],
           "correct": 1,
-          "points": 35,
-          "timeLimit": 25
+          "points": 20
         },
         {
           "id": "q18_3",
-          "type": "timed-reading",
-          "question": "Read this word quickly:",
-          "content": "FRIEND",
-          "options": ["FRIEND", "TREND", "FREND", "FIEND"],
-          "correct": 0,
-          "points": 35,
-          "timeLimit": 15
+          "type": "spelling-correction",
+          "question": "Which sentence is spelled correctly?",
+          "content": "Choose the correctly spelled sentence",
+          "options": ["She recieved a letter", "She received a letter", "She receved a letter", "She recevied a letter"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q18_4",
           "type": "reading-comprehension",
-          "question": "Read: 'I like to play games.' What do I like to do?",
-          "content": "I like to play games.",
-          "options": ["play games", "watch TV", "read books", "eat food"],
-          "correct": 0,
-          "points": 35,
-          "timeLimit": 30
+          "question": "Read: 'The team practiced every day. They worked hard and helped each other. On game day, they won!' Why did the team win?",
+          "content": "The team practiced every day. They worked hard and helped each other. On game day, they won!",
+          "options": ["got lucky", "practiced hard", "had new uniforms", "played at home"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q18_5",
-          "type": "spelling-correction",
-          "question": "Which word is spelled correctly?",
-          "content": "spelling",
-          "options": ["treee", "tree", "trre", "tre"],
+          "type": "paragraph-analysis",
+          "question": "Read: 'Recycling helps the Earth. We can recycle paper, plastic, and glass. This means less trash in landfills.' What is recycling good for?",
+          "content": "Recycling helps the Earth. We can recycle paper, plastic, and glass. This means less trash in landfills.",
+          "options": ["making money", "helping Earth", "cleaning house", "saving time"],
           "correct": 1,
-          "points": 35,
-          "timeLimit": 25
+          "points": 20
         }
       ]
     },
     {
       "id": 19,
-      "difficulty": "expert",
-      "theme": "Nebula",
+      "title": "Level 19: Galactic Genius",
+      "description": "Master advanced comprehension and analysis skills!",
+      "difficulty": 4,
+      "category": "Expert Reading",
+      "requiredStars": 36,
       "questions": [
         {
           "id": "q19_1",
-          "type": "reading-comprehension",
-          "question": "Read: 'My mom makes good food.' Who makes good food?",
-          "content": "My mom makes good food.",
-          "options": ["my mom", "my dad", "my friend", "my teacher"],
-          "correct": 0,
-          "points": 35,
-          "timeLimit": 30
+          "type": "paragraph-analysis",
+          "question": "Read: 'Ancient Egypt was famous for pyramids. These were built as tombs for kings called pharaohs. The pyramids still stand today and amaze visitors.' What were pyramids built for?",
+          "content": "Ancient Egypt was famous for pyramids. These were built as tombs for kings called pharaohs. The pyramids still stand today and amaze visitors.",
+          "options": ["houses for people", "tombs for kings", "places to pray", "schools for children"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q19_2",
-          "type": "spelling-correction",
-          "question": "Which word is spelled correctly?",
-          "content": "spelling",
-          "options": ["girll", "girl", "giirl", "grirl"],
+          "type": "critical-thinking",
+          "question": "Read: 'Lisa studies math every night. Her test scores keep getting better. Next week is the final exam.' What will probably happen?",
+          "content": "Lisa studies math every night. Her test scores keep getting better. Next week is the final exam.",
+          "options": ["she will fail", "she will do well", "she will skip exam", "she will cheat"],
           "correct": 1,
-          "points": 35,
-          "timeLimit": 25
+          "points": 20
         },
         {
           "id": "q19_3",
-          "type": "timed-reading",
-          "question": "Read this word quickly:",
-          "content": "HAPPY",
-          "options": ["HAPPY", "PUPPY", "HIPPY", "HOPPY"],
-          "correct": 0,
-          "points": 35,
-          "timeLimit": 15
+          "type": "spelling-correction",
+          "question": "Which sentence has NO spelling errors?",
+          "content": "Choose the sentence with correct spelling",
+          "options": ["The sciense experiment was intresting", "The science experiment was interesting", "The sciance experiment was intersting", "The sience experiment was intrestign"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q19_4",
-          "type": "reading-comprehension",
-          "question": "Read: 'The ball is round.' What shape is the ball?",
-          "content": "The ball is round.",
-          "options": ["round", "square", "triangle", "rectangle"],
-          "correct": 0,
-          "points": 35,
-          "timeLimit": 30
+          "type": "paragraph-analysis",
+          "question": "Read: 'Dolphins are smart marine mammals. They communicate with clicks and whistles. They live in groups called pods and help each other.' What shows dolphins are smart?",
+          "content": "Dolphins are smart marine mammals. They communicate with clicks and whistles. They live in groups called pods and help each other.",
+          "options": ["they swim fast", "they communicate", "they eat fish", "they are gray"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q19_5",
-          "type": "spelling-correction",
-          "question": "Which word is spelled correctly?",
-          "content": "spelling",
-          "options": ["boyy", "boy", "booy", "byoy"],
-          "correct": 1,
-          "points": 35,
-          "timeLimit": 25
+          "type": "critical-thinking",
+          "question": "Read: 'The garden had no flowers last month. This month, there are many colorful blooms. What might have happened?'",
+          "content": "The garden had no flowers last month. This month, there are many colorful blooms.",
+          "options": ["someone painted them", "flowers grew naturally", "someone planted them", "birds brought them"],
+          "correct": 2,
+          "points": 20
         }
       ]
     },
     {
       "id": 20,
-      "difficulty": "expert",
-      "theme": "Cosmic Journey",
+      "title": "Level 20: Ultimate Universe Master",
+      "description": "Complete your space learning journey with expert-level challenges!",
+      "difficulty": 4,
+      "category": "Expert Reading",
+      "requiredStars": 38,
       "questions": [
         {
           "id": "q20_1",
-          "type": "reading-comprehension",
-          "question": "Read: 'The children play in the park every day.' When do the children play?",
-          "content": "The children play in the park every day.",
-          "options": ["every day", "sometimes", "never", "once a week"],
-          "correct": 0,
-          "points": 40,
-          "timeLimit": 35
+          "type": "advanced-comprehension",
+          "question": "Read: 'Climate change affects weather patterns worldwide. Rising temperatures cause ice caps to melt, which raises sea levels. Scientists study this to understand future impacts.' What is the main concern about climate change?",
+          "content": "Climate change affects weather patterns worldwide. Rising temperatures cause ice caps to melt, which raises sea levels. Scientists study this to understand future impacts.",
+          "options": ["it makes rain", "future impacts", "it's too cold", "animals migrate"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q20_2",
-          "type": "spelling-correction",
-          "question": "Which word is spelled correctly?",
-          "content": "spelling",
-          "options": ["freinds", "friends", "freands", "frends"],
+          "type": "critical-analysis",
+          "question": "Read: 'Maria wants to buy a bike that costs $100. She saves $10 each week. She already has $30. How many more weeks must she save?'",
+          "content": "Maria wants to buy a bike that costs $100. She saves $10 each week. She already has $30.",
+          "options": ["5 weeks", "7 weeks", "10 weeks", "3 weeks"],
           "correct": 1,
-          "points": 40,
-          "timeLimit": 30
+          "points": 20
         },
         {
           "id": "q20_3",
-          "type": "timed-reading",
-          "question": "Read this word quickly:",
-          "content": "RAINBOW",
-          "options": ["RAINBOW", "RAINCOAT", "RAILWAY", "RANDOM"],
-          "correct": 0,
-          "points": 40,
-          "timeLimit": 12
+          "type": "advanced-spelling",
+          "question": "Which word is spelled correctly?",
+          "content": "Choose the correct spelling of this challenging word",
+          "options": ["acommodate", "accommodate", "accomodate", "acomodate"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q20_4",
-          "type": "reading-comprehension",
-          "question": "Read: 'The smart student reads many books.' What does the student do?",
-          "content": "The smart student reads many books.",
-          "options": ["reads many books", "watches TV", "plays games", "sleeps all day"],
-          "correct": 0,
-          "points": 40,
-          "timeLimit": 35
+          "type": "advanced-comprehension",
+          "question": "Read: 'The invention of the printing press in 1440 changed how information spread. Before this, books were copied by hand, making them expensive and rare. The printing press made books cheaper and more available to everyone.' How did the printing press help people?",
+          "content": "The invention of the printing press in 1440 changed how information spread. Before this, books were copied by hand, making them expensive and rare. The printing press made books cheaper and more available to everyone.",
+          "options": ["made books expensive", "made books available", "made writing harder", "stopped book copying"],
+          "correct": 1,
+          "points": 20
         },
         {
           "id": "q20_5",
-          "type": "spelling-correction",
-          "question": "Which word is spelled correctly?",
-          "content": "spelling",
-          "options": ["schoool", "school", "schol", "scool"],
+          "type": "critical-analysis",
+          "question": "Read this conclusion to our space journey: 'Congratulations! You have traveled through all 20 levels of our learning universe. From basic letters to complex reading, you have grown into a reading champion. What skill did you develop most through this journey?'",
+          "content": "You have completed all 20 levels, from basic letters to complex reading comprehension.",
+          "options": ["memorization", "reading skills", "drawing pictures", "counting numbers"],
           "correct": 1,
-          "points": 40,
-          "timeLimit": 30
+          "points": 20
         }
       ]
     }
