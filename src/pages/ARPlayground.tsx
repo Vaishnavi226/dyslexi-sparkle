@@ -76,14 +76,16 @@ const Letter3D: React.FC<{
       <meshStandardMaterial color={color} />
       <Suspense fallback={null}>
         <Center position={[0, 0, 0.11]}>
-          <Text3D
-            font="/fonts/helvetiker_regular.typeface.json"
-            size={0.4}
-            height={0.05}
-          >
-            {letter}
-            <meshStandardMaterial color="white" />
-          </Text3D>
+          <mesh>
+            <planeGeometry args={[0.6, 0.6]} />
+            <meshStandardMaterial color="white" transparent opacity={0.9} />
+          </mesh>
+          <Center position={[0, 0, 0.01]}>
+            <mesh>
+              <planeGeometry args={[0.4, 0.4]} />
+              <meshStandardMaterial color="#000" transparent opacity={0.8} />
+            </mesh>
+          </Center>
         </Center>
       </Suspense>
     </mesh>
