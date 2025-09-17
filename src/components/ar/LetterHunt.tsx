@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, RotateCcw, Trophy, Target, Star, Sparkles, Check } from 'lucide-react';
+import { Volume2, RotateCcw, Trophy, Target, Star, Sparkles } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -9,32 +9,27 @@ import { Badge } from '@/components/ui/badge';
 import { SpeechUtils } from '@/utils/speechUtils';
 import { triggerConfetti } from '@/utils/confetti';
 
-// Analytics event tracking
-const trackEvent = (event: string, data?: any) => {
-  console.log(`Analytics: ${event}`, data);
-  // In a real app, this would send to analytics service
-};
-
 interface LetterHuntProps {
   onComplete: (score: number) => void;
   onBack: () => void;
 }
 
-type LetterState = 'normal' | 'target' | 'found' | 'incorrect';
-type GameState = 'instructions' | 'playing' | 'complete';
-
 interface LetterSquareProps {
   letter: string;
-  state: LetterState;
+  isTarget: boolean;
+  isFound: boolean;
   onClick: () => void;
   index: number;
+  feedback: 'none' | 'correct' | 'incorrect';
 }
 
 const LetterSquare: React.FC<LetterSquareProps> = ({ 
   letter, 
-  state, 
+  isTarget, 
+  isFound, 
   onClick, 
-  index 
+  index, 
+  feedback 
 }) => {
   const colors = [
     'hsl(217 91% 60%)',   // Cosmic blue
@@ -43,69 +38,50 @@ const LetterSquare: React.FC<LetterSquareProps> = ({
     'hsl(25 95% 53%)',    // Cosmic orange
     'hsl(47 96% 53%)',    // Star yellow
     'hsl(0 84% 60%)',     // Red
-    'hsl(300 70% 55%)',   // Magenta
-    'hsl(180 70% 45%)',   // Cyan
-    'hsl(120 60% 50%)',   // Light green
-    'hsl(60 90% 50%)',    // Bright yellow
-    'hsl(320 80% 55%)',   // Pink
-    'hsl(200 80% 55%)',   // Light blue
   ];
 
-  const getStateClasses = () => {
-    switch (state) {
-      case 'target':
-        return 'animate-pulse border-warning shadow-lg shadow-warning/50 ring-4 ring-warning/20';
-      case 'found':
-        return 'border-success bg-success/20 cursor-not-allowed opacity-75';
-      case 'incorrect':
-        return 'animate-bounce border-destructive shadow-lg shadow-destructive/50';
-      default:
-        return 'border-primary/20 hover:border-primary/40';
-    }
+  const getFeedbackClasses = () => {
+    if (feedback === 'correct') return 'animate-pulse border-success shadow-lg shadow-success/50';
+    if (feedback === 'incorrect') return 'animate-bounce border-destructive shadow-lg shadow-destructive/50';
+    if (isTarget) return 'animate-pulse border-warning shadow-lg shadow-warning/50 ring-4 ring-warning/20';
+    return 'border-primary/20';
   };
 
   return (
     <motion.div
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ 
-        scale: state === 'found' ? 0.95 : 1, 
-        opacity: 1,
-        rotate: state === 'incorrect' ? [0, -5, 5, 0] : 0
+        scale: isFound ? 0.9 : 1, 
+        opacity: isFound ? 0.5 : 1,
+        rotate: feedback === 'incorrect' ? [0, -5, 5, 0] : 0
       }}
       exit={{ scale: 0.8, opacity: 0 }}
       transition={{ 
         duration: 0.3,
         rotate: { duration: 0.5 }
       }}
-      whileHover={{ scale: state === 'found' ? 0.95 : 1.05 }}
+      whileHover={{ scale: isFound ? 0.9 : 1.05 }}
       whileTap={{ scale: 0.95 }}
       className="relative"
-      role="button"
-      aria-label={`Letter ${letter}${state === 'target' ? ' - target letter' : ''}${state === 'found' ? ' - found' : ''}`}
     >
       <Button
         onClick={onClick}
-        disabled={state === 'found'}
+        disabled={isFound}
         className={`
-          h-20 w-20 rounded-xl border-2 transition-all duration-300 font-dyslexic text-3xl font-bold relative
-          ${getStateClasses()}
+          h-20 w-20 rounded-xl border-2 transition-all duration-300 font-dyslexic text-3xl font-bold
+          ${getFeedbackClasses()}
+          ${isFound ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:scale-105'}
         `}
         style={{
-          backgroundColor: state === 'found' ? 'hsl(142 76% 45%)' : colors[index % colors.length],
+          backgroundColor: colors[index % colors.length],
           color: 'white',
           textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
         }}
       >
-        {state === 'found' ? (
-          <div className="flex items-center justify-center">
-            <Check className="w-6 h-6" />
-          </div>
-        ) : (
-          letter
-        )}
+        {letter}
         
         {/* Target glow effect */}
-        {state === 'target' && (
+        {isTarget && !isFound && (
           <motion.div
             className="absolute inset-0 rounded-xl border-2 border-warning"
             animate={{ 
@@ -121,14 +97,14 @@ const LetterSquare: React.FC<LetterSquareProps> = ({
 
         {/* Success sparkles */}
         <AnimatePresence>
-          {state === 'found' && (
+          {feedback === 'correct' && (
             <motion.div
-              initial={{ scale: 0, rotate: 0 }}
-              animate={{ scale: 1, rotate: 360 }}
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
               exit={{ scale: 0 }}
               className="absolute -top-2 -right-2"
             >
-              <Sparkles className="h-6 w-6 text-warning" />
+              <Sparkles className="h-6 w-6 text-warning animate-spin" />
             </motion.div>
           )}
         </AnimatePresence>
@@ -143,71 +119,46 @@ const LetterHunt: React.FC<LetterHuntProps> = ({ onComplete, onBack }) => {
   const [score, setScore] = useState(0);
   const [level, setLevel] = useState(1);
   const [timeLeft, setTimeLeft] = useState(60);
-  const [gameState, setGameState] = useState<GameState>('instructions');
+  const [gameStarted, setGameStarted] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(true);
   const [accuracy, setAccuracy] = useState(100);
   const [attempts, setAttempts] = useState(0);
   const [correctAttempts, setCorrectAttempts] = useState(0);
-  const [letterStates, setLetterStates] = useState<{[key: string]: LetterState}>({});
-  const [liveMessage, setLiveMessage] = useState('');
-  const [audioTimeouts, setAudioTimeouts] = useState<NodeJS.Timeout[]>([]);
-  
-  const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
-  
-  // Audio cleanup function
-  const stopAllAudio = useCallback(() => {
-    SpeechUtils.stopSpeaking();
-    audioTimeouts.forEach(timeout => clearTimeout(timeout));
-    setAudioTimeouts([]);
-    trackEvent('audio_stopped_on_exit');
-  }, [audioTimeouts]);
+  const [letterFeedback, setLetterFeedback] = useState<{[key: string]: 'none' | 'correct' | 'incorrect'}>({});
+  const [gameComplete, setGameComplete] = useState(false);
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      stopAllAudio();
-    };
-  }, [stopAllAudio]);
+  const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
 
   // Timer effect
   useEffect(() => {
-    if (gameState === 'playing' && timeLeft > 0) {
+    if (gameStarted && timeLeft > 0 && !gameComplete) {
       const timer = setTimeout(() => setTimeLeft(prev => prev - 1), 1000);
       return () => clearTimeout(timer);
-    } else if (timeLeft === 0 && gameState === 'playing') {
+    } else if (timeLeft === 0) {
       handleGameEnd();
     }
-  }, [gameState, timeLeft]);
+  }, [gameStarted, timeLeft, gameComplete]);
 
   // Auto-announce target letter
   useEffect(() => {
-    if (gameState === 'playing' && currentTarget) {
-      const message = `Find the letter ${currentTarget}. ${currentTarget} as in ${getPhonicsWord(currentTarget)}`;
-      setLiveMessage(message);
-      
+    if (gameStarted && !showInstructions && !gameComplete) {
       const timeout = setTimeout(() => {
-        SpeechUtils.speak(message);
-        trackEvent('letter_target_announced', { letter: currentTarget });
+        SpeechUtils.speak(`Find the letter ${currentTarget}. ${currentTarget} as in ${getPhonicsWord(currentTarget)}`);
       }, 500);
-      
-      setAudioTimeouts(prev => [...prev, timeout]);
       return () => clearTimeout(timeout);
     }
-  }, [currentTarget, gameState]);
+  }, [currentTarget, gameStarted, showInstructions, gameComplete]);
 
-  // Clear incorrect state after animation
+  // Clear feedback after animation
   useEffect(() => {
-    Object.keys(letterStates).forEach(letter => {
-      if (letterStates[letter] === 'incorrect') {
-        const timeout = setTimeout(() => {
-          setLetterStates(prev => ({ 
-            ...prev, 
-            [letter]: letter === currentTarget ? 'target' : 'normal' 
-          }));
+    Object.keys(letterFeedback).forEach(letter => {
+      if (letterFeedback[letter] !== 'none') {
+        setTimeout(() => {
+          setLetterFeedback(prev => ({ ...prev, [letter]: 'none' }));
         }, 1000);
-        setAudioTimeouts(prev => [...prev, timeout]);
       }
     });
-  }, [letterStates, currentTarget]);
+  }, [letterFeedback]);
 
   const getPhonicsWord = (letter: string): string => {
     const phonicsMap: {[key: string]: string} = {
@@ -226,79 +177,47 @@ const LetterHunt: React.FC<LetterHuntProps> = ({ onComplete, onBack }) => {
   };
 
   const handleLetterClick = (letter: string) => {
-    if (gameState !== 'playing') return;
-    
     setAttempts(prev => prev + 1);
     
-    // Handle already found letters
-    if (foundLetters.has(letter)) {
-      const message = `You already found ${letter}.`;
-      setLiveMessage(message);
-      SpeechUtils.speak(message);
-      return;
-    }
-    
     // Speak the letter
-    const letterMessage = `${letter}. ${letter} as in ${getPhonicsWord(letter)}`;
-    SpeechUtils.speak(letterMessage);
+    SpeechUtils.speak(`${letter}. ${letter} as in ${getPhonicsWord(letter)}`);
 
     if (letter === currentTarget) {
-      // Correct letter found
+      // Correct letter
       setFoundLetters(prev => new Set([...prev, letter]));
       setCorrectAttempts(prev => prev + 1);
       setScore(prev => prev + 100 + (level * 10));
-      setLetterStates(prev => ({ ...prev, [letter]: 'found' }));
-      
-      const foundMessage = `Letter ${letter} found!`;
-      setLiveMessage(foundMessage);
+      setLetterFeedback(prev => ({ ...prev, [letter]: 'correct' }));
       
       triggerConfetti('success');
-      trackEvent('letter_found', { letter, score: score + 100 + (level * 10) });
       
       // Move to next target
       const nextTarget = getNextTarget();
       if (nextTarget) {
-        const timeout = setTimeout(() => {
+        setTimeout(() => {
           setCurrentTarget(nextTarget);
-          setLetterStates(prev => ({ 
-            ...prev, 
-            [currentTarget]: 'found',
-            [nextTarget]: 'target'
-          }));
-          const nextMessage = `Great job! Now find the letter ${nextTarget}`;
-          setLiveMessage(nextMessage);
-          SpeechUtils.speak(nextMessage);
-          trackEvent('letter_target_announced', { letter: nextTarget });
-        }, 1200);
-        setAudioTimeouts(prev => [...prev, timeout]);
+          SpeechUtils.speak(`Great job! Now find the letter ${nextTarget}`);
+        }, 1500);
       } else {
-        // All letters found - level complete
-        const timeout = setTimeout(() => {
-          setGameState('complete');
-          const stars = calculateStars();
-          const completionMessage = `Letter ${letter} found! Level complete. Great job! You found all 12 letters and earned ${stars} stars!`;
-          setLiveMessage(completionMessage);
-          SpeechUtils.speak(completionMessage);
-          trackEvent('level_complete', { 
-            score, 
-            stars, 
-            accuracy, 
-            time: 60 - timeLeft,
-            lettersFound: foundLetters.size + 1
-          });
-        }, 1200);
-        setAudioTimeouts(prev => [...prev, timeout]);
+        // Level complete
+        setTimeout(() => {
+          if (level < 3) {
+            setLevel(prev => prev + 1);
+            setFoundLetters(new Set());
+            setCurrentTarget('A');
+            SpeechUtils.speak(`Level ${level + 1} complete! Moving to next level!`);
+          } else {
+            // Game complete
+            setGameComplete(true);
+            const stars = calculateStars();
+            SpeechUtils.speak(`Congratulations! You completed all levels! You earned ${stars} stars!`);
+          }
+        }, 1500);
       }
     } else {
       // Wrong letter
-      setLetterStates(prev => ({ ...prev, [letter]: 'incorrect' }));
-      const errorMessage = `Not that one — try again. Look for the letter ${currentTarget}`;
-      setLiveMessage(errorMessage);
-      SpeechUtils.speak(errorMessage);
-      trackEvent('letter_incorrect_tap', { 
-        tappedLetter: letter, 
-        targetLetter: currentTarget 
-      });
+      setLetterFeedback(prev => ({ ...prev, [letter]: 'incorrect' }));
+      SpeechUtils.speak(`Try again! Look for the letter ${currentTarget}`);
     }
 
     // Update accuracy
@@ -312,16 +231,15 @@ const LetterHunt: React.FC<LetterHuntProps> = ({ onComplete, onBack }) => {
   };
 
   const handleGameEnd = () => {
-    setGameState('complete');
+    setGameStarted(false);
+    setGameComplete(true);
     const stars = calculateStars();
-    const endMessage = `Game over! You found ${foundLetters.size} letters and scored ${score} points! You earned ${stars} stars!`;
-    setLiveMessage(endMessage);
-    SpeechUtils.speak(endMessage);
+    SpeechUtils.speak(`Game over! You found ${foundLetters.size} letters and scored ${score} points! You earned ${stars} stars!`);
   };
 
   const startGame = () => {
-    stopAllAudio();
-    setGameState('playing');
+    setGameStarted(true);
+    setShowInstructions(false);
     setTimeLeft(60);
     setScore(0);
     setFoundLetters(new Set());
@@ -330,22 +248,14 @@ const LetterHunt: React.FC<LetterHuntProps> = ({ onComplete, onBack }) => {
     setAccuracy(100);
     setAttempts(0);
     setCorrectAttempts(0);
-    
-    // Initialize letter states
-    const initialStates: {[key: string]: LetterState} = {};
-    letters.forEach(letter => {
-      initialStates[letter] = letter === 'A' ? 'target' : 'normal';
-    });
-    setLetterStates(initialStates);
-    
-    const startMessage = 'Letter hunt started! Find the letter A. A as in Apple!';
-    setLiveMessage(startMessage);
-    SpeechUtils.speak(startMessage);
+    setLetterFeedback({});
+    setGameComplete(false);
+    SpeechUtils.speak('Letter hunt started! Find the letter A. A as in Apple!');
   };
 
   const resetGame = () => {
-    stopAllAudio();
-    setGameState('instructions');
+    setGameStarted(false);
+    setShowInstructions(true);
     setTimeLeft(60);
     setScore(0);
     setFoundLetters(new Set());
@@ -354,162 +264,108 @@ const LetterHunt: React.FC<LetterHuntProps> = ({ onComplete, onBack }) => {
     setAccuracy(100);
     setAttempts(0);
     setCorrectAttempts(0);
-    setLetterStates({});
-    setLiveMessage('');
+    setLetterFeedback({});
+    setGameComplete(false);
   };
 
-  const repeatTarget = () => {
-    stopAllAudio();
-    const message = `Find the letter ${currentTarget}. ${currentTarget} as in ${getPhonicsWord(currentTarget)}`;
-    setLiveMessage(message);
-    SpeechUtils.speak(message);
-    trackEvent('letter_target_announced', { letter: currentTarget, repeated: true });
-  };
-
-  const handleBackToMenu = () => {
-    stopAllAudio();
-    onBack();
-  };
-
-  if (gameState === 'instructions') {
+  if (showInstructions) {
     return (
-      <div className="space-y-6 font-lexend">
-        {/* ARIA Live Region */}
-        <div
-          role="status"
-          aria-live="assertive"
-          className="sr-only"
-          aria-atomic="true"
-        >
-          {liveMessage}
-        </div>
-        
-        <Card className="cosmic-card">
-          <CardContent className="p-8 text-center space-y-6">
-            <div className="text-6xl mb-4">🔎</div>
-            <h2 className="text-3xl font-bold text-accent">Letter Hunt Instructions</h2>
-            <div className="space-y-4 text-left max-w-2xl mx-auto text-lg">
-              <div className="flex items-start space-x-3">
-                <span className="text-2xl">👂</span>
-                <p>Listen for the letter name and phonics sound</p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <span className="text-2xl">✨</span>
-                <p>Look for the glowing, pulsing target letter</p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <span className="text-2xl">👆</span>
-                <p>Tap on the correct letter square to collect it</p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <span className="text-2xl">⭐</span>
-                <p>Earn up to 3 stars based on your accuracy!</p>
-              </div>
+      <Card className="cosmic-card">
+        <CardContent className="p-8 text-center space-y-6 font-lexend">
+          <div className="text-6xl mb-4">🔎</div>
+          <h2 className="text-3xl font-bold text-accent">Letter Hunt Instructions</h2>
+          <div className="space-y-4 text-left max-w-2xl mx-auto text-lg">
+            <div className="flex items-start space-x-3">
+              <span className="text-2xl">👂</span>
+              <p>Listen for the letter name and phonics sound</p>
             </div>
-            <div className="space-x-4">
-              <Button onClick={startGame} size="lg" className="cosmic-button text-lg px-8 py-3">
-                <Target className="w-5 h-5 mr-2" />
-                Start Hunting!
-              </Button>
-              <Button onClick={handleBackToMenu} variant="outline" size="lg" className="text-lg px-8 py-3">
-                Back to Menu
-              </Button>
+            <div className="flex items-start space-x-3">
+              <span className="text-2xl">✨</span>
+              <p>Look for the glowing, pulsing target letter</p>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+            <div className="flex items-start space-x-3">
+              <span className="text-2xl">👆</span>
+              <p>Tap on the correct letter square to collect it</p>
+            </div>
+            <div className="flex items-start space-x-3">
+              <span className="text-2xl">⭐</span>
+              <p>Earn up to 3 stars based on your accuracy!</p>
+            </div>
+          </div>
+          <div className="space-x-4">
+            <Button onClick={startGame} size="lg" className="cosmic-button text-lg px-8 py-3">
+              <Target className="w-5 h-5 mr-2" />
+              Start Hunting!
+            </Button>
+            <Button onClick={onBack} variant="outline" size="lg" className="text-lg px-8 py-3">
+              Back to Menu
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
-  if (gameState === 'complete') {
+  if (gameComplete) {
     const stars = calculateStars();
     return (
-      <div className="space-y-6 font-lexend">
-        {/* ARIA Live Region */}
-        <div
-          role="status"
-          aria-live="assertive"
-          className="sr-only"
-          aria-atomic="true"
-        >
-          {liveMessage}
-        </div>
-        
-        <Card className="cosmic-card">
-          <CardContent className="p-8 text-center space-y-6">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <Trophy className="w-16 h-16 mx-auto text-accent mb-4" />
-              <h2 className="text-3xl font-bold text-accent mb-4">Level Complete!</h2>
-            </motion.div>
+      <Card className="cosmic-card">
+        <CardContent className="p-8 text-center space-y-6 font-lexend">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Trophy className="w-16 h-16 mx-auto text-accent mb-4" />
+            <h2 className="text-3xl font-bold text-accent mb-4">Game Complete!</h2>
+          </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <div className="cosmic-card p-4">
-                <div className="text-3xl font-bold text-primary">{score}</div>
-                <div className="text-muted-foreground">Final Score</div>
-              </div>
-              <div className="cosmic-card p-4">
-                <div className="text-3xl font-bold text-success">{foundLetters.size}/12</div>
-                <div className="text-muted-foreground">Letters Found</div>
-              </div>
-              <div className="cosmic-card p-4">
-                <div className="text-3xl font-bold text-warning">{Math.round(accuracy)}%</div>
-                <div className="text-muted-foreground">Accuracy</div>
-              </div>
-              <div className="cosmic-card p-4">
-                <div className="text-3xl font-bold text-secondary">{60 - timeLeft}s</div>
-                <div className="text-muted-foreground">Time Used</div>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="cosmic-card p-4">
+              <div className="text-3xl font-bold text-primary">{score}</div>
+              <div className="text-muted-foreground">Final Score</div>
             </div>
+            <div className="cosmic-card p-4">
+              <div className="text-3xl font-bold text-success">{foundLetters.size}/12</div>
+              <div className="text-muted-foreground">Letters Found</div>
+            </div>
+            <div className="cosmic-card p-4">
+              <div className="text-3xl font-bold text-warning">{Math.round(accuracy)}%</div>
+              <div className="text-muted-foreground">Accuracy</div>
+            </div>
+          </div>
 
-            <div className="flex justify-center space-x-2 mb-6">
-              {[1, 2, 3].map((i) => (
-                <motion.div
-                  key={i}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: i * 0.2, duration: 0.3 }}
-                >
-                  <Star 
-                    className={`w-8 h-8 ${i <= stars ? 'text-accent fill-accent' : 'text-muted'}`} 
-                  />
-                </motion.div>
-              ))}
-            </div>
+          <div className="flex justify-center space-x-2 mb-6">
+            {[1, 2, 3].map((i) => (
+              <motion.div
+                key={i}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: i * 0.2, duration: 0.3 }}
+              >
+                <Star 
+                  className={`w-8 h-8 ${i <= stars ? 'text-accent fill-accent' : 'text-muted'}`} 
+                />
+              </motion.div>
+            ))}
+          </div>
 
-            <div className="space-x-4 flex flex-wrap justify-center gap-4">
-              <Button onClick={startGame} className="cosmic-button text-lg px-8 py-3">
-                <RotateCcw className="w-5 h-5 mr-2" />
-                Play Again
-              </Button>
-              <Button onClick={resetGame} variant="outline" className="text-lg px-8 py-3">
-                Review Letters
-              </Button>
-              <Button onClick={handleBackToMenu} variant="outline" className="text-lg px-8 py-3">
-                Back to Menu
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          <div className="space-x-4">
+            <Button onClick={startGame} className="cosmic-button text-lg px-8 py-3">
+              <RotateCcw className="w-5 h-5 mr-2" />
+              Play Again
+            </Button>
+            <Button onClick={onBack} variant="outline" className="text-lg px-8 py-3">
+              Back to Menu
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
     <div className="space-y-6 font-lexend">
-      {/* ARIA Live Region */}
-      <div
-        role="status"
-        aria-live="assertive"
-        className="sr-only"
-        aria-atomic="true"
-      >
-        {liveMessage}
-      </div>
-      
       {/* Game Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card className="cosmic-card">
@@ -565,9 +421,8 @@ const LetterHunt: React.FC<LetterHuntProps> = ({ onComplete, onBack }) => {
           <Button
             variant="outline"
             size="sm"
-            onClick={repeatTarget}
+            onClick={() => SpeechUtils.speak(`Find the letter ${currentTarget}. ${currentTarget} as in ${getPhonicsWord(currentTarget)}`)}
             className="shrink-0"
-            aria-label="Repeat target letter"
           >
             <Volume2 className="w-4 h-4" />
           </Button>
@@ -587,45 +442,36 @@ const LetterHunt: React.FC<LetterHuntProps> = ({ onComplete, onBack }) => {
       <Card className="cosmic-card">
         <CardContent className="p-6">
           <div className="grid grid-cols-3 md:grid-cols-4 gap-4 justify-items-center">
-            {letters.map((letter, index) => {
-              let state: LetterState = 'normal';
-              if (foundLetters.has(letter)) {
-                state = 'found';
-              } else if (letter === currentTarget) {
-                state = 'target';
-              } else if (letterStates[letter]) {
-                state = letterStates[letter];
-              }
-              
-              return (
-                <LetterSquare
-                  key={letter}
-                  letter={letter}
-                  state={state}
-                  onClick={() => handleLetterClick(letter)}
-                  index={index}
-                />
-              );
-            })}
+            {letters.map((letter, index) => (
+              <LetterSquare
+                key={letter}
+                letter={letter}
+                isTarget={letter === currentTarget}
+                isFound={foundLetters.has(letter)}
+                onClick={() => handleLetterClick(letter)}
+                index={index}
+                feedback={letterFeedback[letter] || 'none'}
+              />
+            ))}
           </div>
         </CardContent>
       </Card>
 
       {/* Game Controls */}
-      <div className="flex justify-center space-x-4 flex-wrap gap-4">
+      <div className="flex justify-center space-x-4">
         <Button onClick={resetGame} variant="outline">
           <RotateCcw className="w-4 h-4 mr-2" />
           Reset Game
         </Button>
-        <Button onClick={repeatTarget} className="cosmic-button">
+        <Button 
+          onClick={() => SpeechUtils.speak(`Find the letter ${currentTarget}. ${currentTarget} as in ${getPhonicsWord(currentTarget)}`)}
+          className="cosmic-button"
+        >
           <Volume2 className="w-4 h-4 mr-2" />
           Repeat Target
         </Button>
         <Button onClick={handleGameEnd} variant="destructive">
           End Game
-        </Button>
-        <Button onClick={handleBackToMenu} variant="outline">
-          Back to Menu
         </Button>
       </div>
     </div>
