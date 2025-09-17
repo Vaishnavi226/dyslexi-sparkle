@@ -71,33 +71,49 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				}
 			},
+			fontFamily: {
+				'dyslexic': ['OpenDyslexic', 'Arial', 'sans-serif'],
+				'lexend': ['Lexend', 'system-ui', 'sans-serif'],
+			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
 			},
-			keyframes: {
-				'accordion-down': {
-					from: {
-						height: '0'
-					},
-					to: {
-						height: 'var(--radix-accordion-content-height)'
-					}
-				},
-				'accordion-up': {
-					from: {
-						height: 'var(--radix-accordion-content-height)'
-					},
-					to: {
-						height: '0'
-					}
-				}
+	keyframes: {
+		'accordion-down': {
+			from: {
+				height: '0'
 			},
-			animation: {
-				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+			to: {
+				height: 'var(--radix-accordion-content-height)'
 			}
+		},
+		'accordion-up': {
+			from: {
+				height: 'var(--radix-accordion-content-height)'
+			},
+			to: {
+				height: '0'
+			}
+		},
+		'shake': {
+			'0%, 100%': { transform: 'translateX(0)' },
+			'25%': { transform: 'translateX(-5px)' },
+			'75%': { transform: 'translateX(5px)' }
+		},
+		'success-bounce': {
+			'0%, 20%, 50%, 80%, 100%': { transform: 'translateY(0)' },
+			'40%': { transform: 'translateY(-10px)' },
+			'60%': { transform: 'translateY(-5px)' }
+		}
+	},
+	animation: {
+		'accordion-down': 'accordion-down 0.2s ease-out',
+		'accordion-up': 'accordion-up 0.2s ease-out',
+		'shake': 'shake 0.5s ease-in-out',
+		'success-bounce': 'success-bounce 0.6s ease-out'
+	}
 		}
 	},
 	plugins: [require("tailwindcss-animate")],

@@ -64,6 +64,12 @@ All colors MUST be HSL.
     --shadow-soft: 0 4px 20px hsl(217 91% 60% / 0.1);
     --shadow-card: 0 8px 30px hsl(217 91% 60% / 0.15);
 
+    /* Letter Hunt Game Colors */
+    --letter-correct: 142 76% 45%;
+    --letter-incorrect: 0 84% 60%;
+    --letter-target: 47 96% 53%;
+    --letter-neutral: 217 91% 60%;
+
     --radius: 1rem;
 
     --sidebar-background: 0 0% 98%;
@@ -258,6 +264,18 @@ All colors MUST be HSL.
   50% {
     box-shadow: 0 0 40px hsl(var(--primary) / 0.8), 0 0 60px hsl(var(--secondary) / 0.4);
   }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes success-bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+  60% { transform: translateY(-5px); }
 }
 
 /* Cosmic UI elements */
