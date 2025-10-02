@@ -20,10 +20,11 @@ import { triggerConfetti } from '@/utils/confetti';
 
 // Import mini-game components
 import LetterHunt from '@/components/ar/LetterHunt';
+import WebARLetterHunt from '@/components/ar/WebARLetterHunt';
 import BuildTheWord from '@/components/ar/BuildTheWord';
 import ColorShapeSorter from '@/components/ar/ColorShapeSorter';
 
-type MiniGame = 'letterhunt' | 'buildword' | 'colorshape' | null;
+type MiniGame = 'letterhunt' | 'webarletterhunt' | 'buildword' | 'colorshape' | null;
 
 const ARPlayground: React.FC = () => {
   const { userProfile } = useGame();
@@ -40,6 +41,16 @@ const ARPlayground: React.FC = () => {
       component: LetterHunt,
       learningGoal: 'Letter recognition + phonics',
       color: 'from-blue-500 to-purple-600'
+    },
+    {
+      id: 'webarletterhunt',
+      title: 'WebAR Letter Hunt',
+      icon: Camera,
+      emoji: '📸',
+      description: 'Use your camera to find 3D letters and spell words!',
+      component: WebARLetterHunt,
+      learningGoal: 'AR word spelling + letter detection',
+      color: 'from-cyan-500 to-blue-600'
     },
     {
       id: 'buildword',
