@@ -91,7 +91,8 @@ const BuildTheWord: React.FC<BuildTheWordProps> = ({ onComplete, onBack }) => {
   // Initialize available letters when word changes
   useEffect(() => {
     const wordLetters = currentWord.word.split('');
-    const extraLetters = ['X', 'Y', 'Z', 'Q', 'K', 'W', 'J'].slice(0, 6 - wordLetters.length);
+    const maxExtraLetters = Math.max(0, 6 - wordLetters.length);
+    const extraLetters = ['X', 'Y', 'Z', 'Q', 'K', 'W', 'J'].slice(0, maxExtraLetters);
     const allLetters = [...wordLetters, ...extraLetters].sort(() => Math.random() - 0.5);
     setAvailableLetters(allLetters);
     setBuiltWord([]);
