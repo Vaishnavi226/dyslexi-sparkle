@@ -9,6 +9,7 @@ import MCQQuestion from '@/components/dyslexia/MCQQuestion';
 import LevelNavigation from '@/components/dyslexia/LevelNavigation';
 import TestResults from '@/components/dyslexia/TestResults';
 import DyslexiaProgressManager from '@/utils/dyslexiaProgressManager';
+import { useGame } from '@/contexts/GameContext';
 import levelsData from '@/data/dyslexiaLevels.json';
 
 interface Question {
@@ -58,6 +59,7 @@ const generateLevels = (): Level[] => {
 
 const DyslexiaTest: React.FC = () => {
   const { toast } = useToast();
+  const { updateProgress, addXP } = useGame();
   const [levels, setLevels] = useState<Level[]>(() => generateLevels());
   const [selectedLevel, setSelectedLevel] = useState<Level | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -121,10 +123,24 @@ const DyslexiaTest: React.FC = () => {
     
     const score = Math.round((correct / selectedLevel.questions.length) * 100);
     const stars = score >= 80 ? 3 : score >= 60 ? 2 : score >= 40 ? 1 : 0;
+    const accuracy = score;
     
     // Update progress using the progress manager
     const progressManager = DyslexiaProgressManager.getInstance();
     progressManager.updateLevelProgress(selectedLevel.id, score, stars);
+    
+    // Update GameContext for Progress page
+    updateProgress('dyslexiaTest', {
+      level: selectedLevel.id,
+      score: score,
+      accuracy: accuracy,
+      stars: progressManager.getUserProgress().totalStars,
+      speed: 100 - (selectedLevel.difficulty * 10) // Placeholder speed calculation
+    });
+    
+    // Add XP based on score and stars
+    const xpGain = score + (stars * 10);
+    addXP(xpGain);
     
     // Refresh levels to reflect the updated progress
     setLevels(generateLevels());
@@ -132,7 +148,7 @@ const DyslexiaTest: React.FC = () => {
 
     toast({
       title: `${selectedLevel.title} Complete! ${stars > 0 ? '⭐'.repeat(stars) : '🚀'}`,
-      description: `Score: ${score}% - Earned ${stars} stars!`,
+      description: `Score: ${score}% - Earned ${stars} stars and ${xpGain} XP!`,
     });
   };
 
