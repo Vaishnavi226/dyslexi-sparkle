@@ -18,11 +18,14 @@ const AFrameLetterHunt: React.FC<AFrameLetterHuntProps> = ({ onComplete, onBack 
   const [gameStarted, setGameStarted] = useState(false);
   const [targetWord, setTargetWord] = useState('CAT');
   const [collectedLetters, setCollectedLetters] = useState<string[]>([]);
+  const [currentLetterIndex, setCurrentLetterIndex] = useState(0);
   const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(60);
+  const [timeLeft, setTimeLeft] = useState(120);
+  const [availableLetters, setAvailableLetters] = useState<string[]>([]);
+  
   const sceneRef = useRef<any>(null);
 
-  const words = ['CAT', 'DOG', 'BAT', 'HAT', 'SUN', 'FUN', 'BIG', 'RED', 'TOP', 'CUP'];
+  const words = ['CAT', 'DOG', 'BAT', 'HAT', 'SUN', 'FUN', 'BIG', 'RED', 'TOP', 'CUP', 'PIG', 'BED'];
 
   // Load A-Frame dynamically
   useEffect(() => {
@@ -68,50 +71,105 @@ const AFrameLetterHunt: React.FC<AFrameLetterHuntProps> = ({ onComplete, onBack 
     setGameStarted(true);
     setScore(0);
     setCollectedLetters([]);
-    setTimeLeft(60);
+    setCurrentLetterIndex(0);
+    setTimeLeft(120);
     const word = words[Math.floor(Math.random() * words.length)];
     setTargetWord(word);
-    SpeechUtils.speak(`Find the letters to spell ${word.split('').join(', ')}`);
+    
+    // Generate 5 random letters including the first letter of the word
+    const firstLetter = word[0];
+    const allLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    const otherLetters = allLetters.filter(l => l !== firstLetter);
+    const shuffled = otherLetters.sort(() => Math.random() - 0.5).slice(0, 4);
+    const letterSet = [firstLetter, ...shuffled].sort(() => Math.random() - 0.5);
+    setAvailableLetters(letterSet);
+    
+    const message = `Let's spell ${word.split('').join(', ')}. Find the letter ${firstLetter}. ${firstLetter} as in ${getPhonicsWord(firstLetter)}`;
+    SpeechUtils.speak(message, { lang: 'en-IN', rate: 0.85 });
+  };
+  
+  const getPhonicsWord = (letter: string): string => {
+    const phonicsMap: {[key: string]: string} = {
+      'A': 'Apple', 'B': 'Ball', 'C': 'Cat', 'D': 'Dog', 'E': 'Elephant',
+      'F': 'Fish', 'G': 'Goat', 'H': 'House', 'I': 'Ice cream', 'J': 'Jump',
+      'K': 'Kite', 'L': 'Lion', 'M': 'Mango', 'N': 'Nest', 'O': 'Orange',
+      'P': 'Parrot', 'Q': 'Queen', 'R': 'Rabbit', 'S': 'Sun', 'T': 'Tiger',
+      'U': 'Umbrella', 'V': 'Van', 'W': 'Water', 'X': 'Xylophone', 'Y': 'Yellow', 'Z': 'Zebra'
+    };
+    return phonicsMap[letter] || letter;
   };
 
   const handleLetterClick = (letter: string) => {
     if (!gameStarted) return;
 
-    const nextPosition = collectedLetters.length;
-    const neededLetter = targetWord[nextPosition];
+    const currentTargetLetter = targetWord[currentLetterIndex];
 
-    if (letter === neededLetter) {
+    if (letter === currentTargetLetter) {
+      // Correct letter
       setCollectedLetters(prev => [...prev, letter]);
-      setScore(prev => prev + 10);
+      setCurrentLetterIndex(prev => prev + 1);
+      setScore(prev => prev + 100);
       triggerConfetti('success');
-      SpeechUtils.speak(`${letter} collected! Plus 10 points!`);
+      
+      const foundMessage = `Correct! ${letter} as in ${getPhonicsWord(letter)}! Plus 100 points!`;
+      SpeechUtils.speak(foundMessage, { lang: 'en-IN', rate: 0.85 });
 
-      if (collectedLetters.length + 1 === targetWord.length) {
-        setTimeout(() => completeWord(), 1000);
+      if (currentLetterIndex + 1 === targetWord.length) {
+        // Word complete
+        setTimeout(() => completeWord(), 1500);
+      } else {
+        // Move to next letter
+        const nextLetter = targetWord[currentLetterIndex + 1];
+        setTimeout(() => {
+          // Generate new set of 5 letters including the next target letter
+          const allLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+          const otherLetters = allLetters.filter(l => l !== nextLetter);
+          const shuffled = otherLetters.sort(() => Math.random() - 0.5).slice(0, 4);
+          const letterSet = [nextLetter, ...shuffled].sort(() => Math.random() - 0.5);
+          setAvailableLetters(letterSet);
+          
+          const nextMessage = `Great! Now find ${nextLetter}. ${nextLetter} as in ${getPhonicsWord(nextLetter)}`;
+          SpeechUtils.speak(nextMessage, { lang: 'en-IN', rate: 0.85 });
+        }, 1500);
       }
     } else {
-      setScore(prev => Math.max(0, prev - 5));
-      SpeechUtils.speak(`Wrong letter. You need ${neededLetter}. Minus 5 points.`);
+      // Wrong letter
+      setScore(prev => Math.max(0, prev - 20));
+      const errorMessage = `That is ${letter}. We need ${currentTargetLetter}. ${currentTargetLetter} as in ${getPhonicsWord(currentTargetLetter)}. Minus 20 points.`;
+      SpeechUtils.speak(errorMessage, { lang: 'en-IN', rate: 0.85 });
     }
   };
 
   const completeWord = () => {
     triggerConfetti('celebration');
-    SpeechUtils.speak(`Amazing! You completed the word ${targetWord}! Bonus 50 points!`);
-    setScore(prev => prev + 50);
+    const completionMsg = `Amazing! You completed the word ${targetWord.split('').join(', ')}! Bonus 200 points!`;
+    SpeechUtils.speak(completionMsg, { lang: 'en-IN', rate: 0.85 });
+    setScore(prev => prev + 200);
 
     setTimeout(() => {
       const word = words[Math.floor(Math.random() * words.length)];
       setTargetWord(word);
       setCollectedLetters([]);
-      SpeechUtils.speak(`New word! Find ${word.split('').join(', ')}`);
-    }, 2000);
+      setCurrentLetterIndex(0);
+      
+      // Generate new 5 letters for the new word
+      const firstLetter = word[0];
+      const allLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+      const otherLetters = allLetters.filter(l => l !== firstLetter);
+      const shuffled = otherLetters.sort(() => Math.random() - 0.5).slice(0, 4);
+      const letterSet = [firstLetter, ...shuffled].sort(() => Math.random() - 0.5);
+      setAvailableLetters(letterSet);
+      
+      const newWordMsg = `New word! Let's spell ${word.split('').join(', ')}. Find ${firstLetter}. ${firstLetter} as in ${getPhonicsWord(firstLetter)}`;
+      SpeechUtils.speak(newWordMsg, { lang: 'en-IN', rate: 0.85 });
+    }, 3000);
   };
 
   const endGame = () => {
     setGameStarted(false);
     triggerConfetti('achievement');
-    SpeechUtils.speak(`Game over! Final score: ${score} points!`);
+    const endMsg = `Game over! Final score: ${score} points! Well done!`;
+    SpeechUtils.speak(endMsg, { lang: 'en-IN', rate: 0.85 });
     onComplete(score);
   };
 
@@ -119,7 +177,9 @@ const AFrameLetterHunt: React.FC<AFrameLetterHuntProps> = ({ onComplete, onBack 
     setGameStarted(false);
     setScore(0);
     setCollectedLetters([]);
-    setTimeLeft(60);
+    setCurrentLetterIndex(0);
+    setTimeLeft(120);
+    setAvailableLetters([]);
   };
 
   if (!aframeLoaded) {
@@ -195,12 +255,14 @@ const AFrameLetterHunt: React.FC<AFrameLetterHuntProps> = ({ onComplete, onBack 
                     <span
                       key={i}
                       className={`inline-block min-w-[2rem] ${
-                        collectedLetters[i] === letter
+                        i < collectedLetters.length
                           ? 'text-success'
+                          : i === collectedLetters.length
+                          ? 'text-warning animate-pulse'
                           : 'text-muted-foreground'
                       }`}
                     >
-                      {collectedLetters[i] || '_'}
+                      {i < collectedLetters.length ? letter : '_'}
                     </span>
                   ))}
                 </div>
@@ -263,34 +325,48 @@ const AFrameLetterHunt: React.FC<AFrameLetterHuntProps> = ({ onComplete, onBack 
           color="#7BC8A4"
         ></a-plane>
 
-        {/* 3D Letters */}
-        {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'T'].map((letter, index) => {
-          const angle = (index / 9) * Math.PI * 2;
-          const radius = 5;
+        {/* 3D Letters - Only show 5 at a time */}
+        {availableLetters.map((letter, index) => {
+          const angle = (index / 5) * Math.PI * 2;
+          const radius = 4;
           const x = Math.cos(angle) * radius;
           const z = Math.sin(angle) * radius;
 
-          const colors = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#A8E6CF', '#FF8B94', '#C7CEEA', '#FFDAC1', '#B5EAD7', '#C7CEEA'];
+          const colors = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#A8E6CF', '#FF8B94'];
+          const currentTarget = targetWord[currentLetterIndex];
+          const isTarget = letter === currentTarget;
 
           return (
             <a-entity
-              key={letter}
+              key={`${letter}-${index}`}
               position={`${x} 1.5 ${z}`}
               data-letter={letter}
               class="clickable-letter"
             >
               <a-box
-                color={colors[index]}
-                width="1"
-                height="1"
-                depth="0.2"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 5000; easing: linear"
-              ></a-box>
+                color={isTarget ? '#FFD700' : colors[index % colors.length]}
+                width="1.2"
+                height="1.2"
+                depth="0.3"
+                animation={`property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear${isTarget ? '; dir: alternate' : ''}`}
+                opacity={isTarget ? '1' : '0.9'}
+              >
+                {isTarget && (
+                  <a-animation
+                    attribute="scale"
+                    from="1 1 1"
+                    to="1.2 1.2 1.2"
+                    direction="alternate"
+                    dur="1000"
+                    repeat="indefinite"
+                  ></a-animation>
+                )}
+              </a-box>
               <a-text
                 value={letter}
                 align="center"
-                position="0 0 0.11"
-                scale="2 2 2"
+                position="0 0 0.16"
+                scale="3 3 3"
                 color="#000000"
               ></a-text>
             </a-entity>
@@ -298,17 +374,25 @@ const AFrameLetterHunt: React.FC<AFrameLetterHuntProps> = ({ onComplete, onBack 
         })}
       </a-scene>
 
-      {/* Bottom controls */}
-      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex gap-2 flex-wrap justify-center max-w-md">
-        {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'T'].map(letter => (
-          <Button
-            key={letter}
-            onClick={() => handleLetterClick(letter)}
-            className="cosmic-button w-14 h-14 text-xl font-bold"
-          >
-            {letter}
-          </Button>
-        ))}
+      {/* Bottom controls - Only show available 5 letters */}
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex gap-3 flex-wrap justify-center max-w-md">
+        {availableLetters.map(letter => {
+          const currentTarget = targetWord[currentLetterIndex];
+          const isTarget = letter === currentTarget;
+          return (
+            <Button
+              key={letter}
+              onClick={() => handleLetterClick(letter)}
+              className={`w-16 h-16 text-2xl font-bold transition-all ${
+                isTarget 
+                  ? 'cosmic-button animate-pulse ring-4 ring-warning shadow-lg shadow-warning/50' 
+                  : 'bg-primary hover:bg-primary/90'
+              }`}
+            >
+              {letter}
+            </Button>
+          );
+        })}
       </div>
     </div>
   );
