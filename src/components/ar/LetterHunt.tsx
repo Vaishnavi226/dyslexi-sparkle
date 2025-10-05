@@ -151,6 +151,19 @@ const LetterHunt: React.FC<LetterHuntProps> = ({ onComplete, onBack }) => {
   const [liveMessage, setLiveMessage] = useState('');
   const [audioTimeouts, setAudioTimeouts] = useState<NodeJS.Timeout[]>([]);
   
+  // Dynamic word-based gameplay
+  const [targetWord, setTargetWord] = useState('CAT');
+  const [wordLetters, setWordLetters] = useState<string[]>([]);
+  const [currentLetterIndex, setCurrentLetterIndex] = useState(0);
+  
+  const wordBank = [
+    'CAT', 'DOG', 'BAT', 'HAT', 'RAT', 'MAT',
+    'BIG', 'DIG', 'FIG', 'JIG', 'PIG', 'WIG',
+    'BED', 'FED', 'LED', 'RED', 'TED', 'WED',
+    'CUP', 'PUP', 'SUP',
+    'BAG', 'GAG', 'JAG', 'LAG', 'NAG', 'RAG', 'TAG', 'WAG'
+  ];
+  
   const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
   
   // Audio cleanup function
@@ -178,14 +191,14 @@ const LetterHunt: React.FC<LetterHuntProps> = ({ onComplete, onBack }) => {
     }
   }, [gameState, timeLeft]);
 
-  // Auto-announce target letter
+  // Auto-announce target letter with Indian English accent
   useEffect(() => {
     if (gameState === 'playing' && currentTarget) {
       const message = `Find the letter ${currentTarget}. ${currentTarget} as in ${getPhonicsWord(currentTarget)}`;
       setLiveMessage(message);
       
       const timeout = setTimeout(() => {
-        SpeechUtils.speak(message);
+        SpeechUtils.speak(message, { lang: 'en-IN', rate: 0.85 });
         trackEvent('letter_target_announced', { letter: currentTarget });
       }, 500);
       
@@ -238,9 +251,9 @@ const LetterHunt: React.FC<LetterHuntProps> = ({ onComplete, onBack }) => {
       return;
     }
     
-    // Speak the letter
+    // Speak the letter with Indian accent
     const letterMessage = `${letter}. ${letter} as in ${getPhonicsWord(letter)}`;
-    SpeechUtils.speak(letterMessage);
+    SpeechUtils.speak(letterMessage, { lang: 'en-IN', rate: 0.85 });
 
     if (letter === currentTarget) {
       // Correct letter found
@@ -249,55 +262,77 @@ const LetterHunt: React.FC<LetterHuntProps> = ({ onComplete, onBack }) => {
       setScore(prev => prev + 100 + (level * 10));
       setLetterStates(prev => ({ ...prev, [letter]: 'found' }));
       
-      const foundMessage = `Letter ${letter} found!`;
+      // Update word progress
+      const newWordLetters = [...wordLetters, letter];
+      setWordLetters(newWordLetters);
+      setCurrentLetterIndex(prev => prev + 1);
+      
+      const foundMessage = `Correct! Letter ${letter} found!`;
       setLiveMessage(foundMessage);
       
       triggerConfetti('success');
-      trackEvent('letter_found', { letter, score: score + 100 + (level * 10) });
+      trackEvent('letter_found', { letter, score: score + 100 + (level * 10), word: targetWord });
       
-      // Move to next target
-      const nextTarget = getNextTarget();
-      if (nextTarget) {
+      // Check if word is complete
+      if (newWordLetters.length === targetWord.length) {
         const timeout = setTimeout(() => {
-          setCurrentTarget(nextTarget);
+          const wordCompleteMsg = `Excellent! You completed the word ${targetWord.split('').join(' ')}! Let's try another word!`;
+          setLiveMessage(wordCompleteMsg);
+          SpeechUtils.speak(wordCompleteMsg, { lang: 'en-IN', rate: 0.85 });
+          triggerConfetti('celebration');
+          
+          // Start new word after delay
+          setTimeout(() => {
+            const newWord = wordBank[Math.floor(Math.random() * wordBank.length)];
+            setTargetWord(newWord);
+            setWordLetters([]);
+            setCurrentLetterIndex(0);
+            const firstLetter = newWord[0];
+            setCurrentTarget(firstLetter);
+            setLetterStates(prev => {
+              const newStates = { ...prev };
+              letters.forEach(l => {
+                if (!foundLetters.has(l) && l !== firstLetter) {
+                  newStates[l] = 'normal';
+                }
+              });
+              newStates[firstLetter] = 'target';
+              return newStates;
+            });
+            
+            const newWordMsg = `New word! Find the letters for ${newWord.split('').join(', ')}. First, find ${firstLetter}. ${firstLetter} as in ${getPhonicsWord(firstLetter)}`;
+            setLiveMessage(newWordMsg);
+            SpeechUtils.speak(newWordMsg, { lang: 'en-IN', rate: 0.85 });
+          }, 2500);
+        }, 1000);
+        setAudioTimeouts(prev => [...prev, timeout]);
+      } else {
+        // Move to next letter in the word
+        const nextLetter = targetWord[newWordLetters.length];
+        const timeout = setTimeout(() => {
+          setCurrentTarget(nextLetter);
           setLetterStates(prev => ({ 
             ...prev, 
             [currentTarget]: 'found',
-            [nextTarget]: 'target'
+            [nextLetter]: 'target'
           }));
-          const nextMessage = `Great job! Now find the letter ${nextTarget}`;
+          const nextMessage = `Great! Now find the letter ${nextLetter}. ${nextLetter} as in ${getPhonicsWord(nextLetter)}`;
           setLiveMessage(nextMessage);
-          SpeechUtils.speak(nextMessage);
-          trackEvent('letter_target_announced', { letter: nextTarget });
-        }, 1200);
-        setAudioTimeouts(prev => [...prev, timeout]);
-      } else {
-        // All letters found - level complete
-        const timeout = setTimeout(() => {
-          setGameState('complete');
-          const stars = calculateStars();
-          const completionMessage = `Letter ${letter} found! Level complete. Great job! You found all 12 letters and earned ${stars} stars!`;
-          setLiveMessage(completionMessage);
-          SpeechUtils.speak(completionMessage);
-          trackEvent('level_complete', { 
-            score, 
-            stars, 
-            accuracy, 
-            time: 60 - timeLeft,
-            lettersFound: foundLetters.size + 1
-          });
-        }, 1200);
+          SpeechUtils.speak(nextMessage, { lang: 'en-IN', rate: 0.85 });
+          trackEvent('letter_target_announced', { letter: nextLetter, word: targetWord });
+        }, 1500);
         setAudioTimeouts(prev => [...prev, timeout]);
       }
     } else {
       // Wrong letter
       setLetterStates(prev => ({ ...prev, [letter]: 'incorrect' }));
-      const errorMessage = `Not that one — try again. Look for the letter ${currentTarget}`;
+      const errorMessage = `That is ${letter}. We need ${currentTarget}. ${currentTarget} as in ${getPhonicsWord(currentTarget)}. Try again!`;
       setLiveMessage(errorMessage);
-      SpeechUtils.speak(errorMessage);
+      SpeechUtils.speak(errorMessage, { lang: 'en-IN', rate: 0.85 });
       trackEvent('letter_incorrect_tap', { 
         tappedLetter: letter, 
-        targetLetter: currentTarget 
+        targetLetter: currentTarget,
+        word: targetWord
       });
     }
 
@@ -326,21 +361,28 @@ const LetterHunt: React.FC<LetterHuntProps> = ({ onComplete, onBack }) => {
     setScore(0);
     setFoundLetters(new Set());
     setLevel(1);
-    setCurrentTarget('A');
     setAccuracy(100);
     setAttempts(0);
     setCorrectAttempts(0);
     
+    // Pick a random word to start
+    const firstWord = wordBank[Math.floor(Math.random() * wordBank.length)];
+    setTargetWord(firstWord);
+    setWordLetters([]);
+    setCurrentLetterIndex(0);
+    const firstLetter = firstWord[0];
+    setCurrentTarget(firstLetter);
+    
     // Initialize letter states
     const initialStates: {[key: string]: LetterState} = {};
     letters.forEach(letter => {
-      initialStates[letter] = letter === 'A' ? 'target' : 'normal';
+      initialStates[letter] = letter === firstLetter ? 'target' : 'normal';
     });
     setLetterStates(initialStates);
     
-    const startMessage = 'Letter hunt started! Find the letter A. A as in Apple!';
+    const startMessage = `Welcome to Letter Hunt! Let's spell the word ${firstWord.split('').join(', ')}. First, find the letter ${firstLetter}. ${firstLetter} as in ${getPhonicsWord(firstLetter)}!`;
     setLiveMessage(startMessage);
-    SpeechUtils.speak(startMessage);
+    SpeechUtils.speak(startMessage, { lang: 'en-IN', rate: 0.85 });
   };
 
   const resetGame = () => {
@@ -350,7 +392,10 @@ const LetterHunt: React.FC<LetterHuntProps> = ({ onComplete, onBack }) => {
     setScore(0);
     setFoundLetters(new Set());
     setLevel(1);
-    setCurrentTarget('A');
+    setTargetWord('CAT');
+    setWordLetters([]);
+    setCurrentLetterIndex(0);
+    setCurrentTarget('C');
     setAccuracy(100);
     setAttempts(0);
     setCorrectAttempts(0);
@@ -360,10 +405,13 @@ const LetterHunt: React.FC<LetterHuntProps> = ({ onComplete, onBack }) => {
 
   const repeatTarget = () => {
     stopAllAudio();
-    const message = `Find the letter ${currentTarget}. ${currentTarget} as in ${getPhonicsWord(currentTarget)}`;
+    const wordProgress = wordLetters.length > 0 
+      ? `You have found ${wordLetters.join(', ')}. ` 
+      : '';
+    const message = `${wordProgress}We are spelling ${targetWord.split('').join(', ')}. Find the letter ${currentTarget}. ${currentTarget} as in ${getPhonicsWord(currentTarget)}`;
     setLiveMessage(message);
-    SpeechUtils.speak(message);
-    trackEvent('letter_target_announced', { letter: currentTarget, repeated: true });
+    SpeechUtils.speak(message, { lang: 'en-IN', rate: 0.85 });
+    trackEvent('letter_target_announced', { letter: currentTarget, repeated: true, word: targetWord });
   };
 
   const handleBackToMenu = () => {
@@ -550,6 +598,34 @@ const LetterHunt: React.FC<LetterHuntProps> = ({ onComplete, onBack }) => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Target Word Display */}
+      <Alert className="border-primary bg-primary/10">
+        <Sparkles className="w-4 h-4" />
+        <AlertDescription className="text-lg">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="font-bold">Spelling:</span>
+              <div className="flex gap-2 mt-2">
+                {targetWord.split('').map((letter, idx) => (
+                  <div
+                    key={idx}
+                    className={`w-12 h-12 flex items-center justify-center rounded-lg border-2 font-dyslexic text-xl font-bold transition-all ${
+                      idx < wordLetters.length
+                        ? 'bg-success border-success text-white'
+                        : idx === wordLetters.length
+                        ? 'bg-warning/20 border-warning animate-pulse'
+                        : 'bg-muted border-muted-foreground/20'
+                    }`}
+                  >
+                    {idx < wordLetters.length ? letter : '_'}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </AlertDescription>
+      </Alert>
 
       {/* Current Target */}
       <Alert className="border-warning bg-warning/10">

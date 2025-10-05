@@ -7,20 +7,44 @@ export class SpeechUtils {
     pitch?: number;
     volume?: number;
     voice?: string;
+    lang?: string;
     onEnd?: () => void;
     onStart?: () => void;
   } = {}) {
     if (!this.synthesis) return;
 
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = options.rate || 0.8;
-    utterance.pitch = options.pitch || 1.1;
+    utterance.rate = options.rate || 0.85;
+    utterance.pitch = options.pitch || 1.0;
     utterance.volume = options.volume || 1;
+    utterance.lang = options.lang || 'en-IN'; // Default to Indian English
+    
+    // Try to find Indian English voice
+    const voices = this.synthesis.getVoices();
+    let selectedVoice = null;
     
     if (options.voice) {
-      const voices = this.synthesis.getVoices();
-      const selectedVoice = voices.find(voice => voice.name.includes(options.voice!));
-      if (selectedVoice) utterance.voice = selectedVoice;
+      selectedVoice = voices.find(voice => voice.name.includes(options.voice!));
+    } else {
+      // Prioritize Indian English voices
+      selectedVoice = voices.find(voice => 
+        voice.lang === 'en-IN' || 
+        voice.name.toLowerCase().includes('rishi') ||
+        voice.name.toLowerCase().includes('indian')
+      );
+      
+      // Fallback to any English voice if Indian not available
+      if (!selectedVoice) {
+        selectedVoice = voices.find(voice => 
+          voice.lang.startsWith('en-') && 
+          (voice.name.toLowerCase().includes('female') || voice.name.toLowerCase().includes('male'))
+        );
+      }
+    }
+    
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+      console.log('Using voice:', selectedVoice.name, selectedVoice.lang);
     }
     
     if (options.onStart) utterance.onstart = options.onStart;
