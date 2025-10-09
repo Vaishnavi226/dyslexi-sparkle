@@ -12,7 +12,7 @@ const moduleIcons = {
   dyslexiaTest: Brain,
   spellingWorld: Globe,
   flashCards: BookOpen,
-  arPlayground: Box,
+  vrPlayground: Box,
   voicePractice: Mic,
   storyMode: Book
 };
@@ -21,7 +21,7 @@ const moduleNames = {
   dyslexiaTest: 'Dyslexia Test',
   spellingWorld: 'Spelling World',
   flashCards: 'Flash Cards',
-  arPlayground: 'AR Playground',
+  vrPlayground: 'VR Playground',
   voicePractice: 'Voice Practice',
   storyMode: 'Story Mode'
 };
@@ -30,7 +30,7 @@ const moduleColors = {
   dyslexiaTest: '#FF6B6B',
   spellingWorld: '#4ECDC4',
   flashCards: '#45B7D1',
-  arPlayground: '#96CEB4',
+  vrPlayground: '#96CEB4',
   voicePractice: '#FFEAA7',
   storyMode: '#DDA0DD'
 };

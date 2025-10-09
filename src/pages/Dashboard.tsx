@@ -35,10 +35,10 @@ const dashboardItems = [
     path: '/flash-cards'
   },
   {
-    title: 'AR Playground',
+    title: 'VR Playground',
     icon: Box,
     gradient: 'bg-gradient-to-br from-green-400 via-green-500 to-green-600',
-    path: '/ar-playground'
+    path: '/vr-playground'
   },
   {
     title: 'Voice Practice',

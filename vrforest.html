@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VR Learning World - Alphabet Forest</title>
+    <!-- A-Frame VR Framework -->
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* General styling for the overlay UI */
+        body {
+            font-family: 'Lexend', sans-serif; /* A font designed for readability */
+            margin: 0;
+            overflow: hidden; /* Hide scrollbars */
+        }
+
+        /* Loading Screen */
+        #loading-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: #1a202c;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 0.5s ease-out;
+            opacity: 1;
+        }
+        #loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        #loading-overlay h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        #loading-overlay p {
+            font-size: 1rem;
+        }
+        
+        /* Progress Bar */
+        #progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background-color: rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            display: none;
+        }
+        #progress-bar {
+            width: 0%;
+            height: 100%;
+            background-color: #4ade80;
+            transition: width 0.5s ease-out;
+            border-radius: 0 2px 2px 0;
+        }
+        #progress-text {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 14px;
+            line-height: 20px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+        }
+
+
+        /* Styling for the popup panels */
+        .panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 400px;
+            background-color: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border: 3px solid #82d9ff;
+            z-index: 1000;
+        }
+
+        .panel.visible {
+            display: flex;
+        }
+        
+        #level-select-panel h2 {
+            font-size: 1.8rem;
+            color: #1e3a8a;
+            margin-top: 0;
+        }
+
+        #word-image {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border: 2px solid #eee;
+        }
+
+        #word-text {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin: 0;
+        }
+        
+        #syllable-text {
+            font-size: 1.5rem;
+            color: #3b82f6;
+            margin: 5px 0 20px 0;
+        }
+
+        .action-button, .level-button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            margin: 8px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: 80%;
+            font-family: 'Lexend', sans-serif;
+        }
+
+        .action-button:hover, .level-button:hover {
+            background-color: #2563eb;
+            transform: scale(1.05);
+        }
+        
+        #close-button {
+             background-color: #ef4444;
+        }
+
+        #close-button:hover {
+            background-color: #dc2626;
+        }
+        
+        .level-button.level-2 { background-color: #8b5cf6; }
+        .level-button.level-2:hover { background-color: #7c3aed; }
+        .level-button.level-3 { background-color: #10b981; }
+        .level-button.level-3:hover { background-color: #059669; }
+        .level-button.level-4 { background-color: #f97316; }
+        .level-button.level-4:hover { background-color: #ea580c; }
+
+
+        /* Instructions overlay */
+        #instructions, #back-button-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            z-index: 999;
+            text-align: center;
+            display: none; /* Hidden until a level is chosen */
+        }
+        #back-button-container {
+            bottom: 70px; /* Position it above instructions */
+        }
+        #back-button {
+            background: #f59e0b;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Lexend', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-overlay">
+        <h1>Loading Learning World...</h1>
+        <p>Please wait a moment.</p>
+    </div>
+
+    <!-- The A-Frame Scene where the VR world lives -->
+    <a-scene background="color: #87CEEB" shadow="type: pcfsoft">
+        <!-- Assets -->
+        <a-assets>
+            <!-- A simple tree model made with primitives -->
+            <a-mixin id="tree"
+                geometry="primitive: cone; radius-bottom: 1; radius-top: 0; height: 3.5; segments-radial: 5"
+                material="color: #2E8B57; roughness: 1"></a-mixin>
+            <a-mixin id="trunk"
+                geometry="primitive: cylinder; radius: 0.2; height: 1.5"
+                material="color: #8B4513"></a-mixin>
+        </a-assets>
+
+        <!-- Environment -->
+        <a-plane position="0 0 -4" rotation="-90 0 0" width="100" height="100" color="#7CFC00" shadow></a-plane>
+        <a-sky color="#87CEEB"></a-sky>
+        
+        <!-- Animated Clouds -->
+        <a-sphere position="-30 20 -40" radius="5" color="white" material="opacity: 0.7; flatShading: true">
+            <a-animation attribute="position" to="30 20 -40" dur="90000" direction="alternate" repeat="indefinite"></a-animation>
+        </a-sphere>
+         <a-sphere position="25 25 -50" radius="8" color="white" material="opacity: 0.7; flatShading: true">
+            <a-animation attribute="position" to="-25 25 -50" dur="120000" direction="alternate" repeat="indefinite"></a-animation>
+        </a-sphere>
+
+
+        <!-- Lighting -->
+        <a-entity light="type: ambient; color: #CCC; intensity: 0.6"></a-entity>
+        <a-entity light="type: directional; color: #FFF; intensity: 0.8; castShadow: true" position="-2 5 3"></a-entity>
+
+        <!-- Player Camera and Cursor -->
+        <a-camera position="0 1.6 5">
+            <a-cursor color="#FFD700" fuse="false"></a-cursor>
+        </a-camera>
+
+        <!-- Welcome Sign -->
+        <a-entity id="welcome-sign" position="0 2 -2">
+             <a-text value="Welcome to the Learning World!" align="center" color="#1e3a8a" width="6"></a-text>
+             <a-text value="Please select a level to begin." align="center" color="#3b82f6" width="4" position="0 -0.5 0"></a-text>
+        </a-entity>
+
+        <!-- Portals to other worlds -->
+        <a-cylinder color="#a855f7" radius="2" height="0.2" position="-30 0.1 -30" opacity="0.5">
+            <a-text value="Sound City" align="center" color="white" width="8" position="0 1.5 0"></a-text>
+            <a-animation attribute="rotation" to="0 360 0" dur="10000" easing="linear" repeat="indefinite"></a-animation>
+        </a-cylinder>
+        <a-cylinder color="#10b981" radius="2" height="0.2" position="30 0.1 -30" opacity="0.5">
+            <a-text value="Word Garden" align="center" color="white" width="8" position="0 1.5 0"></a-text>
+            <a-animation attribute="rotation" to="0 360 0" dur="10000" easing="linear" repeat="indefinite"></a-animation>
+        </a-cylinder>
+
+        <!-- Containers for dynamic elements -->
+        <a-entity id="forest-container"></a-entity>
+        <a-entity id="path-container"></a-entity>
+
+    </a-scene>
+
+    <!-- 2D HTML Overlay UI -->
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+        <div id="progress-text">Progress: 0%</div>
+    </div>
+
+    <div id="level-select-panel" class="panel visible">
+        <h2>Choose a Level</h2>
+        <button id="level1-button" class="level-button">Level 1: Beginner ABCs</button>
+        <button id="level2-button" class="level-button level-2">Level 2: Word Blends</button>
+        <button id="level3-button" class="level-button level-3">Level 3: Sight Words</button>
+        <button id="level4-button" class="level-button level-4">Level 4: Learning Colors</button>
+    </div>
+
+    <div id="back-button-container">
+        <button id="back-button">Back to Levels</button>
+    </div>
+    
+    <div id="instructions">
+        Click on a letter or word to learn!
+        <br>
+        Use mouse to look and WASD keys to move.
+    </div>
+
+    <div id="info-panel" class="panel">
+        <img id="word-image" src="https://placehold.co/150x150/FF6347/FFFFFF?text=A" alt="Word illustration">
+        <h1 id="word-text">Apple</h1>
+        <p id="syllable-text">Ap-ple</p>
+        <div>
+            <button id="speak-button" class="action-button">Listen Again</button>
+            <button id="close-button" class="action-button">Close</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sceneEl = document.querySelector('a-scene');
+            const loadingOverlay = document.getElementById('loading-overlay');
+            const infoPanel = document.getElementById('info-panel');
+            const levelSelectPanel = document.getElementById('level-select-panel');
+            const instructions = document.getElementById('instructions');
+            const backButtonContainer = document.getElementById('back-button-container');
+            const backButton = document.getElementById('back-button');
+            const welcomeSign = document.getElementById('welcome-sign');
+            const wordImage = document.getElementById('word-image');
+            const wordText = document.getElementById('word-text');
+            const syllableText = document.getElementById('syllable-text');
+            const speakButton = document.getElementById('speak-button');
+            const closeButton = document.getElementById('close-button');
+            const level1Button = document.getElementById('level1-button');
+            const level2Button = document.getElementById('level2-button');
+            const level3Button = document.getElementById('level3-button');
+            const level4Button = document.getElementById('level4-button');
+
+            const progressContainer = document.getElementById('progress-container');
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            
+            let currentWordData = {};
+            let currentSoundText = '';
+            let discoveredWords = new Set();
+            let totalWordsInLevel = 0;
+
+            const hideLoadingOverlay = () => {
+                loadingOverlay.classList.add('hidden');
+                loadingOverlay.setAttribute('aria-hidden', 'true');
+            };
+
+            // Hide the loading screen once the scene is ready, with a safety timeout fallback
+            if (sceneEl) {
+                if (sceneEl.hasLoaded) {
+                    hideLoadingOverlay();
+                } else {
+                    sceneEl.addEventListener('loaded', hideLoadingOverlay, { once: true });
+                    sceneEl.addEventListener('error', hideLoadingOverlay, { once: true });
+                    setTimeout(() => {
+                        if (!sceneEl.hasLoaded) {
+                            console.warn('Scene load timed out, hiding overlay manually.');
+                            hideLoadingOverlay();
+                        }
+                    }, 8000);
+                }
+            }
+
+            const gameData = {
+                level1: {
+                    'a': { word: 'Apple', syllables: 'Ap-ple', soundText: 'Apple. Ap. ple.' },
+                    'b': { word: 'Ball', syllables: 'Ball', soundText: 'Ball.' },
+                    'c': { word: 'Cat', syllables: 'Cat', soundText: 'Cat.' },
+                    'd': { word: 'Dog', syllables: 'Dog', soundText: 'Dog.' },
+                    'e': { word: 'Elephant', syllables: 'El-e-phant', soundText: 'Elephant. El e phant.' },
+                    'f': { word: 'Fish', syllables: 'Fish', soundText: 'Fish.' },
+                    'g': { word: 'Goat', syllables: 'Goat', soundText: 'Goat.' },
+                    'h': { word: 'Hat', syllables: 'Hat', soundText: 'Hat.' },
+                    'i': { word: 'Igloo', syllables: 'Ig-loo', soundText: 'Igloo. Ig loo.' },
+                    'j': { word: 'Jar', syllables: 'Jar', soundText: 'Jar.' },
+                    'k': { word: 'Kite', syllables: 'Kite', soundText: 'Kite.' },
+                    'l': { word: 'Lion', syllables: 'Li-on', soundText: 'Lion. Li on.' },
+                    'm': { word: 'Moon', syllables: 'Moon', soundText: 'Moon.' },
+                    'n': { word: 'Nest', syllables: 'Nest', soundText: 'Nest.' },
+                    'o': { word: 'Orange', syllables: 'Or-ange', soundText: 'Orange. Or ange.' },
+                    'p': { word: 'Pig', syllables: 'Pig', soundText: 'Pig.' },
+                    'q': { word: 'Queen', syllables: 'Queen', soundText: 'Queen.' },
+                    'r': { word: 'Rainbow', syllables: 'Rain-bow', soundText: 'Rainbow. Rain bow.' },
+                    's': { word: 'Sun', syllables: 'Sun', soundText: 'Sun.' },
+                    't': { word: 'Tiger', syllables: 'Ti-ger', soundText: 'Tiger. Ti ger.' },
+                    'u': { word: 'Umbrella', syllables: 'Um-brel-la', soundText: 'Umbrella. Um brel la.' },
+                    'v': { word: 'Violin', syllables: 'Vi-o-lin', soundText: 'Violin. Vi o lin.' },
+                    'w': { word: 'Watch', syllables: 'Watch', soundText: 'Watch.' },
+                    'x': { word: 'X-ray', syllables: 'X-ray', soundText: 'X-ray.' },
+                    'y': { word: 'Yo-yo', syllables: 'Yo-yo', soundText: 'Yo-yo. Yo yo.' },
+                    'z': { word: 'Zebra', syllables: 'Ze-bra', soundText: 'Zebra. Ze bra.' }
+                },
+                level2: {
+                    'sh': { word: 'Ship', syllables: 'Ship', soundText: 'Ship.' },
+                    'ch': { word: 'Chair', syllables: 'Chair', soundText: 'Chair.' },
+                    'th': { word: 'Thumb', syllables: 'Thumb', soundText: 'Thumb.' },
+                    'wh': { word: 'Whale', syllables: 'Whale', soundText: 'Whale.' },
+                    'ph': { word: 'Phone', syllables: 'Phone', soundText: 'Phone.' },
+                    'bl': { word: 'Block', syllables: 'Block', soundText: 'Block.' },
+                    'fr': { word: 'Frog', syllables: 'Frog', soundText: 'Frog.' },
+                    'gr': { word: 'Grape', syllables: 'Grape', soundText: 'Grape.' }
+                },
+                 level3: {
+                    'the': { word: 'The', syllables: 'The', soundText: 'The.' },
+                    'and': { word: 'And', syllables: 'And', soundText: 'And.' },
+                    'was': { word: 'Was', syllables: 'Was', soundText: 'Was.' },
+                    'you': { word: 'You', syllables: 'You', soundText: 'You.' },
+                    'for': { word: 'For', syllables: 'For', soundText: 'For.' },
+                    'said': { word: 'Said', syllables: 'Said', soundText: 'Said.' },
+                    'his': { word: 'His', syllables: 'His', soundText: 'His.' },
+                    'they': { word: 'They', syllables: 'They', soundText: 'They.' }
+                },
+                level4: {
+                    'Red': { word: 'Red', syllables: 'Red', soundText: 'Red.' },
+                    'Blue': { word: 'Blue', syllables: 'Blue', soundText: 'Blue.' },
+                    'Green': { word: 'Green', syllables: 'Green', soundText: 'Green.' },
+                    'Yellow': { word: 'Yel-low', soundText: 'Yellow.' },
+                    'Orange': { word: 'Or-ange', soundText: 'Orange.' },
+                    'Purple': { word: 'Pur-ple', soundText: 'Purple.' },
+                    'Black': { word: 'Black', soundText: 'Black.' },
+                    'White': { word: 'White', soundText: 'White.' },
+                }
+            };
+            
+            const speak = (text) => {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+            };
+
+            const updateProgress = () => {
+                const percentage = Math.round((discoveredWords.size / totalWordsInLevel) * 100);
+                progressBar.style.width = `${percentage}%`;
+                progressText.textContent = `Progress: ${percentage}%`;
+                if (percentage === 100) {
+                    progressText.textContent = `Level Complete! 🎉`;
+                }
+            };
+
+            const hslStringToHex = (colorValue) => {
+                if (typeof colorValue !== 'string' || !colorValue.trim()) return '808080'; // Return grey for safety
+                const value = colorValue.trim();
+                if (value.startsWith('#')) {
+                    return value.replace('#', '').toUpperCase();
+                }
+                const matches = value.match(/\d+(?:\.\d+)?/g);
+                if (!matches || matches.length < 3) return '808080';
+                const [h, s, l] = matches.map(Number);
+                const sDecimal = Math.min(Math.max(s, 0), 100) / 100;
+                const lDecimal = Math.min(Math.max(l, 0), 100) / 100;
+                const c = (1 - Math.abs(2 * lDecimal - 1)) * sDecimal;
+                const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+                const m = lDecimal - c / 2;
+                let r = 0, g = 0, b = 0;
+
+                if (h >= 0 && h < 60) { [r, g, b] = [c, x, 0]; } 
+                else if (h >= 60 && h < 120) { [r, g, b] = [x, c, 0]; } 
+                else if (h >= 120 && h < 180) { [r, g, b] = [0, c, x]; } 
+                else if (h >= 180 && h < 240) { [r, g, b] = [0, x, c]; } 
+                else if (h >= 240 && h < 300) { [r, g, b] = [x, 0, c]; } 
+                else if (h >= 300 && h < 360) { [r, g, b] = [c, 0, x]; }
+
+                r = Math.round((r + m) * 255);
+                g = Math.round((g + m) * 255);
+                b = Math.round((b + m) * 255);
+
+                const toHex = val => val.toString(16).padStart(2, '0');
+                return `${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase();
+            };
+
+            const generateWorld = (levelData) => {
+                const forestContainer = document.getElementById('forest-container');
+                const pathContainer = document.getElementById('path-container');
+                
+                forestContainer.innerHTML = '';
+                pathContainer.innerHTML = '';
+                currentWordData = levelData;
+
+                const items = Object.keys(levelData);
+                const radius = 18;
+                const numItems = items.length;
+                totalWordsInLevel = numItems;
+
+                for (let i = 0; i < numItems; i++) {
+                    const itemKey = items[i];
+                    const angle = (i / numItems) * 2 * Math.PI;
+                    
+                    const x = radius * Math.sin(angle);
+                    const z = -radius * Math.cos(angle);
+                    const y = 1.25;
+
+                    const treeEntity = document.createElement('a-entity');
+                    treeEntity.setAttribute('position', `${x} ${y} ${z}`);
+                    const trunk = document.createElement('a-entity');
+                    trunk.setAttribute('mixin', 'trunk');
+                    trunk.setAttribute('position', '0 -0.5 0');
+                    const treeTop = document.createElement('a-entity');
+                    treeTop.setAttribute('mixin', 'tree');
+                    treeTop.setAttribute('position', '0 1.25 0');
+                    
+                    const itemSphere = document.createElement('a-sphere');
+                    itemSphere.classList.add('letter-sphere');
+                    itemSphere.setAttribute('id', `item-${itemKey}`);
+                    itemSphere.setAttribute('radius', '0.6'); 
+                    itemSphere.setAttribute('shadow', 'cast: true');
+                    const sphereX = 0.9 * Math.sin(angle * 3);
+                    const sphereY = 1 + (i % 3) * 0.2;
+                    const sphereZ = 0.9 * Math.cos(angle * 3);
+                    itemSphere.setAttribute('position', `${sphereX} ${sphereY} ${sphereZ}`);
+                    const hue = Math.round((i / numItems) * 360);
+                    const color = `hsl(${hue}, 80%, 60%)`;
+                    itemSphere.setAttribute('color', color);
+
+                    const itemText = document.createElement('a-text');
+                    itemText.setAttribute('value', itemKey.toUpperCase());
+                    itemText.setAttribute('align', 'center');
+                    itemText.setAttribute('color', '#FFFFFF');
+                    itemText.setAttribute('width', '5');
+                    itemText.setAttribute('position', '0 0 0.6'); 
+                    
+                    itemSphere.appendChild(itemText);
+                    treeEntity.appendChild(trunk);
+                    treeEntity.appendChild(treeTop);
+                    treeEntity.appendChild(itemSphere);
+                    forestContainer.appendChild(treeEntity);
+
+                    const pathStone = document.createElement('a-cylinder');
+                    pathStone.setAttribute('radius', '0.7');
+                    pathStone.setAttribute('height', '0.1');
+                    pathStone.setAttribute('color', '#A9A9A9');
+                    pathStone.setAttribute('position', `${x*0.9} 0.05 ${z*0.9}`);
+                    pathContainer.appendChild(pathStone);
+                }
+                
+                document.querySelectorAll('.letter-sphere').forEach(sphere => {
+                    sphere.addEventListener('click', () => {
+                        const itemKey = sphere.id.replace(/^item-/, '');
+                        const data = currentWordData[itemKey];
+                        const sphereColor = sphere.getAttribute('color');
+
+                        if (data) {
+                            if(!discoveredWords.has(itemKey)) {
+                                discoveredWords.add(itemKey);
+                                updateProgress();
+                            }
+
+                            const hexColor = hslStringToHex(sphereColor);
+                            wordImage.src = `https://placehold.co/150x150/${hexColor}/FFFFFF?text=${encodeURIComponent(data.word)}`;
+                            wordText.textContent = data.word;
+                            syllableText.textContent = data.syllables || '';
+                            currentSoundText = data.soundText;
+                            infoPanel.classList.add('visible');
+                            speak(currentSoundText);
+                        }
+                    });
+                });
+            };
+            
+            const returnToMenu = () => {
+                document.getElementById('forest-container').innerHTML = '';
+                document.getElementById('path-container').innerHTML = '';
+                levelSelectPanel.classList.add('visible');
+                welcomeSign.setAttribute('visible', 'true');
+                instructions.style.display = 'none';
+                backButtonContainer.style.display = 'none';
+                progressContainer.style.display = 'none';
+                progressBar.style.width = '0%';
+                progressText.textContent = 'Progress: 0%';
+                discoveredWords.clear();
+                totalWordsInLevel = 0;
+                infoPanel.classList.remove('visible');
+                window.speechSynthesis.cancel();
+            };
+
+            const startGame = (level) => {
+                levelSelectPanel.classList.remove('visible');
+                welcomeSign.setAttribute('visible', 'false');
+                instructions.style.display = 'block';
+                backButtonContainer.style.display = 'block';
+                progressContainer.style.display = 'block';
+                
+                // Reset progress
+                discoveredWords.clear();
+                generateWorld(gameData[level]);
+                updateProgress();
+            };
+
+            level1Button.addEventListener('click', () => startGame('level1'));
+            level2Button.addEventListener('click', () => startGame('level2'));
+            level3Button.addEventListener('click', () => startGame('level3'));
+            level4Button.addEventListener('click', () => startGame('level4'));
+            backButton.addEventListener('click', returnToMenu);
+            
+            speakButton.addEventListener('click', () => {
+                if (currentSoundText) speak(currentSoundText);
+            });
+
+            closeButton.addEventListener('click', () => {
+                infoPanel.classList.remove('visible');
+                window.speechSynthesis.cancel();
+            });
+        });
+    </script>
+</body>
+</html>
+

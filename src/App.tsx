@@ -11,7 +11,7 @@ import Login from "./pages/Login";
 import DyslexiaTest from "./pages/DyslexiaTest";
 import SpellingWorld from "./pages/SpellingWorld";
 import FlashCards from "./pages/FlashCards";
-import ARPlayground from "./pages/ARPlayground";
+import VRPlayground from "./pages/VRPlayground";
 import VoicePractice from "./pages/VoicePractice";
 import StoryMode from "./pages/StoryMode";
 import Profile from "./pages/Profile";
@@ -36,7 +36,7 @@ const App = () => (
                 <Route path="/dyslexia-test" element={<DyslexiaTest />} />
                 <Route path="/spelling-world" element={<SpellingWorld />} />
                 <Route path="/flash-cards" element={<FlashCards />} />
-                <Route path="/ar-playground" element={<ARPlayground />} />
+                <Route path="/vr-playground" element={<VRPlayground />} />
                 <Route path="/voice-practice" element={<VoicePractice />} />
                 <Route path="/story-mode" element={<StoryMode />} />
                 <Route path="/profile" element={<Profile />} />

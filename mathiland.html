@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Number Islands VR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <style>
+      :root {
+        color-scheme: dark light;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        color: #fefefe;
+        background: #000;
+        overflow: hidden;
+      }
+      button {
+        font-family: inherit;
+      }
+      #loading-overlay {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 1.25rem;
+        background: radial-gradient(circle at top, rgba(31, 62, 99, 0.92), rgba(8, 15, 26, 0.96));
+        color: #f7f9ff;
+        z-index: 10000;
+        transition: opacity 0.7s ease, visibility 0.7s ease;
+      }
+      #loading-overlay.hidden {
+        opacity: 0;
+        visibility: hidden;
+      }
+      .spinner {
+        width: 64px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        border: 6px solid rgba(255, 255, 255, 0.25);
+        border-top-color: #66e2ff;
+        animation: spin 0.9s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .hud {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        right: 16px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        z-index: 4000;
+        pointer-events: none;
+      }
+      .hud__tile {
+        min-width: 220px;
+        padding: 12px 16px;
+        border-radius: 12px;
+        background: rgba(15, 28, 48, 0.8);
+        backdrop-filter: blur(8px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+        pointer-events: auto;
+      }
+      .hud__tile h1 {
+        margin: 0 0 4px 0;
+        font-size: 1.25rem;
+        letter-spacing: 0.04em;
+      }
+      .hud__tile p {
+        margin: 4px 0;
+        font-size: 0.95rem;
+        line-height: 1.35;
+      }
+      .hud__tile strong {
+        display: block;
+        font-size: 2.4rem;
+        margin-top: 4px;
+        letter-spacing: 0.08em;
+        font-weight: 700;
+      }
+      .hud__tile ul {
+        padding-left: 20px;
+        margin: 6px 0 0 0;
+        font-size: 0.85rem;
+        line-height: 1.4;
+      }
+      .hud__actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 8px;
+      }
+      .hud__actions button {
+        pointer-events: auto;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: none;
+        background: linear-gradient(130deg, #3dd6ff, #1864ff);
+        color: #fff;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.2s ease;
+      }
+      .hud__actions button[disabled] {
+        opacity: 0.45;
+        cursor: not-allowed;
+        filter: grayscale(0.8);
+      }
+      .hud__actions button:not([disabled]):hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 18px rgba(56, 159, 255, 0.35);
+      }
+      .hud__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 12px;
+        flex: 1 1 280px;
+      }
+      .hud__scoreboard {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .hud__scoreboard .score-line {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        justify-content: space-between;
+        font-size: 1rem;
+      }
+      .hud__scoreboard .score-line span.value {
+        font-size: 2rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+      }
+      .hud__linear {
+        position: relative;
+        width: 100%;
+        height: 8px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+      }
+      .hud__linear div {
+        position: absolute;
+        inset: 0;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #7cffd2, #2196f3);
+        transform-origin: left center;
+        transform: scaleX(0.1);
+        transition: transform 0.5s ease;
+      }
+      #quest-progress {
+        font-size: 0.85rem;
+        padding-left: 18px;
+        margin: 8px 0 0 0;
+        max-height: 120px;
+        overflow-y: auto;
+      }
+      #quest-progress li.is-complete {
+        color: #9cfac5;
+        text-shadow: 0 0 6px rgba(156, 250, 197, 0.6);
+      }
+      #toast {
+        position: fixed;
+        left: 50%;
+        bottom: 32px;
+        transform: translate(-50%, 120%);
+        background: rgba(17, 29, 45, 0.92);
+        color: #f1f6ff;
+        padding: 12px 20px;
+        border-radius: 999px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.4);
+        transition: transform 0.35s ease, opacity 0.35s ease;
+        opacity: 0;
+        z-index: 4500;
+      }
+      #toast[data-mood="success"] {
+        background: rgba(41, 123, 73, 0.92);
+      }
+      #toast[data-mood="warning"] {
+        background: rgba(201, 128, 21, 0.95);
+      }
+      #toast[data-mood="error"] {
+        background: rgba(183, 39, 45, 0.95);
+      }
+      #toast.visible {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+      #orientation-modal {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(4, 9, 18, 0.85);
+        z-index: 5000;
+        backdrop-filter: blur(6px);
+        transition: opacity 0.35s ease;
+      }
+      #orientation-modal.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .orientation-card {
+        width: min(420px, 90vw);
+        border-radius: 18px;
+        padding: 24px 28px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        background: radial-gradient(circle at top, rgba(53, 104, 255, 0.35), rgba(23, 43, 88, 0.9));
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+        text-align: left;
+      }
+      .orientation-card h2 {
+        margin: 0;
+        font-size: 1.4rem;
+        letter-spacing: 0.05em;
+      }
+      .orientation-card ul {
+        margin: 0;
+        padding-left: 18px;
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+      .orientation-card button {
+        align-self: flex-end;
+        padding: 10px 18px;
+        border-radius: 999px;
+        border: none;
+        background: linear-gradient(120deg, #64ffda, #33bfff);
+        color: #002035;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .orientation-card button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px rgba(100, 255, 218, 0.4);
+      }
+      @media (max-width: 720px) {
+        .hud {
+          top: 12px;
+          left: 12px;
+          right: 12px;
+          gap: 10px;
+        }
+        .hud__tile {
+          min-width: 180px;
+        }
+        .orientation-card {
+          padding: 20px;
+        }
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const overlay = document.getElementById("loading-overlay");
+        const orientationModal = document.getElementById("orientation-modal");
+        const scene = document.querySelector("a-scene");
+        let overlayDismissed = false;
+        const dismissOverlay = (reason) => {
+          if (overlayDismissed) return;
+          overlayDismissed = true;
+          overlay.classList.add("hidden");
+          setTimeout(() => overlay.remove(), 1000);
+          if (reason === "loaded") {
+            setTimeout(() => {
+              orientationModal.classList.remove("hidden");
+            }, 900);
+          }
+        };
+        const fallbackTimer = setTimeout(() => dismissOverlay("timeout"), 12000);
+        if (scene) {
+          scene.addEventListener("loaded", () => {
+            clearTimeout(fallbackTimer);
+            dismissOverlay("loaded");
+            initializeNumberIslands(scene);
+          });
+          scene.addEventListener("error", () => dismissOverlay("error"));
+        } else {
+          dismissOverlay("no-scene");
+        }
+        document.getElementById("orientation-dismiss").addEventListener("click", () => {
+          orientationModal.classList.add("hidden");
+        });
+      });
+    </script>
+    <script src="aframe.min.js"></script>
+  </head>
+  <body>
+    <div id="loading-overlay">
+      <div class="spinner" role="presentation"></div>
+      <div>
+        <strong>Launching Number Islands</strong>
+        <p style="margin:4px 0 0 0; font-size:0.95rem; opacity:0.75;">Preparing the islands and summoning number sprites.</p>
+      </div>
+    </div>
+
+    <div class="hud" aria-live="polite">
+      <div class="hud__tile">
+        <h1>Number Islands</h1>
+        <p id="quest-name">Loading quest</p>
+        <p id="quest-goal" style="opacity:0.85;">Your goal will appear here.</p>
+        <ul id="quest-rules">
+          <li>Allowed operators: + − × ÷</li>
+        </ul>
+        <ul id="quest-progress"></ul>
+      </div>
+      <div class="hud__grid">
+        <div class="hud__tile hud__scoreboard">
+          <div class="score-line">
+            <span>Current Expression</span>
+            <span class="value" id="expression-display">—</span>
+          </div>
+          <div class="score-line">
+            <span>Target</span>
+            <span class="value" id="target-display">?</span>
+          </div>
+          <div class="score-line">
+            <span>Score</span>
+            <span class="value" id="score-display">0</span>
+          </div>
+          <div class="hud__linear"><div id="progress-meter"></div></div>
+          <div class="hud__actions">
+            <button type="button" id="reset-selection">Reset Selection</button>
+            <button type="button" id="next-quest" disabled>Next Quest</button>
+          </div>
+        </div>
+        <div class="hud__tile">
+          <p style="margin-top:0; font-weight:600; letter-spacing:0.05em; text-transform:uppercase;">Tips</p>
+          <p style="margin-bottom:6px;"> Gaze or mouse over a token, then click/tap to select.</p>
+          <p style="margin-bottom:6px;"> Pick a number, then an operator, then a second number to craft an answer.</p>
+          <p style="margin-bottom:6px;"> Finish quests to brighten the islands and unlock the next challenge.</p>
+          <p style="margin-bottom:0;"> Press <kbd>F</kbd> for fullscreen. WASD or teleport controllers move you around.</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" role="status" aria-live="assertive"></div>
+
+    <div id="orientation-modal" class="hidden" role="dialog" aria-modal="true">
+      <div class="orientation-card">
+        <h2>Welcome to the Archipelago!</h2>
+        <p>Collect glowing number tiles and pair them with math stones to satisfy each island spirit.</p>
+        <ul>
+          <li>Select <strong>Number  Operator  Number</strong> to craft an answer.</li>
+          <li>Look around with your headset or mouse, move using controllers or WASD keys.</li>
+          <li>Complete quests to restore the aurora. Keep an eye on your score!</li>
+        </ul>
+        <button id="orientation-dismiss" type="button">Begin Adventure</button>
+      </div>
+    </div>
+
+    <a-scene
+      background="color: #7ed6ff"
+      renderer="physicallyCorrectLights: true; sortObjects: true"
+      fog="type: exponential; color: #6bc9ff; density: 0.012"
+      shadow="type: pcfsoft"
+      webxr="optionalFeatures: dom-overlay, local-floor; overlayElement: #dom-overlay-root"
+    >
+      <a-assets></a-assets>
+
+      <a-entity light="type: ambient; intensity: 0.45; color: #dff6ff"></a-entity>
+      <a-entity
+        light="type: directional; intensity: 0.9; castShadow: true"
+        position="-4 8 6"
+        animation="property: position; dir: alternate; to: 4 9 4; dur: 12000; easing: easeInOutSine; loop: true"
+      ></a-entity>
+
+      <a-entity id="environment">
+        <a-entity geometry="primitive: sphere; radius: 60" material="color: #68cfff; side: back; shader: standard" position="0 0 0"></a-entity>
+        <a-entity geometry="primitive: plane; width: 120; height: 120" rotation="-90 0 0" position="0 -0.05 0" material="color: #0d92ff; roughness: 0.5; metalness: 0; opacity: 0.95"></a-entity>
+        <a-entity
+          geometry="primitive: torus; radius: 20; radiusTubular: 0.4"
+          rotation="90 0 0"
+          position="0 0 -20"
+          material="color: #9be5ff; opacity: 0.15; transparent: true"
+          animation="property: rotation; to: 90 360 0; loop: true; dur: 38000; easing: linear"
+        ></a-entity>
+        <a-entity
+          id="aurora"
+          geometry="primitive: plane; width: 80; height: 20"
+          material="color: #9effff; opacity: 0.28; shader: standard; side: double; emissive: #8efff0; emissiveIntensity: 0.3"
+          position="0 18 -30"
+          rotation="-5 0 0"
+          animation="property: material.opacity; dir: alternate; to: 0.44; dur: 6000; easing: easeInOutSine; loop: true"
+        ></a-entity>
+        <a-entity id="info-board" position="0 3.8 -10.2" rotation="-4 0 0">
+          <a-plane
+            id="info-board-surface"
+            width="10.8"
+            height="5.6"
+            material="color: #6ec3ff; opacity: 0.9; shader: standard; roughness: 0.32; metalness: 0.04"
+          ></a-plane>
+          <a-entity id="board-title" position="0 1.9 0.02" text="value: Number Islands; align: center; width: 8; wrapCount: 24; color: #062c42; baseline: center"></a-entity>
+          <a-entity id="board-quest-name" position="0 1.25 0.02" text="value: Quest name; align: center; width: 8; wrapCount: 22; color: #ffffff; baseline: center"></a-entity>
+          <a-entity id="board-stats-title" position="0 0.65 0.02" text="value: Stats; align: center; width: 6.5; wrapCount: 20; color: #074062; baseline: center"></a-entity>
+          <a-entity id="board-expression-label" position="-3 0.1 0.02" text="value: Expression; align: left; width: 4.6; wrapCount: 20; color: #062c42; baseline: center"></a-entity>
+          <a-entity id="board-expression-value" position="-3 -0.45 0.02" text="value: ?; align: left; width: 4.6; wrapCount: 24; color: #ffffff; baseline: center"></a-entity>
+          <a-entity id="board-target-label" position="0 0.1 0.02" text="value: Target; align: center; width: 4.6; wrapCount: 18; color: #062c42; baseline: center"></a-entity>
+          <a-entity id="board-target-value" position="0 -0.45 0.02" text="value: ?; align: center; width: 4.6; wrapCount: 18; color: #ffffff; baseline: center"></a-entity>
+          <a-entity id="board-score-label" position="3 0.1 0.02" text="value: Score; align: right; width: 4.6; wrapCount: 20; color: #062c42; baseline: center"></a-entity>
+          <a-entity id="board-score-value" position="3 -0.45 0.02" text="value: 0; align: right; width: 4.6; wrapCount: 18; color: #ffffff; baseline: center"></a-entity>
+          <a-entity id="board-progress" position="0 -1.35 0.02" text="value: Progress lines; align: center; width: 8.8; wrapCount: 30; color: #e7f6ff; baseline: center"></a-entity>
+          <!-- Removed board tips text per user request -->
+        </a-entity>
+      </a-entity>
+
+      <a-entity id="island-root"></a-entity>
+      <a-entity id="operator-root"></a-entity>
+      <a-entity id="celebrations-root"></a-entity>
+
+      <a-entity id="player-rig" position="0 1.6 8">
+        <a-camera wasd-controls="acceleration: 28" look-controls="pointerLockEnabled: true">
+          <a-cursor
+            fuse="true"
+            fuse-timeout="550"
+            raycaster="objects: .selectable; interval: 75"
+            material="shader: flat; color: #ffffff"
+            geometry="primitive: ring; radiusInner: 0.006; radiusOuter: 0.01"
+            animation__fuse="property: scale; dir: alternate; to: 1.4 1.4 1.4; loop: true; dur: 900"
+          ></a-cursor>
+          <a-entity id="vr-fallback-panel" position="0 -0.35 -1.35" visible="false">
+            <a-plane
+              width="1.8"
+              height="1.15"
+              material="color: #07375b; opacity: 0.92; shader: standard; roughness: 0.35; metalness: 0.02"
+              position="0 0 0"
+            ></a-plane>
+            <a-entity
+              id="fallback-title"
+              position="0 0.42 0.01"
+              text="value: Number Islands; align: center; width: 1.6; wrapCount: 22; color: #8de4ff; baseline: center"
+            ></a-entity>
+            <a-entity
+              id="fallback-quest-name"
+              position="0 0.24 0.01"
+              text="value: Quest name; align: center; width: 1.6; wrapCount: 26; color: #ffffff; baseline: center"
+            ></a-entity>
+            <a-entity
+              id="fallback-narrative"
+              position="0 0.05 0.01"
+              text="value: Narrative goes here; align: center; width: 1.6; wrapCount: 30; color: #e7f5ff; baseline: center"
+            ></a-entity>
+            <a-entity
+              id="fallback-allowed"
+              position="0 -0.12 0.01"
+              text="value: Allowed operators: + −; align: center; width: 1.6; wrapCount: 30; color: #d6f1ff; baseline: center"
+            ></a-entity>
+            <a-entity
+              id="fallback-hint"
+              position="0 -0.24 0.01"
+              text="value: Hint text; align: center; width: 1.6; wrapCount: 32; color: #f1ffe6; baseline: center"
+            ></a-entity>
+            <a-entity
+              id="fallback-expression-label"
+              position="-0.68 -0.38 0.01"
+              text="value: Current Expression; align: left; width: 1.2; wrapCount: 28; color: #91f7ff; baseline: center"
+            ></a-entity>
+            <a-entity
+              id="fallback-expression-value"
+              position="-0.68 -0.49 0.01"
+              text="value: ?; align: left; width: 1.2; wrapCount: 18; color: #ffffff; baseline: center"
+            ></a-entity>
+            <a-entity
+              id="fallback-target-label"
+              position="0 -0.38 0.01"
+              text="value: Target; align: center; width: 0.5; wrapCount: 16; color: #91f7ff; baseline: center"
+            ></a-entity>
+            <a-entity
+              id="fallback-target-value"
+              position="0 -0.49 0.01"
+              text="value: ?; align: center; width: 0.5; wrapCount: 12; color: #ffffff; baseline: center"
+            ></a-entity>
+            <a-entity
+              id="fallback-score-label"
+              position="0.55 -0.38 0.01"
+              text="value: Score; align: right; width: 1.2; wrapCount: 18; color: #91f7ff; baseline: center"
+            ></a-entity>
+            <a-entity
+              id="fallback-score-value"
+              position="0.55 -0.49 0.01"
+              text="value: 0; align: right; width: 1.2; wrapCount: 12; color: #ffffff; baseline: center"
+            ></a-entity>
+            <a-entity
+              id="fallback-tips"
+              position="0 -0.68 0.01"
+              text="value: Tips will appear here.; align: center; width: 1.7; wrapCount: 34; color: #bde6ff; baseline: center"
+            ></a-entity>
+          </a-entity>
+        </a-camera>
+      </a-entity>
+    </a-scene>
+
+    <script>
+      function initializeNumberIslands(sceneEl) {
+        const toastEl = document.getElementById("toast");
+        const questNameEl = document.getElementById("quest-name");
+        const questGoalEl = document.getElementById("quest-goal");
+        const questRulesEl = document.getElementById("quest-rules");
+        const questProgressEl = document.getElementById("quest-progress");
+        const scoreDisplay = document.getElementById("score-display");
+        const expressionDisplay = document.getElementById("expression-display");
+        const targetDisplay = document.getElementById("target-display");
+        const progressMeter = document.getElementById("progress-meter");
+        const resetButton = document.getElementById("reset-selection");
+        const nextQuestButton = document.getElementById("next-quest");
+        const celebrationRoot = document.getElementById("celebrations-root");
+  const fallbackPanel = document.getElementById("vr-fallback-panel");
+  const fallbackTitle = document.getElementById("fallback-title");
+  const fallbackQuestName = document.getElementById("fallback-quest-name");
+  const fallbackNarrative = document.getElementById("fallback-narrative");
+  const fallbackAllowed = document.getElementById("fallback-allowed");
+  const fallbackHint = document.getElementById("fallback-hint");
+  const fallbackExpressionValue = document.getElementById("fallback-expression-value");
+  const fallbackTargetValue = document.getElementById("fallback-target-value");
+  const fallbackScoreValue = document.getElementById("fallback-score-value");
+  const fallbackTips = document.getElementById("fallback-tips");
+  const boardTitle = document.getElementById("board-title");
+  const boardQuestName = document.getElementById("board-quest-name");
+  const boardStatsTitle = document.getElementById("board-stats-title");
+  const boardExpressionValue = document.getElementById("board-expression-value");
+  const boardTargetValue = document.getElementById("board-target-value");
+  const boardScoreValue = document.getElementById("board-score-value");
+  const boardProgress = document.getElementById("board-progress");
+  const boardTips = document.getElementById("board-tips");
+  let fallbackToastShown = false;
+
+        const questState = {
+          quests: [
+            {
+              id: "coral-sum",
+              name: "Coral Chorus",
+              narrative: "Harmonize the coral choir by showing them the number 7.",
+              target: 7,
+              allowed: ["+", "-"],
+              hint: "Try chaining smaller numbers."
+            },
+            {
+              id: "reef-factor",
+              name: "Reef Resonance",
+              narrative: "Grow the reef by building the energy number 12.",
+              target: 12,
+              allowed: ["+", "-", "*"],
+              hint: "Pairs of 3s and 4s love to help."
+            },
+            {
+              id: "glow-division",
+              name: "Lantern Balance",
+              narrative: "Stabilize the glow orbs with a result of 3.",
+              target: 3,
+              allowed: ["/", "-", "+"],
+              hint: "Division stones can be gentle if you start big."
+            },
+            {
+              id: "tidal-mix",
+              name: "Tidal Mix",
+              narrative: "Calm the tides by reaching 15.",
+              target: 15,
+              allowed: ["+", "*", "-"],
+              hint: "Stack a trio or multiply first, then adjust."
+            },
+            {
+              id: "sky-lantern",
+              name: "Sky Lantern",
+              narrative: "Light the night lantern with the number 6.",
+              target: 6,
+              allowed: ["/", "-", "+"],
+              hint: "Balance halves or subtract softly."
+            }
+          ],
+          completed: new Set(),
+          activeQuest: null,
+          score: 0,
+          index: 0
+        };
+
+        const selection = {
+          first: null,
+          operator: null,
+          operatorSymbol: null,
+          second: null,
+          selectedElements: new Set(),
+          locked: false
+        };
+
+  const tipsText = `Gaze or click a token to select.\nSelect Number → Operator → Number.\nFinish quests to brighten the islands.\nPress F for fullscreen. Use WASD or teleport to move.`;
+
+        const setTextAttr = (entity, props) => {
+          if (!entity) return;
+          entity.setAttribute("text", props);
+        };
+
+        const setDisplayTips = (extraMessage = "") => {
+          const lines = [tipsText];
+          if (extraMessage) {
+            lines.push(extraMessage);
+          }
+          const value = lines.join("\n");
+          setTextAttr(fallbackTips, {
+            value,
+            align: "center",
+            width: 1.7,
+            wrapCount: 34,
+            color: "#bde6ff",
+            baseline: "center"
+          });
+          setTextAttr(boardTips, {
+            value,
+            align: "center",
+            width: 10.8,
+            wrapCount: 36,
+            color: "#dff6ff",
+            baseline: "center"
+          });
+        };
+
+        const updateQuestDisplays = (quest) => {
+          const questName = quest ? quest.name : "Quest loading";
+          const narrative = quest ? quest.narrative : "Discover the islands...";
+          const allowedSymbols = quest
+            ? quest.allowed.map((op) => ({ "+": "+", "-": "−", "*": "×", "/": "÷" }[op] || op)).join("  ")
+            : "...";
+          const hint = quest ? quest.hint : "Patience.";
+
+          setTextAttr(fallbackTitle, {
+            value: "Number Islands",
+            align: "center",
+            width: 1.6,
+            wrapCount: 22,
+            color: "#8de4ff",
+            baseline: "center"
+          });
+          setTextAttr(boardTitle, {
+            value: "Number Islands",
+            align: "center",
+            width: 9,
+            wrapCount: 26,
+            color: "#062c42",
+            baseline: "center"
+          });
+
+          setTextAttr(fallbackQuestName, {
+            value: questName,
+            align: "center",
+            width: 1.6,
+            wrapCount: 26,
+            color: "#ffffff",
+            baseline: "center"
+          });
+          setTextAttr(boardQuestName, {
+            value: questName,
+            align: "center",
+            width: 9,
+            wrapCount: 26,
+            color: "#ffffff",
+            baseline: "center"
+          });
+
+          setTextAttr(boardStatsTitle, {
+            value: quest ? `Stats` : "Stats",
+            align: "center",
+            width: 6.5,
+            wrapCount: 20,
+            color: "#074062",
+            baseline: "center"
+          });
+
+          setTextAttr(fallbackNarrative, {
+            value: narrative,
+            align: "center",
+            width: 1.6,
+            wrapCount: 30,
+            color: "#e7f5ff",
+            baseline: "center"
+          });
+
+          const allowedText = `Allowed operators: ${allowedSymbols}`;
+          setTextAttr(fallbackAllowed, {
+            value: allowedText,
+            align: "center",
+            width: 1.6,
+            wrapCount: 30,
+            color: "#d6f1ff",
+            baseline: "center"
+          });
+
+          const hintText = `Hint: ${hint}`;
+          setTextAttr(fallbackHint, {
+            value: hintText,
+            align: "center",
+            width: 1.6,
+            wrapCount: 32,
+            color: "#f1ffe6",
+            baseline: "center"
+          });
+        };
+
+        const updateStatDisplays = () => {
+          const expressionValue = expressionDisplay.textContent || "?";
+          const targetValue = targetDisplay.textContent || "?";
+          const scoreValue = scoreDisplay.textContent || "0";
+
+          setTextAttr(fallbackExpressionValue, {
+            value: expressionValue,
+            align: "left",
+            width: 1.2,
+            wrapCount: 18,
+            color: "#ffffff",
+            baseline: "center",
+            letterSpacing: 3
+          });
+          setTextAttr(boardExpressionValue, {
+            value: expressionValue,
+            align: "left",
+            width: 4.2,
+            wrapCount: 24,
+            color: "#ffffff",
+            baseline: "center",
+            letterSpacing: 5
+          });
+
+          setTextAttr(fallbackTargetValue, {
+            value: targetValue,
+            align: "center",
+            width: 0.5,
+            wrapCount: 12,
+            color: "#ffffff",
+            baseline: "center"
+          });
+          setTextAttr(boardTargetValue, {
+            value: targetValue,
+            align: "center",
+            width: 4.6,
+            wrapCount: 18,
+            color: "#ffffff",
+            baseline: "center"
+          });
+
+          setTextAttr(fallbackScoreValue, {
+            value: scoreValue,
+            align: "right",
+            width: 1.2,
+            wrapCount: 12,
+            color: "#ffffff",
+            baseline: "center"
+          });
+          setTextAttr(boardScoreValue, {
+            value: scoreValue,
+            align: "right",
+            width: 4.6,
+            wrapCount: 18,
+            color: "#ffffff",
+            baseline: "center"
+          });
+        };
+
+        const updateBoardProgress = () => {
+          const progressItems = Array.from(questProgressEl.querySelectorAll("li")).map((li, index) => {
+            const prefix = li.classList.contains("is-complete") ? "✓" : `${index + 1}.`;
+            return `${prefix} ${li.textContent.trim()}`;
+          });
+          const progressLines = progressItems.length
+            ? ["Progress:", ...progressItems.slice(-4)]
+            : ["Progress:", "—"];
+
+          setTextAttr(boardProgress, {
+            value: progressLines.join("\n"),
+            align: "center",
+            width: 8.8,
+            wrapCount: 34,
+            color: "#e7f6ff",
+            baseline: "center"
+          });
+        };
+
+        const refreshDisplays = (options = {}) => {
+          updateQuestDisplays(questState.activeQuest);
+          updateStatDisplays();
+          updateBoardProgress();
+          setDisplayTips(options.message || "");
+        };
+
+        const textures = new Map();
+        const getLabelTexture = (label, { background = "#ffe59d", accent = "#ffcf56", color = "#2f2a1f", glow = "rgba(255,255,255,0.16)" } = {}) => {
+          const key = `${label}|${background}|${color}|${accent}`;
+          if (textures.has(key)) return textures.get(key);
+          const canvas = document.createElement("canvas");
+          canvas.width = canvas.height = 256;
+          const ctx = canvas.getContext("2d");
+          const gradient = ctx.createLinearGradient(0, 0, 256, 256);
+          gradient.addColorStop(0, background);
+          gradient.addColorStop(1, accent);
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, 256, 256);
+          ctx.fillStyle = glow;
+          ctx.beginPath();
+          ctx.arc(128, 106, 98, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = color;
+          ctx.font = "bold 150px 'Segoe UI', system-ui, sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.shadowColor = "rgba(0,0,0,0.18)";
+          ctx.shadowBlur = 16;
+          ctx.fillText(label, 128, 142);
+          const dataUrl = canvas.toDataURL("image/png");
+          textures.set(key, dataUrl);
+          return dataUrl;
+        };
+
+        const showToast = (message, mood = "info", duration = 4200) => {
+          toastEl.dataset.mood = mood;
+          toastEl.textContent = message;
+          toastEl.classList.add("visible");
+          clearTimeout(showToast._timer);
+          showToast._timer = setTimeout(() => {
+            toastEl.classList.remove("visible");
+          }, duration);
+        };
+
+        const ensureAudio = (() => {
+          let ctx = null;
+          return () => {
+            if (!ctx) {
+              ctx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return ctx;
+          };
+        })();
+
+        const playTone = (frequency = 660, duration = 0.35) => {
+          const ctx = ensureAudio();
+          const now = ctx.currentTime + 0.05;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(frequency, now);
+          gain.gain.setValueAtTime(0.0001, now);
+          gain.gain.exponentialRampToValueAtTime(0.18, now + 0.04);
+          gain.gain.exponentialRampToValueAtTime(0.00001, now + duration);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + duration + 0.15);
+        };
+
+        sceneEl.addEventListener("enter-vr", () => {
+          const session = sceneEl.xrSession;
+          const hasDomOverlay = !!(session && session.domOverlayState && session.domOverlayState.type);
+          if (fallbackPanel) {
+            fallbackPanel.setAttribute("visible", "false");
+          }
+          if (!hasDomOverlay && !fallbackToastShown) {
+            showToast(
+              "Your info board ahead now carries the HUD while in VR.",
+              "warning",
+              5200
+            );
+            fallbackToastShown = true;
+          }
+          refreshDisplays({ message: hasDomOverlay ? "" : "Board synced for VR viewing." });
+        });
+
+        sceneEl.addEventListener("exit-vr", () => {
+          if (fallbackPanel) {
+            fallbackPanel.setAttribute("visible", "false");
+          }
+          refreshDisplays();
+        });
+
+        const spawnCelebration = (origin) => {
+          const orb = document.createElement("a-entity");
+          orb.setAttribute("geometry", "primitive: sphere; radius: 0.28");
+          orb.setAttribute("material", "color: #fffeb3; emissive: #ffe066; emissiveIntensity: 0.9; opacity: 0.85; shader: standard");
+          const base = origin.clone();
+          orb.setAttribute("position", `${base.x} ${base.y + 1.2} ${base.z}`);
+          orb.setAttribute("animation__rise", "property: position; to: 0 2.7 0; dur: 1500; easing: easeOutQuad; dir: alternate; loop: false");
+          orb.setAttribute("animation__fade", "property: material.opacity; from: 0.85; to: 0; dur: 1100; easing: linear; delay: 500");
+          orb.setAttribute("animation__scale", "property: scale; from: 1 1 1; to: 1.4 1.4 1.4; dur: 1200; easing: easeOutCubic");
+          celebrationRoot.appendChild(orb);
+          setTimeout(() => celebrationRoot.removeChild(orb), 1600);
+        };
+
+        const setExpressionText = () => {
+          const parts = [];
+          if (selection.first != null) parts.push(selection.first);
+          if (selection.operatorSymbol) parts.push(selection.operatorSymbol);
+          if (selection.second != null) parts.push(selection.second);
+          const spacer = parts.length > 1 ? "\u2003" : "";
+          expressionDisplay.textContent = parts.length ? parts.join(spacer || "") : "—";
+          updateStatDisplays();
+        };
+
+        const resetSelection = (showMessage = true) => {
+          selection.first = null;
+          selection.operator = null;
+          selection.operatorSymbol = null;
+          selection.second = null;
+          selection.selectedElements.forEach((el) => {
+            if (el && el.dataset && el.dataset.baseEmissive) {
+              el.setAttribute(
+                "material",
+                `emissive: ${el.dataset.baseEmissive}; emissiveIntensity: ${el.dataset.baseEmissiveIntensity || 0};`
+              );
+            }
+            if (el && el.dataset && el.dataset.resetScale) {
+              el.setAttribute("scale", el.dataset.resetScale);
+            }
+          });
+          selection.selectedElements.clear();
+          selection.locked = false;
+          setExpressionText();
+          updateStatDisplays();
+          updateBoardProgress();
+          if (showMessage) {
+            showToast("Selection cleared. Choose a new path!", "info", 2600);
+          }
+        };
+
+        const applyQuestToUI = (quest) => {
+          questNameEl.textContent = `${quest.name}`;
+          questGoalEl.textContent = quest.narrative;
+          targetDisplay.textContent = quest.target;
+          questRulesEl.innerHTML = "";
+          const allowed = document.createElement("li");
+          allowed.textContent = `Allowed operators: ${quest.allowed
+            .map((op) => ({ "+": "+", "-": "−", "*": "×", "/": "÷" }[op] || op))
+            .join("  ")}`;
+          questRulesEl.appendChild(allowed);
+          const hintEl = document.createElement("li");
+          hintEl.textContent = `Hint: ${quest.hint}`;
+          questRulesEl.appendChild(hintEl);
+          setExpressionText();
+          nextQuestButton.disabled = true;
+          selection.locked = false;
+          updateQuestDisplays(quest);
+          updateStatDisplays();
+          updateBoardProgress();
+          setDisplayTips();
+        };
+
+        const loadQuest = (index) => {
+          const quest = questState.quests[index % questState.quests.length];
+          questState.activeQuest = quest;
+          questState.index = index % questState.quests.length;
+          applyQuestToUI(quest);
+          showToast(`New quest ✨ ${quest.name}!`, "success", 3200);
+        };
+
+        const markQuestComplete = (quest) => {
+          if (!questState.completed.has(quest.id)) {
+            questState.completed.add(quest.id);
+            const li = document.createElement("li");
+            li.textContent = ` ${quest.name} complete`;
+            li.classList.add("is-complete");
+            questProgressEl.appendChild(li);
+            const ratio = questState.completed.size / questState.quests.length;
+            progressMeter.style.transform = `scaleX(${Math.min(1, Math.max(0.15, ratio))})`;
+            updateBoardProgress();
+            if (fallbackPanel && fallbackPanel.getAttribute("visible") === "true") {
+              refreshDisplays({ message: `${quest.name} restored!` });
+            }
+          }
+        };
+
+        const compute = (a, b, op) => {
+          switch (op) {
+            case "+":
+              return a + b;
+            case "-":
+              return a - b;
+            case "*":
+              return a * b;
+            case "/":
+              return b === 0 ? null : a / b;
+            default:
+              return null;
+          }
+        };
+
+        const evaluateSelection = () => {
+          if (selection.first == null || selection.operator == null || selection.second == null) {
+            showToast("Select a number, an operator, then another number.", "warning", 3200);
+            return;
+          }
+          const quest = questState.activeQuest;
+          if (!quest) return;
+          if (!quest.allowed.includes(selection.operator)) {
+            showToast("That operator isnt attuned to this quest!", "error", 3400);
+            return;
+          }
+          const first = Number(selection.first);
+          const second = Number(selection.second);
+          const result = compute(first, second, selection.operator);
+          if (result == null) {
+            showToast("That calculation breaks the rules. Try a different path!", "error", 3600);
+            return;
+          }
+          const rounded = Math.round((result + Number.EPSILON) * 1000) / 1000;
+          if (rounded === quest.target) {
+            selection.locked = true;
+            questState.score += 1;
+            scoreDisplay.textContent = questState.score;
+            nextQuestButton.disabled = false;
+            markQuestComplete(quest);
+            showToast(`You restored ${quest.name}!`, "success", 3800);
+            const rig = document.getElementById("player-rig");
+            if (rig && rig.object3D) {
+              spawnCelebration(rig.object3D.position);
+            }
+            playTone(740, 0.45);
+          } else {
+            playTone(220, 0.25);
+            showToast(`That equals ${rounded}, not ${quest.target}. Adjust and try again!`, "warning", 4200);
+          }
+        };
+
+        const highlightElement = (el, active) => {
+          if (!el || !el.dataset) return;
+          if (!el.dataset.baseEmissive) {
+            const mat = el.getAttribute("material") || "";
+            const match = /emissive:\s*([^;]+)/.exec(mat);
+            el.dataset.baseEmissive = match ? match[1].trim() : "#000";
+            const intensity = /emissiveIntensity:\s*([^;]+)/.exec(mat);
+            el.dataset.baseEmissiveIntensity = intensity ? intensity[1].trim() : "0";
+          }
+          el.setAttribute(
+            "material",
+            `emissive: ${active ? "#ffe066" : el.dataset.baseEmissive}; emissiveIntensity: ${active ? 0.85 : el.dataset.baseEmissiveIntensity || 0};`
+          );
+          if (!el.dataset.resetScale) {
+            el.dataset.resetScale = el.getAttribute("scale") || "1 1 1";
+          }
+          el.setAttribute("scale", active ? "1.18 1.18 1.18" : el.dataset.resetScale);
+        };
+
+        const numberHandler = (value, el) => {
+          if (selection.locked) {
+            showToast("Quest complete! Move on or reset for free play.", "warning", 2800);
+            return;
+          }
+          if (selection.first == null) {
+            selection.first = value;
+            selection.selectedElements.add(el);
+            highlightElement(el, true);
+            showToast(`First number: ${value}`, "info", 2000);
+          } else if (selection.operator == null) {
+            showToast("Choose an operator next.", "info", 2000);
+            return;
+          } else if (selection.second == null) {
+            selection.second = value;
+            selection.selectedElements.add(el);
+            highlightElement(el, true);
+            showToast(`Second number: ${value}`, "info", 2000);
+            evaluateSelection();
+          } else {
+            showToast("Expression already complete. Reset or choose another quest.", "warning", 2800);
+          }
+          setExpressionText();
+        };
+
+        const operatorHandler = (operator, symbol, el) => {
+          if (selection.locked) {
+            showToast("Quest already mastered. Advance to the next one!", "warning", 2600);
+            return;
+          }
+          if (selection.first == null) {
+            showToast("Pick a number first so the operator has context.", "warning", 2600);
+            return;
+          }
+          selection.operator = operator;
+          selection.operatorSymbol = symbol;
+          highlightElement(el, true);
+          selection.selectedElements.add(el);
+          setExpressionText();
+          showToast(`Operator chosen: ${symbol}`, "info", 2000);
+        };
+
+        // SIMPLE MODE: 12 flat number buttons (no islands)
+        const numberButtonData = Array.from({ length: 12 }, (_, i) => ({
+          value: i + 1,
+          // alternating color palette (background / accent)
+          colors: [
+            ["#ffe59d", "#ffc24b"],
+            ["#b3d9ff", "#62b4ff"],
+            ["#ffc2e1", "#ff86c4"],
+            ["#c9ffdd", "#66f4a2"],
+            ["#d8c6ff", "#a684ff"],
+            ["#ffd9b3", "#ffa554"],
+            ["#ffe59d", "#ffc24b"],
+            ["#b3d9ff", "#62b4ff"],
+            ["#ffc2e1", "#ff86c4"],
+            ["#c9ffdd", "#66f4a2"],
+            ["#d8c6ff", "#a684ff"],
+            ["#ffd9b3", "#ffa554"]
+          ][i]
+        }));
+
+        const operatorBlueprints = [
+          { id: "operator-add", symbol: "+", operator: "+", position: "-2 1.2 -3", color: "#ffd166", accent: "#ffe7a3" },
+          { id: "operator-sub", symbol: "−", operator: "-", position: "0.8 1.15 -4.2", color: "#ff8a80", accent: "#ffc2bd" },
+          { id: "operator-mul", symbol: "×", operator: "*", position: "3.5 1.25 -5.4", color: "#b388ff", accent: "#dbc6ff" },
+          { id: "operator-div", symbol: "÷", operator: "/", position: "-4.5 1.3 -4.6", color: "#64ffda", accent: "#a0ffec" }
+        ];
+
+        // Decorations not needed in simple mode (kept minimal); placeholder if needed later
+        const placeDecorations = () => {};
+
+        const buildNumberButtons = () => {
+          const root = document.getElementById("island-root");
+          // clear any previous children
+          while (root.firstChild) root.removeChild(root.firstChild);
+          const spacing = 1.3; // distance between centers
+          const startX = -((numberButtonData.length - 1) * spacing) / 2;
+          const rowZ = -2.5; // bring numbers in front (closer to player)
+          numberButtonData.forEach((btn, idx) => {
+            const x = startX + idx * spacing;
+            const entity = document.createElement("a-entity");
+            entity.setAttribute("class", "selectable number-token");
+            entity.dataset.value = btn.value;
+            entity.dataset.resetScale = "1 1 1";
+            const texture = getLabelTexture(String(btn.value), {
+              background: btn.colors[0],
+              accent: btn.colors[1],
+              color: "#1b212a"
+            });
+            entity.setAttribute("geometry", "primitive: circle; radius: 0.5");
+            entity.setAttribute(
+              "material",
+              `shader: flat; src: url(${texture}); side: double; transparent: false; emissive: #222; emissiveIntensity: 0.15`
+            );
+            entity.setAttribute("position", `${x.toFixed(2)} 1 ${rowZ}`);
+            entity.setAttribute(
+              "animation__hover",
+              `property: position; dir: alternate; dur: ${1700 + Math.random() * 500}; to: ${x.toFixed(2)} 1.22 ${rowZ}; easing: easeInOutSine; loop: true`
+            );
+            entity.addEventListener("mouseenter", () => highlightElement(entity, true));
+            entity.addEventListener("mouseleave", () => {
+              if (!selection.selectedElements.has(entity)) highlightElement(entity, false);
+            });
+            entity.addEventListener("click", () => numberHandler(btn.value, entity));
+            root.appendChild(entity);
+          });
+        };
+
+        const buildOperators = () => {
+          const operatorRoot = document.getElementById("operator-root");
+          operatorBlueprints.forEach((blueprint, idx) => {
+            const pillar = document.createElement("a-entity");
+            pillar.setAttribute(
+              "geometry",
+              "primitive: cylinder; radius: 0.4; height: 1.6"
+            );
+            pillar.setAttribute(
+              "material",
+              "color: #f7f2d0; roughness: 0.4; metalness: 0.08; emissive: #61502b; emissiveIntensity: 0.18"
+            );
+            pillar.setAttribute("position", blueprint.position);
+            pillar.setAttribute(
+              "animation__glow",
+              `property: material.emissiveIntensity; dir: alternate; to: 0.34; loop: true; dur: ${3600 + idx * 550}; easing: easeInOutSine`
+            );
+
+            const token = document.createElement("a-entity");
+            token.setAttribute("class", "selectable operator-token");
+            token.dataset.resetScale = "1 1 1";
+            token.dataset.operator = blueprint.operator;
+            token.dataset.symbol = blueprint.symbol;
+            const texture = getLabelTexture(blueprint.symbol, {
+              background: blueprint.color,
+              accent: blueprint.accent,
+              color: "#152030"
+            });
+            token.setAttribute("geometry", "primitive: plane; width: 0.95; height: 0.95");
+            token.setAttribute(
+              "material",
+              `shader: flat; transparent: false; side: double; src: url(${texture}); emissive: #1c222d; emissiveIntensity: 0.12`
+            );
+            token.setAttribute("position", "0 1.1 0");
+            token.setAttribute(
+              "animation__hover",
+              `property: rotation; dur: ${2600 + idx * 430}; to: 0 360 0; easing: linear; loop: true`
+            );
+            token.addEventListener("mouseenter", () => highlightElement(token, true));
+            token.addEventListener("mouseleave", () => {
+              if (!selection.selectedElements.has(token)) {
+                highlightElement(token, false);
+              }
+            });
+            token.addEventListener("click", () => operatorHandler(blueprint.operator, blueprint.symbol, token));
+            pillar.appendChild(token);
+
+            operatorRoot.appendChild(pillar);
+          });
+        };
+
+        resetButton.addEventListener("click", () => resetSelection());
+        nextQuestButton.addEventListener("click", () => {
+          resetSelection(false);
+          const nextIndex = questState.index + 1;
+          loadQuest(nextIndex);
+        });
+
+  buildNumberButtons();
+        buildOperators();
+        loadQuest(0);
+        showToast("Islands ready. Begin your first quest!", "success", 4000);
+      }
+    </script>
+  </body>
+</html>

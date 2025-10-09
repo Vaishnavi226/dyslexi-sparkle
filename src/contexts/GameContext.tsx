@@ -23,7 +23,7 @@ export interface UserProgress {
     lastPlayed: Date;
     stars: number;
   };
-  arPlayground: {
+  vrPlayground: {
     level: number;
     score: number;
     experimentsCompleted: number;
@@ -84,7 +84,7 @@ const defaultProgress: UserProgress = {
   dyslexiaTest: { level: 1, score: 0, accuracy: 0, speed: 0, lastPlayed: new Date(), stars: 0 },
   spellingWorld: { level: 1, score: 0, accuracy: 0, lastPlayed: new Date(), stars: 0 },
   flashCards: { level: 1, score: 0, cardsCompleted: 0, lastPlayed: new Date(), stars: 0 },
-  arPlayground: { level: 1, score: 0, experimentsCompleted: 0, lastPlayed: new Date(), stars: 0 },
+  vrPlayground: { level: 1, score: 0, experimentsCompleted: 0, lastPlayed: new Date(), stars: 0 },
   voicePractice: { level: 1, score: 0, accuracy: 0, lastPlayed: new Date(), stars: 0 },
   storyMode: { level: 1, score: 0, storiesCompleted: 0, lastPlayed: new Date(), stars: 0 },
   overall: { xp: 0, level: 1, badges: [], streak: 0, totalPlayTime: 0 }
