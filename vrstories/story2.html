@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VR Story: The Talking Tree</title>
+    <meta name="description" content="A VR story with TTS narration featuring Oakley the wise talking tree.">
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    
+    <style>
+        body { margin: 0; font-family: sans-serif; }
+        .story-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+        #startButton {
+            padding: 20px 40px;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(45deg, #8B4513, #D2691E);
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        #startButton:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+        }
+        #storyText {
+            position: absolute;
+            bottom: 10%;
+            width: 100%;
+            text-align: center;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            z-index: 5;
+            box-sizing: border-box;
+            display: none;
+        }
+        #backButton {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            color: white;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid white;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 15;
+            transition: background 0.3s;
+        }
+        #backButton:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Back button -->
+    <button id="backButton" onclick="window.close()">← Back to Stories</button>
+
+    <!-- Story overlay and start button -->
+    <div id="storyText"></div>
+    <div id="storyContainer" class="story-container">
+        <button id="startButton">Start Story</button>
+    </div>
+
+    <!-- A-Frame VR Scene -->
+    <a-scene background="color: #87CEEB" fog="type: linear; color: #87CEEB; near: 10; far: 50">
+        <!-- Assets preloading -->
+        <a-assets>
+            <a-asset-item id="mapleTreeModel" src="modes/maple_tree.glb"></a-asset-item>
+            <a-asset-item id="squirrelModel" src="modes/squirrel.glb"></a-asset-item>
+        </a-assets>
+
+        <!-- Camera -->
+        <a-camera position="0 1.6 0"></a-camera>
+
+        <!-- Ground with grass texture -->
+        <a-plane position="0 0 -4" rotation="-90 0 0" width="100" height="100" 
+                 color="#228B22" material="roughness: 0.8"></a-plane>
+
+        <!-- Oakley the Talking Tree (Main character) -->
+        <a-entity id="oakley" position="0 0 -10" visible="false">
+            <a-entity gltf-model="#mapleTreeModel" scale="0.06 0.06 0.06" shadow></a-entity>
+            <!-- Tree face (eyes and mouth) -->
+            <a-entity id="treeFace" position="0 3.5 0.5" visible="false">
+                <!-- Left Eye -->
+                <a-sphere color="#FFFFFF" radius="0.15" position="-0.3 0.2 0">
+                    <a-sphere color="#000000" radius="0.08" position="0 0 0.1"></a-sphere>
+                </a-sphere>
+                <!-- Right Eye -->
+                <a-sphere color="#FFFFFF" radius="0.15" position="0.3 0.2 0">
+                    <a-sphere color="#000000" radius="0.08" position="0 0 0.1"></a-sphere>
+                </a-sphere>
+                <!-- Mouth -->
+                <a-torus id="mouth" color="#654321" radius="0.25" radius-tubular="0.08" 
+                         position="0 -0.2 0" rotation="0 0 0" segments-tubular="16"></a-torus>
+            </a-entity>
+        </a-entity>
+
+        <!-- Nutkin the Squirrel -->
+        <a-entity id="nutkin" position="5 0.25 -8" visible="false">
+            <a-entity gltf-model="#squirrelModel" scale="0.25 0.25 0.25" shadow></a-entity>
+        </a-entity>
+
+        <!-- Forest creatures (birds, butterflies represented as simple shapes) -->
+        <a-entity id="bird1" position="-3 2 -8" visible="false">
+            <a-sphere radius="0.15" color="#FFD700">
+                <a-cone color="#FF6347" radius-bottom="0.05" radius-top="0" height="0.1" 
+                        position="0 0 0.2" rotation="-90 0 0"></a-cone>
+            </a-sphere>
+        </a-entity>
+
+        <a-entity id="butterfly" position="2 2.5 -9" visible="false">
+            <a-box color="#FF69B4" width="0.3" height="0.1" depth="0.05" position="-0.15 0 0"></a-box>
+            <a-box color="#FF1493" width="0.3" height="0.1" depth="0.05" position="0.15 0 0"></a-box>
+            <a-sphere color="#000000" radius="0.05"></a-sphere>
+        </a-entity>
+
+        <!-- Better lighting -->
+        <a-light type="directional" color="#FFF" intensity="0.8" position="-5 5 2" 
+                 castShadow="true"></a-light>
+        <a-light type="ambient" color="#BBB" intensity="0.5"></a-light>
+        <a-light type="hemisphere" color="#87CEEB" groundColor="#228B22" intensity="0.4"></a-light>
+    </a-scene>
+
+    <script>
+        // --- STORY DATA ---
+        const story = [
+            {
+                text: "Deep in the Whispering Woods lived Oakley, a magnificent oak tree who could speak.",
+                action: () => {
+                    const oakley = document.getElementById('oakley');
+                    oakley.setAttribute('visible', true);
+                    oakley.setAttribute('animation', {
+                        property: 'scale', from: '0.1 0.1 0.1', to: '1 1 1', dur: 2000, easing: 'easeOutElastic'
+                    });
+                }
+            },
+            {
+                text: "Oakley had a kind face with wise eyes and a friendly smile.",
+                action: () => {
+                    const face = document.getElementById('treeFace');
+                    face.setAttribute('visible', true);
+                    face.setAttribute('animation', {
+                        property: 'scale', from: '0 0 0', to: '1 1 1', dur: 1000, easing: 'easeOutBack'
+                    });
+                }
+            },
+            {
+                text: "Oakley loved to tell jokes and riddles to any creature that would listen.",
+                action: () => {
+                    const mouth = document.getElementById('mouth');
+                    mouth.setAttribute('animation', {
+                        property: 'rotation', to: '0 0 180', dir: 'alternate', loop: 3, dur: 500
+                    });
+                }
+            },
+            {
+                text: "One sunny morning, a little squirrel named Nutkin came to visit Oakley.",
+                action: () => {
+                    const nutkin = document.getElementById('nutkin');
+                    nutkin.setAttribute('visible', true);
+                    nutkin.setAttribute('animation', {
+                        property: 'position', to: '1.5 0.25 -9.5', dur: 2000, easing: 'easeInOutQuad'
+                    });
+                }
+            },
+            {
+                text: "'Hello, Oakley!' chirped Nutkin. 'Do you have a story for me today?'",
+                action: () => {
+                    const nutkin = document.getElementById('nutkin');
+                    nutkin.setAttribute('animation', {
+                        property: 'rotation', to: '0 20 0', dir: 'alternate', loop: 2, dur: 300
+                    });
+                }
+            },
+            {
+                text: "'Of course, little friend!' boomed Oakley in a warm, friendly voice.",
+                action: () => {
+                    const mouth = document.getElementById('mouth');
+                    mouth.setAttribute('animation', {
+                        property: 'scale', to: '1.2 1.2 1.2', dir: 'alternate', loop: 2, dur: 400
+                    });
+                }
+            },
+            {
+                text: "Oakley shared ancient wisdom about friendship, kindness, and growing strong like a tree.",
+                action: () => {
+                    const bird = document.getElementById('bird1');
+                    const butterfly = document.getElementById('butterfly');
+                    bird.setAttribute('visible', true);
+                    butterfly.setAttribute('visible', true);
+                    
+                    bird.setAttribute('animation', {
+                        property: 'position', to: '-2 2.5 -9', dur: 1500
+                    });
+                    butterfly.setAttribute('animation', {
+                        property: 'position', to: '1.5 3 -9.5', dur: 1500
+                    });
+                }
+            },
+            {
+                text: "'True friends are like strong roots,' said Oakley. 'They support you through sunshine and storms.'",
+                action: () => {
+                    const oakley = document.getElementById('oakley');
+                    oakley.setAttribute('animation', {
+                        property: 'rotation', to: '0 5 0', dir: 'alternate', loop: 4, dur: 800, easing: 'easeInOutSine'
+                    });
+                }
+            },
+            {
+                text: "Nutkin learned that the best treasures in life are the friends we make along the way.",
+                action: () => {
+                    const nutkin = document.getElementById('nutkin');
+                    nutkin.setAttribute('animation', {
+                        property: 'position', to: '0.5 2 -10', dur: 2000, easing: 'easeInOutQuad'
+                    });
+                }
+            },
+            {
+                text: "And from that day on, Nutkin visited Oakley every morning to hear wonderful stories. The end.",
+                action: () => {
+                    const treeFace = document.getElementById('treeFace');
+                    treeFace.setAttribute('animation', {
+                        property: 'scale', to: '1.1 1.1 1.1', dir: 'alternate', loop: true, dur: 1000
+                    });
+                    
+                    const butterfly = document.getElementById('butterfly');
+                    butterfly.setAttribute('animation', {
+                        property: 'rotation', to: '0 360 0', loop: true, dur: 3000, easing: 'linear'
+                    });
+                }
+            }
+        ];
+
+        // --- SCRIPT LOGIC ---
+        const startButton = document.getElementById('startButton');
+        const storyContainer = document.getElementById('storyContainer');
+        const storyTextElement = document.getElementById('storyText');
+        let currentLine = 0;
+
+        function resetScene() {
+            // Reset all entities
+            document.getElementById('oakley').setAttribute('visible', 'false');
+            document.getElementById('treeFace').setAttribute('visible', 'false');
+            document.getElementById('nutkin').setAttribute('visible', 'false');
+            document.getElementById('bird1').setAttribute('visible', 'false');
+            document.getElementById('butterfly').setAttribute('visible', 'false');
+            
+            // Clear animations
+            document.querySelectorAll('a-entity').forEach(entity => {
+                entity.removeAttribute('animation');
+            });
+
+            currentLine = 0;
+        }
+
+        function narrateAndAnimate(index) {
+            if (index >= story.length) {
+                storyTextElement.style.display = 'none';
+                console.log('Story finished.');
+                startButton.textContent = 'Start Story Again';
+                storyContainer.style.display = 'flex';
+                return;
+            }
+
+            const storyLine = story[index];
+            storyTextElement.textContent = storyLine.text;
+
+            const utterance = new SpeechSynthesisUtterance(storyLine.text);
+            utterance.rate = 0.85;
+            utterance.pitch = 1.0;
+            utterance.volume = 1;
+            
+            const voices = window.speechSynthesis.getVoices();
+            const preferredVoice = voices.find(voice => 
+                voice.name.includes('Male') || voice.name.includes('Google US English')
+            );
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
+            }
+            
+            utterance.onend = () => {
+                currentLine++;
+                narrateAndAnimate(currentLine);
+            };
+            
+            window.speechSynthesis.speak(utterance);
+            storyLine.action();
+        }
+
+        window.speechSynthesis.onvoiceschanged = () => {
+            const voices = window.speechSynthesis.getVoices();
+            console.log('Available voices:', voices);
+        };
+
+        startButton.addEventListener('click', () => {
+            resetScene();
+            storyContainer.style.display = 'none';
+            storyTextElement.style.display = 'block';
+            narrateAndAnimate(currentLine);
+        });
+
+        function spawnTrees(count = 12, radius = 20) {
+            document.querySelectorAll('.bg-tree').forEach(e => e.remove());
+
+            const scene = document.querySelector('a-scene');
+            for (let i = 0; i < count; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const r = radius * (0.5 + Math.random() * 0.5);
+                const x = Math.cos(angle) * r;
+                const z = Math.sin(angle) * r - 10;
+                const y = 0;
+                const scale = (0.02 + Math.random() * 0.04).toFixed(3);
+
+                const treeEnt = document.createElement('a-entity');
+                treeEnt.setAttribute('class', 'bg-tree');
+                treeEnt.setAttribute('position', `${x} ${y} ${z}`);
+                treeEnt.setAttribute('rotation', `0 ${Math.floor(Math.random() * 360)} 0`);
+                treeEnt.setAttribute('scale', `${scale} ${scale} ${scale}`);
+                treeEnt.setAttribute('gltf-model', '#mapleTreeModel');
+                treeEnt.setAttribute('shadow', 'receive: true');
+
+                scene.appendChild(treeEnt);
+            }
+        }
+
+        document.querySelector('a-scene').addEventListener('loaded', () => {
+            spawnTrees(4, 15);
+        });
+
+    </script>
+</body>
+</html>

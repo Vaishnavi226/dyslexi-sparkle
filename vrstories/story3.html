@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VR Story: The Lion and the Mouse</title>
+    <meta name="description" content="A VR story about kindness with TTS narration and animated objects.">
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    
+    <style>
+        body { margin: 0; font-family: sans-serif; }
+        .story-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+        #startButton {
+            padding: 20px 40px;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(45deg, #FFC107, #FF9800);
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        #startButton:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+        }
+         /* Style for the story text overlay */
+        #storyText {
+            position: absolute;
+            bottom: 10%;
+            width: 100%;
+            text-align: center;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            z-index: 5;
+            box-sizing: border-box;
+            display: none; /* Initially hidden */
+        }
+        #backButton {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            color: white;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid white;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 15;
+            transition: background 0.3s;
+        }
+        #backButton:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+        #stopButton {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            color: white;
+            background: rgba(220, 53, 69, 0.8);
+            border: 2px solid white;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 15;
+            transition: background 0.3s;
+            display: none;
+        }
+        #stopButton:hover {
+            background: rgba(220, 53, 69, 1);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Back button -->
+    <button id="backButton" onclick="window.close()">← Back to Stories</button>
+    
+    <!-- Stop button -->
+    <button id="stopButton">⏹ Stop Story</button>
+
+    <!-- Story overlay and start button -->
+    <div id="storyText"></div>
+    <div id="storyContainer" class="story-container">
+        <button id="startButton">Start Story</button>
+    </div>
+
+    <!-- A-Frame VR Scene -->
+    <a-scene background="color: #87CEEB">
+        <a-assets>
+            <a-asset-item id="lionModel" src="modes/lion.glb"></a-asset-item>
+        </a-assets>
+        <!-- Camera with a cursor for potential future interactivity -->
+        <a-camera position="0 1.6 0"></a-camera>
+
+        <!-- The ground -->
+        <a-plane position="0 0 -4" rotation="-90 0 0" width="100" height="100" color="#7CFC00"></a-plane>
+
+        <!-- Scenery: Trees -->
+        <a-entity class="tree" position="-8 0 -15" scale="1.2 1.2 1.2">
+            <a-cylinder color="#5D4037" height="6" radius="0.4" position="0 3 0"></a-cylinder>
+            <a-sphere color="#4CAF50" radius="2.5" position="0 6 0"></a-sphere>
+        </a-entity>
+        <a-entity class="tree" position="10 0 -18">
+            <a-cylinder color="#5D4037" height="8" radius="0.5" position="0 4 0"></a-cylinder>
+            <a-sphere color="#66BB6A" radius="3" position="0 8 0"></a-sphere>
+        </a-entity>
+        <a-entity class="tree" position="-12 0 -22" scale="0.9 0.9 0.9">
+             <a-cylinder color="#5D4037" height="7" radius="0.4" position="0 3.5 0"></a-cylinder>
+            <a-sphere color="#388E3C" radius="2.8" position="0 7 0"></a-sphere>
+        </a-entity>
+         <a-entity class="tree" position="15 0 -14" scale="0.8 0.8 0.8">
+             <a-cylinder color="#5D4037" height="5" radius="0.5" position="0 2.5 0"></a-cylinder>
+            <a-sphere color="#4CAF50" radius="3" position="0 5 0"></a-sphere>
+        </a-entity>
+
+        <!-- The Lion (glTF model) -->
+        <a-entity id="lion" position="0 0.6 -10" visible="false">
+            <a-entity gltf-model="#lionModel" scale="0.09 0.09 0.09" rotation="0 -80 0"></a-entity>
+        </a-entity>
+        
+        <!-- The Mouse -->
+        <a-entity id="mouse" position="5 0.15 -8" visible="false">
+            <!-- Body -->
+            <a-sphere color="#9E9E9E" radius="0.18" shadow></a-sphere>
+            <!-- Head -->
+            <a-sphere color="#757575" radius="0.12" position="0 0.05 0.22"></a-sphere>
+            <!-- Ears -->
+            <a-sphere color="#BDBDBD" radius="0.08" position="-0.1 0.15 0.25"></a-sphere>
+            <a-sphere color="#BDBDBD" radius="0.08" position="0.1 0.15 0.25"></a-sphere>
+            <!-- Tail -->
+            <a-cylinder color="#757575" height="0.3" radius="0.02" position="0 0 -0.2" rotation="45 0 0"></a-cylinder>
+            <!-- Eyes (tiny) -->
+            <a-sphere color="#000" radius="0.02" position="-0.05 0.1 0.32"></a-sphere>
+            <a-sphere color="#000" radius="0.02" position="0.05 0.1 0.32"></a-sphere>
+        </a-entity>
+
+        <!-- The Net -->
+        <a-entity id="net" position="0 1.5 -10" visible="false">
+            <!-- Vertical ropes -->
+            <a-cylinder color="#654321" height="3" radius="0.03" rotation="0 0 90" position="0 0 0"></a-cylinder>
+            <a-cylinder color="#654321" height="3" radius="0.03" rotation="0 0 90" position="0 0.4 0"></a-cylinder>
+            <a-cylinder color="#654321" height="3" radius="0.03" rotation="0 0 90" position="0 -0.4 0"></a-cylinder>
+            <a-cylinder color="#654321" height="3" radius="0.03" rotation="0 0 90" position="0 0.8 0"></a-cylinder>
+            <a-cylinder color="#654321" height="3" radius="0.03" rotation="0 0 90" position="0 -0.8 0"></a-cylinder>
+            <!-- Horizontal ropes -->
+            <a-cylinder color="#654321" height="2" radius="0.03" rotation="90 0 0" position="-0.8 0 0"></a-cylinder>
+            <a-cylinder color="#654321" height="2" radius="0.03" rotation="90 0 0" position="-0.4 0 0"></a-cylinder>
+            <a-cylinder color="#654321" height="2" radius="0.03" rotation="90 0 0" position="0 0 0"></a-cylinder>
+            <a-cylinder color="#654321" height="2" radius="0.03" rotation="90 0 0" position="0.4 0 0"></a-cylinder>
+            <a-cylinder color="#654321" height="2" radius="0.03" rotation="90 0 0" position="0.8 0 0"></a-cylinder>
+            <!-- Diagonal ropes for more net-like appearance -->
+            <a-cylinder color="#654321" height="1.5" radius="0.02" rotation="0 0 45" position="-0.5 0.5 0"></a-cylinder>
+            <a-cylinder color="#654321" height="1.5" radius="0.02" rotation="0 0 -45" position="0.5 0.5 0"></a-cylinder>
+        </a-entity>
+
+        <!-- Sun/Light source -->
+        <a-light type="directional" color="#FFF" intensity="1" position="-1 2 1"></a-light>
+        <a-light type="ambient" color="#AAA"></a-light>
+    </a-scene>
+
+    <script>
+        // --- STORY DATA ---
+                const story = [
+            {
+                text: "Once upon a time, in a vast savanna, there lived a mighty lion.",
+                action: () => {
+                    const lion = document.getElementById('lion');
+                    lion.setAttribute('visible', true);
+                    lion.setAttribute('animation', {
+                        property: 'scale', from: '0.1 0.1 0.1', to: '1 1 1', dur: 1500, easing: 'easeOutElastic'
+                    });
+                }
+            },
+            {
+                text: "One day, the lion caught a tiny mouse running through the grass.",
+                action: () => {
+                    const mouse = document.getElementById('mouse');
+                    mouse.setAttribute('visible', 'true');
+                    mouse.setAttribute('position', '0.8 0.15 -9.2');
+                    mouse.setAttribute('animation', {
+                        property: 'scale', from: '0.1 0.1 0.1', to: '1 1 1', dur: 1000, easing: 'easeOutBack'
+                    });
+                }
+            },
+            {
+                text: "The mouse pleaded, 'Please let me go! I may help you one day.'",
+                action: () => {
+                    const mouse = document.getElementById('mouse');
+                    mouse.setAttribute('animation__jump', {
+                        property: 'position', to: '0.8 0.35 -9.2', dir: 'alternate', loop: 2, dur: 400
+                    });
+                }
+            },
+            {
+                text: "The lion laughed but was kind and let the mouse go free.",
+                action: () => {
+                    const mouse = document.getElementById('mouse');
+                    mouse.removeAttribute('animation__jump');
+                    mouse.setAttribute('animation', {
+                        property: 'position', to: '5 0.15 -8', dur: 2000, easing: 'easeInOutQuad'
+                    });
+                }
+            },
+            {
+                text: "Later, the lion was trapped in a hunter's net!",
+                action: () => {
+                    const net = document.getElementById('net');
+                    net.setAttribute('visible', 'true');
+                    net.setAttribute('animation', {
+                        property: 'scale', from: '0.1 0.1 0.1', to: '1.2 1.2 1.2', dur: 1200, easing: 'easeOutBack'
+                    });
+                    const lion = document.getElementById('lion');
+                    lion.setAttribute('animation__struggle', {
+                        property: 'rotation', to: '0 10 0', dir: 'alternate', loop: true, dur: 500, easing: 'easeInOutSine'
+                    });
+                }
+            },
+            {
+                text: "The mouse heard the lion's roar and rushed to help.",
+                action: () => {
+                    const mouse = document.getElementById('mouse');
+                    mouse.setAttribute('position', '5 0.15 -8');
+                    mouse.setAttribute('animation', {
+                        property: 'position', to: '0.5 0.8 -9.5', dur: 2500, easing: 'easeInOutQuad'
+                    });
+                }
+            },
+            {
+                text: "The brave mouse gnawed through the ropes of the net.",
+                action: () => {
+                    const mouse = document.getElementById('mouse');
+                    mouse.setAttribute('animation__gnaw', {
+                        property: 'rotation', to: '0 360 0', loop: 3, dur: 600, easing: 'linear'
+                    });
+                }
+            },
+            {
+                text: "The lion was free! He thanked the little mouse.",
+                action: () => {
+                    const net = document.getElementById('net');
+                    net.setAttribute('animation', {
+                        property: 'position', to: '0 -2 -10', dur: 1500, easing: 'easeInQuad'
+                    });
+                    const lion = document.getElementById('lion');
+                    lion.removeAttribute('animation__struggle');
+                    lion.setAttribute('rotation', '0 0 0');
+                    lion.setAttribute('animation__happy', {
+                        property: 'position', to: '0 0.8 -10', dir: 'alternate', loop: 2, dur: 600
+                    });
+                }
+            },
+            {
+                text: "Moral: Kindness is never wasted. Even the smallest friend can be the greatest help. The end.",
+                action: () => {
+                    const mouse = document.getElementById('mouse');
+                    mouse.removeAttribute('animation__gnaw');
+                    mouse.setAttribute('animation', {
+                        property: 'position', to: '0.8 0.15 -9.2', dur: 1500
+                    });
+                    const lion = document.getElementById('lion');
+                    lion.removeAttribute('animation__happy');
+                    lion.setAttribute('animation__celebrate', {
+                        property: 'scale', to: '1.1 1.1 1.1', dir: 'alternate', loop: true, dur: 1000
+                    });
+                }
+            }
+        ];
+
+        // --- SCRIPT LOGIC ---
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        const storyContainer = document.getElementById('storyContainer');
+        const storyTextElement = document.getElementById('storyText');
+        let currentLine = 0;
+        let isPlaying = false;
+
+        function resetScene() {
+            // Stop any speech
+            window.speechSynthesis.cancel();
+            
+            // Reset lion
+            const lion = document.getElementById('lion');
+            lion.removeAttribute('animation');
+            lion.removeAttribute('animation__struggle');
+            lion.removeAttribute('animation__happy');
+            lion.removeAttribute('animation__celebrate');
+            lion.setAttribute('visible', 'false');
+            lion.setAttribute('position', '0 0.6 -10');
+            lion.setAttribute('rotation', '0 0 0');
+            lion.setAttribute('scale', '1 1 1');
+
+            // Reset mouse
+            const mouse = document.getElementById('mouse');
+            mouse.removeAttribute('animation');
+            mouse.removeAttribute('animation__jump');
+            mouse.removeAttribute('animation__gnaw');
+            mouse.setAttribute('visible', 'false');
+            mouse.setAttribute('position', '5 0.15 -8');
+            mouse.setAttribute('scale', '1 1 1');
+
+            // Reset net
+            const net = document.getElementById('net');
+            net.removeAttribute('animation');
+            net.setAttribute('visible', 'false');
+            net.setAttribute('position', '0 1.5 -10');
+            net.setAttribute('scale', '1 1 1');
+
+            // Reset story line counter
+            currentLine = 0;
+            isPlaying = false;
+        }
+
+        // Function to narrate a line and trigger its animation
+        function narrateAndAnimate(index) {
+            if (!isPlaying) return; // Stop if user clicked stop
+            
+            if (index >= story.length) {
+                storyTextElement.style.display = 'none';
+                stopButton.style.display = 'none';
+                console.log('Story finished.');
+                startButton.textContent = 'Start Story Again';
+                storyContainer.style.display = 'flex';
+                isPlaying = false;
+                return;
+            }
+
+            const storyLine = story[index];
+            
+            storyTextElement.textContent = storyLine.text;
+
+            const utterance = new SpeechSynthesisUtterance(storyLine.text);
+            
+            // TTS Customization
+            utterance.rate = 0.9;
+            utterance.pitch = 1.0;
+            utterance.volume = 1;
+            
+            // Get available voices
+            const voices = window.speechSynthesis.getVoices();
+            const preferredVoice = voices.find(voice => 
+                voice.name.includes('Female') || 
+                voice.name.includes('Google UK English Female') ||
+                voice.lang.startsWith('en')
+            );
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
+            }
+            
+            utterance.onend = () => {
+                if (isPlaying) {
+                    currentLine++;
+                    narrateAndAnimate(currentLine);
+                }
+            };
+            
+            window.speechSynthesis.speak(utterance);
+            storyLine.action();
+        }
+
+        // Load voices (needed for Chrome/Edge)
+        window.speechSynthesis.onvoiceschanged = () => {
+            const voices = window.speechSynthesis.getVoices();
+            console.log('Available voices:', voices);
+        };
+
+        // Event listener for the start button
+        startButton.addEventListener('click', () => {
+            resetScene();
+            storyContainer.style.display = 'none';
+            storyTextElement.style.display = 'block';
+            stopButton.style.display = 'block';
+            startButton.textContent = 'Start Story';
+            isPlaying = true;
+            narrateAndAnimate(currentLine);
+        });
+
+        // Event listener for the stop button
+        stopButton.addEventListener('click', () => {
+            isPlaying = false;
+            resetScene();
+            storyTextElement.style.display = 'none';
+            stopButton.style.display = 'none';
+            storyContainer.style.display = 'flex';
+        });
+
+    </script>
+</body>
+</html>
+
+

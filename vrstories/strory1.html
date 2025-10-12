@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VR Story: The Lost Bird</title>
+    <meta name="description" content="A simple VR story with TTS narration and animated objects for dyslexic students.">
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    
+    <style>
+        body { margin: 0; font-family: sans-serif; }
+        .story-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+        #startButton {
+            padding: 20px 40px;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(45deg, #4CAF50, #81C784);
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        #startButton:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+        }
+         /* Style for the story text overlay */
+        #storyText {
+            position: absolute;
+            bottom: 10%;
+            width: 100%;
+            text-align: center;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            z-index: 5;
+            box-sizing: border-box;
+            display: none; /* Initially hidden */
+        }
+        #backButton {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            color: white;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid white;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 15;
+            transition: background 0.3s;
+        }
+        #backButton:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Back button -->
+    <button id="backButton" onclick="window.close()">← Back to Stories</button>
+
+    <!-- Story overlay and start button -->
+    <div id="storyText"></div>
+    <div id="storyContainer" class="story-container">
+        <button id="startButton">Start Story</button>
+    </div>
+
+    <!-- A-Frame VR Scene -->
+    <a-scene background="color: #87CEEB" fog="type: linear; color: #87CEEB; near: 10; far: 50">
+        <!-- Assets preloading for faster load times -->
+        <a-assets>
+            <a-asset-item id="mapleTreeModel" src="modes/maple_tree.glb"></a-asset-item>
+            <a-asset-item id="squirrelModel" src="modes/squirrel.glb"></a-asset-item>
+        </a-assets>
+
+        <!-- Camera with a cursor for potential future interactivity -->
+        <a-camera position="0 1.6 0"></a-camera>
+
+        <!-- Better ground with texture -->
+        <a-plane position="0 0 -4" rotation="-90 0 0" width="100" height="100" 
+                 color="#7CFC00" material="roughness: 0.8"></a-plane>
+
+        <!-- The Tree with 3D Model and nest -->
+        <a-entity id="tree" position="0 0 -10" visible="false">
+            <a-entity gltf-model="#mapleTreeModel" scale="0.05 0.05 0.05" shadow></a-entity>
+            <a-entity id="nest" position="0 4 -0.8" visible="false">
+                <a-torus color="#654321" radius="0.3" radius-tubular="0.1" segments-tubular="6"></a-torus>
+            </a-entity>
+        </a-entity>
+
+        <!-- More detailed bird -->
+        <a-entity id="bird" position="0 0.4 -9.5" visible="false">
+            <!-- Body -->
+            <a-sphere radius="0.25" color="#FFD700" position="0 0 0" shadow></a-sphere>
+            <!-- Head -->
+            <a-sphere radius="0.15" color="#FFD700" position="0 0.3 0.15"></a-sphere>
+            <!-- Beak -->
+            <a-cone color="#FF6347" radius-bottom="0.08" radius-top="0" height="0.15" 
+                    position="0 0.3 0.35" rotation="-90 0 0"></a-cone>
+            <!-- Wings -->
+            <a-box color="#FFA500" width="0.4" height="0.1" depth="0.05" position="-0.2 0 0"></a-box>
+            <a-box color="#FFA500" width="0.4" height="0.1" depth="0.05" position="0.2 0 0"></a-box>
+            <!-- Eyes -->
+            <a-sphere color="#000" radius="0.03" position="-0.08 0.35 0.25"></a-sphere>
+            <a-sphere color="#000" radius="0.03" position="0.08 0.35 0.25"></a-sphere>
+        </a-entity>
+
+        <!-- Squirrel (GLB model, smaller than tree) -->
+        <a-entity id="squirrel" position="3 0.25 -8" visible="false">
+            <!-- glTF model inserted as child so parent animations/position still work -->
+            <a-entity gltf-model="#squirrelModel" scale="0.2 0.2 0.2" shadow></a-entity>
+        </a-entity>
+
+        <!-- Better lighting -->
+        <a-light type="directional" color="#FFF" intensity="0.8" position="-5 5 2" 
+                 castShadow="true"></a-light>
+        <a-light type="ambient" color="#BBB" intensity="0.5"></a-light>
+        <a-light type="hemisphere" color="#87CEEB" groundColor="#7CFC00" intensity="0.3"></a-light>
+    </a-scene>
+
+    <script>
+        // --- STORY DATA ---
+        const story = [
+            {
+                text: "In a big, green forest, a tall tree stood proudly.",
+                action: () => {
+                    const tree = document.getElementById('tree');
+                    tree.setAttribute('visible', true);
+                    tree.setAttribute('animation', {
+                        property: 'scale', from: '0.1 0.1 0.1', to: '1 1 1', dur: 1500, easing: 'easeOutElastic'
+                    });
+                }
+            },
+            {
+                text: "In its branches, there was a cozy little nest.",
+                action: () => {
+                    document.getElementById('nest').setAttribute('visible', true);
+                }
+            },
+            {
+                text: "One day, a little baby bird fell out of the nest!",
+                action: () => {
+                    const bird = document.getElementById('bird');
+                    bird.setAttribute('visible', true);
+                    bird.setAttribute('position', '0 3.8 -9.8');
+                    bird.setAttribute('animation', {
+                        property: 'position', to: '0 0.4 -9.5', dur: 1200, easing: 'easeInQuad'
+                    });
+                }
+            },
+            {
+                text: "Oh no! The baby bird was scared and began to wobble.",
+                action: () => {
+                    const bird = document.getElementById('bird');
+                    bird.setAttribute('animation', {
+                        property: 'rotation', to: '0 0 10', dir: 'alternate', loop: true, dur: 300, easing: 'easeInOutSine'
+                    });
+                }
+            },
+            {
+                text: "Suddenly, a friendly squirrel appeared from nearby.",
+                action: () => {
+                     const squirrel = document.getElementById('squirrel');
+                     squirrel.setAttribute('visible', true);
+                     squirrel.setAttribute('animation', {
+                         property: 'position', to: '1.5 0.25 -9', dur: 1000
+                     });
+                }
+            },
+            {
+                text: "'Don't worry,' chattered the squirrel. 'I will help you get back!'",
+                action: () => {
+                    // Just a pause for the dialogue
+                }
+            },
+            {
+                text: "The squirrel scurried quickly up the tree trunk.",
+                action: () => {
+                    const squirrel = document.getElementById('squirrel');
+                    squirrel.setAttribute('animation', {
+                        property: 'position', to: '0 3 -9.8', dur: 2000, easing: 'linear'
+                    });
+                }
+            },
+            {
+                text: "The little bird followed, flying right behind its new friend.",
+                action: () => {
+                    const bird = document.getElementById('bird');
+                    // Stop wobbling
+                    bird.removeAttribute('animation');
+                    bird.setAttribute('animation', {
+                        property: 'position', to: '0 3.8 -9.8', dur: 2500, easing: 'easeOutQuad'
+                    });
+                }
+            },
+            {
+                text: "The baby bird was safe and sound in the nest. The end.",
+                action: () => {
+                   const bird = document.getElementById('bird');
+                   bird.setAttribute('animation', {
+                       property: 'scale', to: '1.1 1.1 1.1', dir: 'alternate', loop: true, dur: 500
+                   });
+                }
+            }
+        ];
+
+        // --- SCRIPT LOGIC ---
+        const startButton = document.getElementById('startButton');
+        const storyContainer = document.getElementById('storyContainer');
+        const storyTextElement = document.getElementById('storyText');
+        let currentLine = 0;
+
+        function resetScene() {
+            // Reset bird
+            const bird = document.getElementById('bird');
+            bird.removeAttribute('animation');
+            bird.setAttribute('visible', 'false');
+            bird.setAttribute('position', '0 0.4 -9.5');
+            bird.setAttribute('rotation', '0 0 0');
+            bird.setAttribute('scale', '1 1 1');
+
+            // Reset squirrel
+            const squirrel = document.getElementById('squirrel');
+            squirrel.removeAttribute('animation');
+            squirrel.setAttribute('visible', 'false');
+            squirrel.setAttribute('position', '4 0.25 -8');
+
+            // Reset tree & nest
+            const tree = document.getElementById('tree');
+            tree.removeAttribute('animation');
+            tree.setAttribute('visible', 'false');
+            tree.setAttribute('scale', '1 1 1'); // Reset scale
+            document.getElementById('nest').setAttribute('visible', 'false');
+
+            // Reset story line counter
+            currentLine = 0;
+        }
+
+        // Function to narrate a line and trigger its animation
+        function narrateAndAnimate(index) {
+            if (index >= story.length) {
+                storyTextElement.style.display = 'none'; // Hide text at the end
+                console.log('Story finished.');
+                startButton.textContent = 'Start Story Again'; // Change button text
+                storyContainer.style.display = 'flex'; // Show the button container
+                return;
+            }
+
+            const storyLine = story[index];
+            
+            storyTextElement.textContent = storyLine.text;
+
+            const utterance = new SpeechSynthesisUtterance(storyLine.text);
+            
+            // TTS Customization Options:
+            utterance.rate = 0.9;      // Speed: 0.1 to 10 (1 = normal, lower = slower)
+            utterance.pitch = 1.1;     // Pitch: 0 to 2 (1 = normal, higher = child-like)
+            utterance.volume = 1;      // Volume: 0 to 1 (1 = max)
+            
+            // Get available voices and select a specific one
+            const voices = window.speechSynthesis.getVoices();
+            // Example: Use a female voice (you can filter by language/name)
+            const preferredVoice = voices.find(voice => 
+                voice.name.includes('Female') || 
+                voice.name.includes('Google UK English Female')
+            );
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
+            }
+            
+            utterance.onend = () => {
+                currentLine++;
+                narrateAndAnimate(currentLine);
+            };
+            
+            window.speechSynthesis.speak(utterance);
+            storyLine.action();
+        }
+
+        // Load voices (needed for Chrome/Edge)
+        window.speechSynthesis.onvoiceschanged = () => {
+            const voices = window.speechSynthesis.getVoices();
+            console.log('Available voices:', voices); // Check browser console to see all voices
+        };
+
+        // Event listener for the start button
+        startButton.addEventListener('click', () => {
+            resetScene(); // Reset the scene objects to their starting state
+            storyContainer.style.display = 'none';
+            storyTextElement.style.display = 'block';
+            narrateAndAnimate(currentLine);
+        });
+
+        // Spawn multiple background trees around the scene
+        function spawnTrees(count = 18, radius = 25) {
+            // remove previously spawned background trees (if any)
+            document.querySelectorAll('.bg-tree').forEach(e => e.remove());
+
+            const scene = document.querySelector('a-scene');
+            for (let i = 0; i < count; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const r = radius * (0.5 + Math.random() * 0.5); // spread variation
+                const x = Math.cos(angle) * r;
+                const z = Math.sin(angle) * r - 10; // center around -10 where main tree sits
+                const y = 0;
+                const scale = (0.02 + Math.random() * 0.04).toFixed(3); // random small sizes
+
+                const treeEnt = document.createElement('a-entity');
+                treeEnt.setAttribute('class', 'bg-tree');
+                treeEnt.setAttribute('position', `${x} ${y} ${z}`);
+                treeEnt.setAttribute('rotation', `0 ${Math.floor(Math.random() * 360)} 0`);
+                treeEnt.setAttribute('scale', `${scale} ${scale} ${scale}`);
+                treeEnt.setAttribute('gltf-model', '#mapleTreeModel');
+                treeEnt.setAttribute('shadow', 'receive: true');
+
+                scene.appendChild(treeEnt);
+            }
+        }
+
+        // Wait for the A-Frame scene to be ready, then spawn trees
+        document.querySelector('a-scene').addEventListener('loaded', () => {
+            // spawn background trees once when scene loads
+            spawnTrees(5, 15);
+        });
+
+    </script>
+</body>
+</html>
+

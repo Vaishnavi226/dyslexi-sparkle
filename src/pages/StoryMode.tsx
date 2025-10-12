@@ -42,6 +42,7 @@ interface Story {
   duration: string;
   scene: 'forest' | 'ocean' | 'space' | 'castle' | 'garden';
   characters: string[];
+  vrStoryPath?: string;
 }
 
 const stories: Story[] = [
@@ -60,7 +61,8 @@ const stories: Story[] = [
     difficulty: 'easy',
     duration: '2 min',
     scene: 'space',
-    characters: ['Luna the Star', 'Planet Friends', 'Cosmic Helpers']
+    characters: ['Luna the Star', 'Planet Friends', 'Cosmic Helpers'],
+    vrStoryPath: '/vrstories/strory1.html'
   },
   {
     id: 2,
@@ -77,7 +79,8 @@ const stories: Story[] = [
     difficulty: 'easy',
     duration: '2 min',
     scene: 'forest',
-    characters: ['Oakley the Tree', 'Nutkin the Squirrel', 'Forest Friends']
+    characters: ['Oakley the Tree', 'Nutkin the Squirrel', 'Forest Friends'],
+    vrStoryPath: '/vrstories/story2.html'
   },
   {
     id: 3,
@@ -94,7 +97,8 @@ const stories: Story[] = [
     difficulty: 'medium',
     duration: '2 min',
     scene: 'space',
-    characters: ['Zoomy the Rocket', 'Stella the Satellite', 'Space Crew']
+    characters: ['Zoomy the Rocket', 'Stella the Satellite', 'Space Crew'],
+    vrStoryPath: '/vrstories/story3.html'
   },
   {
     id: 4,
@@ -161,6 +165,17 @@ const StoryMode: React.FC = () => {
     SpeechUtils.speak('Amazing job! You completed the story mission!');
   };
 
+  const handleStoryClick = (story: Story) => {
+    if (story.vrStoryPath) {
+      // Open VR story in a new window or navigate to it
+      window.open(story.vrStoryPath, '_blank');
+    } else {
+      // Fallback to showing activity
+      setCurrentStoryIndex(story.id - 1);
+      setShowActivity(true);
+    }
+  };
+
   return (
     <Layout>
       <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6">
@@ -174,11 +189,32 @@ const StoryMode: React.FC = () => {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {stories.map((story, index) => (
-                <Card key={story.id} className="cursor-pointer hover:shadow-lg transition-all">
+                <Card 
+                  key={story.id} 
+                  className="cursor-pointer hover:shadow-lg transition-all hover:scale-105"
+                  onClick={() => handleStoryClick(story)}
+                >
                   <CardContent className="p-4">
-                    <h3 className="font-bold mb-2">{story.title}</h3>
-                    <p className="text-sm text-muted-foreground mb-2">{story.description}</p>
-                    <Badge variant="outline">{story.difficulty}</Badge>
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="font-bold text-lg">{story.title}</h3>
+                      {story.vrStoryPath && (
+                        <Badge variant="secondary" className="ml-2">
+                          <Eye className="w-3 h-3 mr-1" />
+                          VR
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">{story.description}</p>
+                    <div className="flex items-center justify-between">
+                      <Badge variant="outline">{story.difficulty}</Badge>
+                      <span className="text-xs text-muted-foreground">{story.duration}</span>
+                    </div>
+                    {completedStories.includes(story.id) && (
+                      <div className="mt-2 flex items-center text-green-600 text-sm">
+                        <Award className="w-4 h-4 mr-1" />
+                        Completed
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               ))}
